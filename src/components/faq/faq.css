@@ -1,0 +1,45 @@
+.faq .accordion-body {
+    border: none;
+    margin-block: 10px;
+    border-radius: 7px;
+    border: 1px solid #ddd;
+}
+.faq .accordion-header {
+    border-radius: 7px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+    margin-block: 10px;
+}
+.faq .accordion-header button::after {
+         margin-right: auto;
+    margin-left: 0;
+}
+.faq .accordion-button:not(.collapsed) {
+    color: var(--bs-accordion-active-color);
+    background-color: #fff2d8;
+}
+.faq .accordion-item {border: none;border-radius: 10px;}
+.faq .accordion-button:not(.collapsed)::after {background-image: url('../../../public/cross.png');}
+.faq .accordion-button::after {
+    background-image: url('../../../public/plus.png');
+    margin-left: auto;
+    margin-right: 0;
+}
+[dir='ltr'] {
+    .faq .accordion-header button::after {
+         margin-left: auto;
+        margin-right: 0;
+}
+}
+[data-theme='dark'] {
+    .faq .accordion-header , .faq .accordion-button{
+    background-color: var(--dark-color);
+    border-color: #353434;
+    color: var(--basic-color);
+}
+.faq .accordion-body {border: none;}
+.faq .accordion-button::after {
+    background-image: url('../../../public/add.png');
+}
+.faq .accordion-button:not(.collapsed)::after {background-image: url('../../../public/cross.png');}
+}

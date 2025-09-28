@@ -1,0 +1,25 @@
+.provider_profile {
+    background-color: #F3F3F3;
+}
+.provider_profile .container {
+        display: flex;
+    align-items: center;
+}
+.provider_profile .info {margin-inline: 20px;}
+.provider_profile .info span {color: #777;}
+.provider_profile .img img {
+    width: 70px;
+    max-height: 70px;
+    object-fit: cover;
+    border-radius: 50%;
+    display: block;
+}
+[data-theme='dark'] {
+    .provider_profile {background-color: var(--dark-color);color: var(--basic-color);}
+    .provider_profile .info span {color: var(--basic-color);}
+    .common {
+        background-color: var(--dark-color);
+        color: var(--basic-color);
+        border-color: #16181b;
+    }
+}

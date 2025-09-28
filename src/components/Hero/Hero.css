@@ -1,0 +1,103 @@
+.hero {position: relative;}
+.hero::before {
+    position: absolute;
+    right: 0px;
+    height: 200px;
+    width: 200px;
+    bottom: 7px;
+    background-image: url('../../../public/hero-light-line2.gif');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    content: '';
+    z-index: -1;
+}
+.hero::after {
+    position: absolute;
+    left: 0;
+    height: 200px;
+    width: 200px;
+    top: 7px;
+    background-image: url('../../../public/hero-light-line.gif');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    content: '';
+    z-index: -1;
+}
+.hero h1 {
+    width: 463px;
+    max-width: 90%;
+    margin: auto;
+    line-height: 1.7em;
+}
+.custom-span {position: relative;}
+.custom-span::after {
+    position: absolute;
+    right: 0;
+    height: 110px;
+    width: 110px;
+    top: 7px;
+    background-image: url('../../../public/span-line.png');
+    background-position: center;
+    background-size: contain;
+    background-repeat: no-repeat;
+    content: '';
+    z-index: -1;
+}
+.hero form {
+    position: relative;
+    width: 600px;
+    max-width: 90%;
+    margin: auto;
+    box-shadow: 0px 3px 5px 0px rgba(0, 0, 0, .1);
+    border: 1px solid #eee;
+    border-radius: 6px;
+    padding: 6px;
+    display: flex;
+    justify-content: space-between;
+}
+.hero form svg {
+    position: absolute;
+    right: 11px;
+    top: 16px;
+    color: #777;
+}
+.hero form input {
+    width: 90%;
+    border: 0;
+    padding-inline: 32px;
+}
+.hero form input:focus {outline: none;border: none;}
+.hero form button {
+    background-color: #000;
+    color: var(--basic-color);
+    border-radius: 6px;
+    padding: 3px 17px 7px;
+    border: none;
+}
+/* dir ltr*/
+[dir='ltr']  {
+.custom-span::after {left: 0;right: unset;top: -5px;}
+.hero form svg {left: 11px;right: unset;top: 15px;}
+.hero form button {padding: 7px 17px;}
+.hero form input {width: 84%;}
+
+}
+/* dark mode */
+[data-theme="dark"] .hero::before {
+    background-image: url('../../../public/hero-line2.gif');
+}
+
+[data-theme="dark"] .hero::after {
+    background-image: url('../../../public/hero-line.gif');
+}
+[data-theme="dark"]
+.custom-span::after {
+    background-image: url('../../../public/span-dark-line.png');
+}
+
+@media(max-width:567px) {
+.hero::after {top: -48px;max-width: 50px;}
+.hero::before {bottom: 27px;max-width: 50px;}
+}

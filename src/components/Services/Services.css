@@ -1,0 +1,36 @@
+.service_btns {
+    display: flex;
+    justify-content: center;
+}
+.service_btns button {
+    background-color: var(--basic-color);
+    border: 1px solid #ddd;
+    padding: 20px;
+    margin-inline: 5px;
+    border-radius: 12px;
+    transition: all .3s ease-in-out;
+}
+.service_btns button span {font-weight: bold;}
+.service_btns button:hover {background-color: #ddd;}
+.service_btns button img {
+        width: auto;
+    max-height: 45px;
+    margin-inline: 4px;
+}
+/* dir ltr */
+[dir='ltr'] {
+    .service_btns {
+    align-items: center;
+}
+.service_btns button span {font-size: small;}
+.service_btns button {display: flex;text-align: left;}
+.service_btns button img {margin-inline: 7px;}
+}
+@media(max-width:567px) {
+    .service_btns button {
+        width: 43%;
+        margin-block: 10px;
+    }
+    .service_btns {flex-wrap: wrap;}
+    .service_btns button span {font-size: small;}
+}

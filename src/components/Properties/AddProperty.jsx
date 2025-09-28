@@ -1,0 +1,475 @@
+import React, { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import "./property.css";
+import "leaflet/dist/leaflet.css";
+import Breadcrumb from "../Breadcrumb/Breadcrumb";
+import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
+import { toast } from "react-toastify";
+import { addProperty } from "../../redux/Slices/AddPropertySlice";
+import MapPicker from "./MapPicker";
+
+const AddProperty = () => {
+  const { t,i18n } = useTranslation("global");
+  const dispatch = useDispatch();
+  const user3ayin = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const userID = user3ayin?.user?.id;
+  const userType = user3ayin?.user?.type;
+  const [previews, setPreviews] = useState({
+    images: [null, null, null, null],
+    files: [null, null, null, null],
+  });
+
+  const [showMap, setShowMap] = useState(false);
+  const navigate = useNavigate();
+  const { success, error, isLoading } = useSelector((state) => state.property);
+
+  const [formdata, setFormata] = useState({
+    category: "",
+    unit_type: "",
+    title: "",
+    rooms: "",
+    floor: "",
+    area_sqm: "",
+    finishing_status: "",
+    furniture_status: "",
+    price: "",
+    payment_method: "",
+    address_details: "",
+    deposit_amount: "",
+    images: [], // array of images
+    files: [], // array of files
+    latitude: "",
+    longitude: "",
+    location: "",
+    ar_link: "",
+    vr_link: "",
+  });
+
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormata((prev) => ({ ...prev, [name]: value }));
+  };
+  const handleFileInput = (e, key, index) => {
+    const file = e.target.files[0];
+    if (!file) return;
+
+    const imageTypes = ["image/jpeg", "image/png", "image/jpg"];
+    const fileTypes = [
+      "application/pdf",
+      "application/msword",
+      "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+    ];
+
+    let allowedTypes;
+    if (key === "images") allowedTypes = imageTypes;
+    if (key === "files") allowedTypes = fileTypes;
+
+    if (!allowedTypes.includes(file.type)) {
+      toast.error(
+        `${t("only_allowed")} ${
+          key === "files" ? "PDF, Word" : "JPG, JPEG, PNG"
+        }`
+      );
+      return;
+    }
+
+    // update formdata with actual file
+    setFormata((prev) => {
+      const newFiles = [...prev[key]];
+      newFiles[index] = file;
+      return { ...prev, [key]: newFiles };
+    });
+
+    // update preview for images and user_works
+    if (key === "images") {
+      setPreviews((prev) => {
+        const newPreviews = { ...prev };
+        newPreviews[key][index] = URL.createObjectURL(file);
+        return newPreviews;
+      });
+    } else if (key === "files") {
+      setPreviews((prev) => {
+        const newPreviews = { ...prev };
+        newPreviews[key][index] = file.name; // show file name instead of image
+        return newPreviews;
+      });
+    }
+
+    e.target.value = null; // allow reselecting same file
+  };
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    if (formdata.ar_link && !formdata.ar_link.startsWith("https://")) {
+      toast.error(t("property.arLinkInvalid"));
+      return;
+    }
+
+    if (formdata.vr_link && !formdata.vr_link.startsWith("https://")) {
+      toast.error(t("property.vrLinkInvalid"));
+      return;
+    }
+
+    const data = new FormData();
+
+    data.append("user_id", userID);
+    Object.entries(formdata).forEach(([key, value]) => {
+      if (["images", "files"].includes(key)) return;
+      if (value !== null && value !== undefined) {
+        data.append(key, value);
+      }
+    });
+
+    formdata.images.forEach((file) => data.append("images[]", file));
+    formdata.files.forEach((file) => data.append("files[]", file));
+
+    dispatch(addProperty(data));
+  };
+
+  useEffect(() => {
+  if (success) {
+    toast.success(t("request_added_success"), {
+      onClose: () => {
+        dispatch({ type: "property/clearState" });
+        navigate("/all_properties");
+      },
+    });
+  } else if (error) { 
+    toast.error(t("failedToAdd"), {
+      onClose: () => dispatch({ type: "property/clearState" }),
+    });
+  }
+}, [success, error, t, dispatch, navigate]);
+
+  return (
+    <div className="form_holder">
+      <Breadcrumb title={t("property.add_property")} />
+      <div className="container">
+        <div className="add_property py-4">
+          <form className="form-style" onSubmit={handleSubmit}>
+            <div className="row">
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <h4
+                  className="fw-bold my-4 position-relative"
+                  style={{ fontSize: "22px" }}
+                >
+                  {t("property.select_category")}
+                </h4>
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.unitCategory")}</label>
+                <select
+                  type="text"
+                  name="category"
+                  onChange={handleChange}
+                  value={formdata.category}
+                  required
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  <option value="sale">{t("property.sale")}</option>
+                  <option value="rent">{t("property.rent")}</option>
+                  <option value="share">{t("property.share")}</option>
+                </select>
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.unitType")}</label>
+                <select
+                  type="text"
+                  name="unit_type"
+                  onChange={handleChange}
+                  required
+                  value={formdata.unit_type}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  <option value="apartment">{t("property.apartment")}</option>
+                  <option value="villa">{t("property.villa")}</option>
+                  <option value="duplex">{t("property.duplex")}</option>
+                  <option value="office">{t("property.office")}</option>
+                  <option value="shop">{t("property.shop")}</option>
+                  <option value="warehouse">{t("property.warehouse")}</option>
+                  <option value="land">{t("property.land")}</option>
+                  <option value="chalet">{t("property.chalet")}</option>
+                </select>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <hr />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <h4
+                  className="fw-bold my-4 position-relative"
+                  style={{ fontSize: "22px" }}
+                >
+                  {t("property.property_details")}
+                </h4>
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.unitName")}</label>
+                <input
+                  type="text"
+                  name="title"
+                  required
+                  onChange={handleChange}
+                  value={formdata.title}
+                />
+              </div>
+
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.area")}</label>
+                <input
+                  type="number"
+                  required
+                  name="area_sqm"
+                  onChange={handleChange}
+                  value={formdata.area_sqm}
+                />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.rooms")}</label>
+                <input
+                  type="number"
+                  required
+                  name="rooms"
+                  onChange={handleChange}
+                  value={formdata.rooms}
+                />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.floor")}</label>
+                <input
+                  type="number"
+                  required
+                  name="floor"
+                  onChange={handleChange}
+                  value={formdata.floor}
+                />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">
+                  {t("property.finishingStatus")}
+                </label>
+                <select
+                  type="text"
+                  required
+                  name="finishing_status"
+                  onChange={handleChange}
+                  value={formdata.finishing_status}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  <option value="semi">{t("property.finishingSemi")}</option>
+                  <option value="full">{t("property.finishingFull")}</option>
+                  <option value="superLux">
+                    {t("property.finishingSuperLux")}
+                  </option>
+                  <option value="company">
+                    {t("property.finishingCompany")}
+                  </option>
+                </select>
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">
+                  {t("property.furnitureStatus")}
+                </label>
+                <select
+                  type="text"
+                  required
+                  name="furniture_status"
+                  onChange={handleChange}
+                  value={formdata.furniture_status}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  <option value="empty">{t("property.furnitureEmpty")}</option>
+                  <option value="furnished">
+                    {t("property.furnitureFurnished")}
+                  </option>
+                  <option value="semi">{t("property.furnitureSemi")}</option>
+                  <option value="none">{t("property.furnitureNone")}</option>
+                </select>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <hr />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.price")}</label>
+                <input
+                  type="text"
+                  name="price"
+                  required
+                  onChange={handleChange}
+                  value={formdata.price}
+                />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.paymentMethod")}</label>
+                <select
+                  type="text"
+                  name="payment_method"
+                  required
+                  onChange={handleChange}
+                  value={formdata.payment_method}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  <option value="cash">{t("property.paymentCash")}</option>
+                  <option value="installments">
+                    {t("property.paymentInstallments")}
+                  </option>
+                  <option value="monthly">
+                    {t("property.paymentMonthly")}
+                  </option>
+                </select>
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.deposit")}</label>
+                <input
+                  type="number"
+                  name="deposit_amount"
+                  onChange={handleChange}
+                  value={formdata.deposit_amount}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">
+                  {t("property.detailedAddress")}
+                </label>
+                <textarea
+                  name="address_details"
+                  onChange={handleChange}
+                  value={formdata.address_details}
+                  required
+                  placeholder={`(${t("property.addressRegion")} - ${t(
+                    "property.addressStreet"
+                  )} - ${t("property.addressLandmark")})`}
+                ></textarea>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("create_ad.uploadImages")}</label>
+                <div className="row">
+                  {previews.images.map((preview, index) => (
+                    <div
+                      className="col-xl-3 col-lg-3 col-md-6 col-6"
+                      key={index}
+                    >
+                      <div className="photo_wrapper">
+                        <input
+                          type="file"
+                          accept=".png,.jpg,.jpeg"
+                          onChange={(e) => handleFileInput(e, "images", index)}
+                        />
+                        <img src={preview || "/camera.png"} alt="preview" />
+                        <span>{t("create_ad.uploadImage")}</span>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("create_ad.location")}</label>
+                <input
+                  type="text"
+                  name="location"
+                  value={formdata.location}
+                  onChange={handleChange}
+                  placeholder={t("create_ad.useCurrentLocation")}
+                />
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary mt-2"
+                  onClick={() => setShowMap(true)}
+                >
+                  {t("property.pickFromMap")}
+                </button>
+
+                {showMap && (
+                  <div className="mt-3">
+                    <MapPicker
+                      lang={i18n.language}
+                      onSelect={({ latitude, longitude, location }) => {
+                        setFormata((prev) => ({
+                          ...prev,
+                          latitude,
+                          longitude,
+                          location,
+                        }));
+                        setShowMap(false);
+                      }}
+                    />
+                  </div>
+                )}
+              </div>
+
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("create_ad.arVr")}</label>
+                <input
+                  type="text"
+                  name="ar_link"
+                  placeholder={t("create_ad.link")}
+                  onChange={handleChange}
+                  value={formdata.AR_VR}
+                />
+                <input
+                  type="text"
+                  name="vr_link"
+                  placeholder={t("create_ad.link")}
+                  onChange={handleChange}
+                  value={formdata.AR_VR}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">
+                  {t("create_ad.additional_details")}
+                </label>
+                <div className="row">
+                  {previews.files.map((fileName, index) => (
+                    <div
+                      className="col-xl-3 col-lg-3 col-md-6 col-6"
+                      key={index}
+                    >
+                      <div className="photo_wrapper">
+                        <input
+                          type="file"
+                          accept=".pdf,.doc,.docx"
+                          onChange={(e) => handleFileInput(e, "files", index)}
+                        />
+                        {fileName ? (
+                          <>
+                            <img src="/file.png" alt="file" />
+                            <span>{fileName}</span>
+                          </>
+                        ) : (
+                          <>
+                            <img src="/camera.png" alt="upload" />
+                            <span>{t("create_ad.uploadFile")}</span>
+                          </>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <div className="form_btn">
+                  <button type="submit" disabled={isLoading}>
+                    {isLoading ? t("loading") : t("create_ad.publishNow")}
+                  </button>
+                </div>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export default AddProperty;

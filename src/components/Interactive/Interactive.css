@@ -1,0 +1,135 @@
+.interactive_btns {
+    position: relative;
+}
+.interactive .main_img {
+    width: auto;
+    height: 500px;
+    display: block;
+    margin: auto;
+}
+.interactive .after_img {
+    position: absolute;
+    top: 50px;
+    left: 50%;
+    z-index: -1;
+    width: auto;
+    max-height: 415px;
+    transform: translateX(-50%);
+}
+.interactive_btns button {
+    width: 70px;
+    height: 70px;
+    border-radius: 50%;
+    background-color: #000;
+    border: none;
+    text-align: center;
+}
+.interactive .btn1 {
+    right: 16%;
+    top: 0;
+    position: absolute;
+}
+.interactive .btn2 {
+    right: 16%;
+    bottom: 80px;
+    position: absolute;
+}
+.interactive .btn3 {
+    left: 16%;
+    top: 0;
+    position: absolute;
+}
+.interactive .btn4 {
+    left: 16%;
+    bottom: 80px;
+    position: absolute;
+}
+.interactive_btns .dropdown {
+  position: absolute;
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 22px;
+    padding: 10px;
+    z-index: 999;
+    min-width: 150px;
+    text-align: right;
+    font-size: 13px;
+    box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
+}
+.interactive_btns .dropdown::before {
+    background-color: #fff;
+    height: 10px;
+    width: 10px;
+    position: absolute;
+    top: -6px;
+    right: 28px;
+    content: '';
+    transform: rotate(45deg);
+    z-index: 1;
+    border: 1px solid #ddd;
+    border-right: none;
+    border-bottom: none;
+}
+[dir="ltr"] .interactive_btns .dropdown {text-align: left;}
+[dir="ltr"] 
+.interactive_btns .dropdown::before {right: 0;left: 28px;}
+.interactive_btns .dropdown ul {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.interactive_btns .dropdown li {
+      padding: 3px 5px;
+    cursor: pointer;
+    transition: all .2s ease-in-out;
+    margin-block: 3px;
+    border-radius: 4px;
+}
+.interactive_btns .dropdown li a {transition: all .2s ease-in-out;}
+.interactive_btns .dropdown li a {color: #000;}
+.interactive_btns .dropdown li:hover {
+  background-color: var(--main-color);
+  color: var(--basic-color);
+}
+.interactive_btns .dropdown li:hover a {color: var(--basic-color);}
+.interactive_btns button:focus {outline: none;border: none;}
+.interactive_btns button img {width: auto;display: block;max-height: 30px;margin: auto;}
+.interactive_btns .react-ripples {border-radius: 50%;}
+/* media */
+@media(max-width:567px) {
+    .interactive .after_img {max-height: 75% !important;}
+    .interactive .main_img {max-height: 220px;}
+    .interactive_btns button {width: 30px;height: 30px;}
+    .spin-div {
+    width: 38px !important;
+    height: 38px !important;
+    top: -4px !important;
+    right: -4px !important;
+    border-width: 1px !important;
+}
+.interactive_btns button img {max-height: 14px;}
+.interactive .btn1 {
+    right: 8%;
+    top: 20px;
+    position: absolute;
+}
+.interactive .btn3 {
+    left: 8%;
+    top: 20px;
+    position: absolute;
+}
+.interactive .btn2 {
+    right: 8%;
+    bottom: 33px;
+    position: absolute;
+}
+.interactive .btn4 {
+    left: 8%;
+    bottom: 33px;
+    position: absolute;
+}
+.interactive_btns .dropdown li a {font-size: 12px;}
+}
+@media(max-width:991px) {
+    .interactive_btns button,.interactive_btns .spinner {display: none;}
+}

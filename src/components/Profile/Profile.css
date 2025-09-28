@@ -1,0 +1,50 @@
+.user_upload_profile {
+    position: relative;
+    width: 70px;
+    height: 70px;
+    border: 1px solid #000;
+    border-radius: 50%;
+    cursor: pointer;
+    margin-block: 20px;
+}
+.user_upload_profile img {
+    width: 68px;
+    height: 68px;
+    border-radius: 50%;
+    object-fit: cover;
+    cursor: pointer;
+}
+.user_upload_profile input {
+    position: absolute;
+    left: 0;
+    top: 0;
+    height: 100% !important;
+    width: 100%;
+    opacity: 0;
+    cursor: pointer;
+    z-index: 999;
+}
+.user_upload_profile .icon {
+    position: absolute;
+    bottom: 0;
+    right: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    color: var(--basic-color);
+    background-color: var(--main-color);
+    text-align: center;
+    padding-top: 2px;
+    cursor: pointer;
+}
+.sendSpecialOffers {
+    display: flex !important;
+    align-items: center;
+    cursor: pointer;
+    margin: 20px 0 !important;
+}
+.sendSpecialOffers input {
+    height: auto !important;
+    width: auto !important;
+    cursor: pointer;
+}

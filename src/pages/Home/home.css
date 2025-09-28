@@ -1,0 +1,113 @@
+.div-bg {
+    padding: 20px;
+    border-radius: 8px;
+    margin-block: 10px;
+    border: 1px solid #ddd;
+    box-shadow: var(--box-shadow)
+}
+ h5.stat-title {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 17px;
+    color: var(--text-lighter);
+    margin-bottom: 30px;
+    font-weight: bold;
+}
+
+
+/* main content */
+
+.stat_card {
+  padding: 20px 10px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  box-shadow: var(--box-shadow);
+  margin: 10px 0;
+  height: 200px;
+  background-color: var(--basic-color);
+  position: relative;
+}
+
+.stat_card img {
+  width: auto;
+  max-height: 40px;
+  margin: 6px auto 0 auto;
+  display: block;
+}
+.stat_card .plus-number {
+  position: absolute;
+  right: 35%;
+  top: 27px;
+  font-size: 12px;
+  color: #42bf42;
+}
+.stat_card .icon {
+  height: 30px;
+  width: 30px;
+  border-radius: 50%;
+  text-align: center;
+  padding-top: 7px;
+  font-size: small;
+}
+.icon1 {
+  background-color: #00800033;
+}
+.icon2 {
+  background-color: #F0920033;
+}
+.icon3 {
+  background-color: #FF000033;
+}
+.icon4 {
+  background-color: #B300FF33;
+}
+.icon5 {
+  background-color: #FF00AE33;
+}
+.icon6 {
+  background-color: #017FD233;
+}
+.stat_card .icon img {
+  width: auto;
+  max-height: 15px;
+  margin-top: 0px !important;
+}
+.stat_card h5 {
+  margin-block: 10px;
+  font-weight: bold;
+}
+
+.stat_card h5,
+.stat_card b {
+  white-space: nowrap;
+  color: var(--gray-color);
+}
+
+.stat_card b {
+  font-size: 12px;
+  display: block;
+  white-space: pre-wrap;
+  margin-top: 4px;
+  height: 40px;
+}
+.btns-div {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.main_content button {border: none;background: transparent;}
+/* stats */
+.stats li:nth-child(1) i {color: var(--text-color);}
+.stats li:nth-child(2) i {color: #FF964C;}
+.stats li:nth-child(3) i {color: #17AD37;}
+.stats li {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-block: 7px;
+  font-size: 12px;
+  font-weight: bold;
+  color: var(--text-lighter);
+}

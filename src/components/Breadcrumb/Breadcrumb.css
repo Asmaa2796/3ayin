@@ -1,0 +1,23 @@
+/* breadcrumb */
+.breadcrumb {background-color: #EBEBEB;position: relative;margin-bottom: 0;}
+.breadcrumb ul li {
+  display: inline-block;
+  margin-inline: 3px;
+  font-size: 13px;
+  color: #000;
+}
+.breadcrumb ul li a {color: #000;}
+.breadcrumb ul li span.active {
+  color: var(--main-color);
+}
+
+.breadcrumb ul li a {
+  color: #333 !important;
+}
+[data-theme="dark"] {
+    .breadcrumb {background-color: var(--dark-color);}
+    .breadcrumb ul li a ,
+    .breadcrumb ul li svg ,
+    .breadcrumb ul li  
+    {color: var(--basic-color) !important;}
+}
