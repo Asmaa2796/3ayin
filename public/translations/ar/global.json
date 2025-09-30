@@ -4,6 +4,9 @@
     "platform": "منصة واحدة تربطك بكل ما يخص العقارات … في أي وقت ومن أي مكان.",
     "searchHere": "ابحث هنا..",
     "search": "بحث",
+    "searchIn": "بحث في",
+    "ads": "الإعلانات",
+    "properties": "العقارات",
     "enterSearch": "يرجى إدخال كلمة للبحث"
   },
   "topnav": {
@@ -226,6 +229,7 @@
   },
   "property": {
     "all": "جميع العقارات",
+    "title": "عقارات نرشحها لك",
     "add_property": "إضافة عقار",
     "unitCategory": "فئة الوحدة",
     "sale": "بيع",
@@ -234,6 +238,7 @@
     "unitType": "نوع الوحدة",
     "apartment": "شقة سكنية",
     "villa": "فيلا",
+    "building": "عمارة",
     "duplex": "دوبلكس",
     "office": "مكتب إداري",
     "shop": "محل تجاري",
@@ -280,9 +285,12 @@
     "pickFromMap": "اختر من الخريطة",
     "arLinkInvalid": "يرجى إدخال رابط AR صحيح يبدأ بـ https://",
     "vrLinkInvalid": "يرجى إدخال رابط VR صحيح يبدأ بـ https://",
+    "videoLinkInvalid": "يرجى إدخال رابط فيديو صحيح يبدأ بـ https://",
     "property_status": "حالة العقار",
     "address": "العنوان",
-    "property_area": "مساحة العقار"
+    "property_area": "مساحة العقار",
+    "relatedProperties": "عقارات ذات صلة",
+    "video_url": "رابط فيديو"
   },
   "servicesPage": {
     "filterServices": "تصفية الخدمات",
@@ -325,7 +333,9 @@
     "provideRate": "يرجى تقديم تقييم وتعليق.",
     "rateSuccess": "تمت إضافة تقييمك بنجاح",
     "rateFail": "لم تتم إضافة تقييمك",
-    "share_now": "شارك الآن"
+    "share_now": "شارك الآن",
+    "alreadyRated": "لقد قمت بالتقييم من قبل",
+    "video": "فيديو"
   },
   "serviceProvider": {
     "reviews": "تقييمات",
@@ -363,7 +373,8 @@
     "q3": "السؤال الثالت ؟",
     "answer": "الإجابة",
     "privacy_policy": "سياسة الخصوصية",
-    "terms_and_conditions": "الشروط والأحكام"
+    "terms_and_conditions": "الشروط والأحكام",
+    "update": "تحديث"
   },
   "profile": {
     "title": "الملف الشخصي",
@@ -400,10 +411,13 @@
     "emailUpdated": "تم تحديث بريد الإشعارات بنجاح",
     "emailUpdateFailed": "فشل في إرسال بريد الإشعارات",
     "updatedSuccessfully": "تم التحديث بنجاح",
-    "updateFailed": "فشل التحديث"
+    "updateFailed": "فشل التحديث",
+    "please_upload_required_images": "يرجى رفع الصور المطلوبة"
   },
   "addedSuccessfully": "تمت الإضافة بنجاح",
+  "updatedSuccessfully": "تم التحديث بنجاح",
   "failedToAdd": "فشل في الإضافة",
+  "failedToUpdate": "فشل في التحديث",
   "only_allowed": "الامتدادات المسموح بها",
   "category": "فئة الخدمة مطلوبة",
   "sub_category": "نوع فئة الخدمة مطلوب",
@@ -420,7 +434,11 @@
   "subscribed_successfully": "تم الاشتراك بنجاح",
   "failed_to_subscribe": "لم يتم الاشتراك",
   "labels": {
-    "all_ads": "جميع الإعلانات"
+    "all_ads": "جميع الإعلانات",
+    "previous": "السابق",
+    "page": "صفحة",
+    "of": "من",
+    "next": "التالي"
   },
   "loading": "جار التحميل...",
   "not_found_title": "٤٠٤ - الصفحة غير موجودة",
@@ -434,7 +452,7 @@
       "monthlySubscription": "الاشتراك الشهري",
       "adsCount": "عدد الإعلانات",
       "photosVideos": "صور وفيديو",
-      "vrTours": "عرض جولات افتراضية بتقنية VR",
+      "vrTours": "عرض جولات افتراضية بتقنية VR - AR",
       "searchAppearance": "ظهور مميز في البحث",
       "statisticsReports": "إحصائيات وتقارير الأداء",
       "teamManagement": "إدارة فريق العمل (لوحة تحكم خاصة)",

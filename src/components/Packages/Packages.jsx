@@ -102,7 +102,14 @@ const Packages = () => {
               )}
               {t("packages.features.video")}
             </span>
-            <span className="ms-1 d-block my-1">{pkg.photosVideos.images}</span>
+            <span className="d-block my-1">
+              {pkg.photosVideos.images ? (
+                <i className="bi bi-check-circle-fill text-success ms-1"></i>
+              ) : (
+                <i className="bi bi-x-circle-fill text-danger ms-1"></i>
+              )}
+              {pkg.photosVideos.images}
+            </span>
           </div>
         );
 

@@ -67,6 +67,21 @@
     opacity: 0;
     cursor: pointer;
 }
+.finishing_status {
+  position: absolute;
+    top: 20px;
+    right: 20px;
+    background-color: #000;
+    color: var(--basic-color);
+    padding: 5px 20px;
+    border-radius: 25px;
+    font-size: small;
+}
+[dir='ltr'] 
+  .finishing_status {
+    right: unset;
+    left: 20px;
+}
 /* Dark mode */
 [data-theme="dark"] {
     .form_holder::before {background-color: rgba(0, 0, 0, 0.9);}

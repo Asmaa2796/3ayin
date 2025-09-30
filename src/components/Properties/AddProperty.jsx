@@ -10,7 +10,7 @@ import { addProperty } from "../../redux/Slices/AddPropertySlice";
 import MapPicker from "./MapPicker";
 
 const AddProperty = () => {
-  const { t,i18n } = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
   const user3ayin = JSON.parse(sessionStorage.getItem("user3ayin"));
   const userID = user3ayin?.user?.id;
@@ -44,6 +44,7 @@ const AddProperty = () => {
     location: "",
     ar_link: "",
     vr_link: "",
+    video_url: "",
   });
 
   const handleChange = (e) => {
@@ -110,6 +111,10 @@ const AddProperty = () => {
       toast.error(t("property.vrLinkInvalid"));
       return;
     }
+    if (formdata.video_url && !formdata.video_url.startsWith("https://")) {
+      toast.error(t("property.videoLinkInvalid"));
+      return;
+    }
 
     const data = new FormData();
 
@@ -128,19 +133,19 @@ const AddProperty = () => {
   };
 
   useEffect(() => {
-  if (success) {
-    toast.success(t("request_added_success"), {
-      onClose: () => {
-        dispatch({ type: "property/clearState" });
-        navigate("/all_properties");
-      },
-    });
-  } else if (error) { 
-    toast.error(t("failedToAdd"), {
-      onClose: () => dispatch({ type: "property/clearState" }),
-    });
-  }
-}, [success, error, t, dispatch, navigate]);
+    if (success) {
+      toast.success(t("request_added_success"), {
+        onClose: () => {
+          dispatch({ type: "property/clearState" });
+          navigate("/all_properties");
+        },
+      });
+    } else if (error) {
+      toast.error(t("failedToAdd"), {
+        onClose: () => dispatch({ type: "property/clearState" }),
+      });
+    }
+  }, [success, error, t, dispatch, navigate]);
 
   return (
     <div className="form_holder">
@@ -187,6 +192,7 @@ const AddProperty = () => {
                     {t("property.select_item")}
                   </option>
                   <option value="apartment">{t("property.apartment")}</option>
+                  <option value="building">{t("property.building")}</option>
                   <option value="villa">{t("property.villa")}</option>
                   <option value="duplex">{t("property.duplex")}</option>
                   <option value="office">{t("property.office")}</option>
@@ -222,6 +228,10 @@ const AddProperty = () => {
                 <label className="fw-bold">{t("property.area")}</label>
                 <input
                   type="number"
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   required
                   name="area_sqm"
                   onChange={handleChange}
@@ -232,6 +242,10 @@ const AddProperty = () => {
                 <label className="fw-bold">{t("property.rooms")}</label>
                 <input
                   type="number"
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   required
                   name="rooms"
                   onChange={handleChange}
@@ -242,7 +256,10 @@ const AddProperty = () => {
                 <label className="fw-bold">{t("property.floor")}</label>
                 <input
                   type="number"
-                  required
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   name="floor"
                   onChange={handleChange}
                   value={formdata.floor}
@@ -332,6 +349,10 @@ const AddProperty = () => {
                 <label className="fw-bold">{t("property.deposit")}</label>
                 <input
                   type="number"
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   name="deposit_amount"
                   onChange={handleChange}
                   value={formdata.deposit_amount}
@@ -423,6 +444,16 @@ const AddProperty = () => {
                   placeholder={t("create_ad.link")}
                   onChange={handleChange}
                   value={formdata.AR_VR}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("property.video_url")}</label>
+                <input
+                  type="text"
+                  name="video_url"
+                  placeholder={t("create_ad.link")}
+                  onChange={handleChange}
+                  value={formdata.video_url}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">

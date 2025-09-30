@@ -13,6 +13,7 @@ import { toast } from "react-toastify";
 import axios from "axios";
 import {
   storeUserIdentifies,
+  updateUserIdentifies,
   clearState,
 } from "../../redux/Slices/UserIdentifiesSlice";
 const Profile = () => {
@@ -24,7 +25,7 @@ const Profile = () => {
   const { record: getProviderAdsRecord, isLoading } = useSelector(
     (state) => state.providerAds
   );
-  const { success, error } = useSelector((state) => state.userIdentifies);
+  const { success, error,successUpdate,errorUpdate,isLoading:loading } = useSelector((state) => state.userIdentifies);
   const [currentPage, setCurrentPage] = useState(1);
   const adsPerPage = 4;
   const indexOfLastAd = currentPage * adsPerPage;
@@ -63,6 +64,7 @@ const Profile = () => {
   const token = userData?.token;
   const userType = userData?.user?.type;
   const [emailNotify, setEmailNotify] = useState("");
+  const [hasIdentifiers, setHasIdentifiers] = useState(false);
   const [profileData, setProfileData] = useState({
     name: "",
     phone: "",
@@ -89,7 +91,6 @@ const Profile = () => {
         image: userData.user.profile.image || null,
         username: userData.user.profile?.username || "",
         company_name: userData.user.profile?.company_name || "",
-        
       }));
 
       // set image preview
@@ -137,6 +138,7 @@ const Profile = () => {
     tax_record_back: "",
     tax_card_front: "",
     tax_card_back: "",
+    previews: {},
   });
   const handleInputChange = (e) => {
     const { name, type, value, files } = e.target;
@@ -150,19 +152,67 @@ const Profile = () => {
           e.target.value = "";
           return;
         }
-      }
-    }
 
-    setUserIdentifiesFields((prev) => ({
-      ...prev,
-      [name]: type === "file" ? files[0] : value,
-    }));
+        // create preview
+        const previewUrl = URL.createObjectURL(file);
+
+        setUserIdentifiesFields((prev) => ({
+          ...prev,
+          [name]: file,
+          previews: {
+            ...prev.previews,
+            [name]: previewUrl,
+          },
+        }));
+      }
+    } else {
+      setUserIdentifiesFields((prev) => ({
+        ...prev,
+        [name]: value,
+      }));
+    }
   };
 
   // handle user identifies
   const submitUserIdentifies = (e) => {
     e.preventDefault();
 
+    // check required images depending on user type
+    if (userType === "individual") {
+      const requiredFields = [
+        "personal_photo",
+        "national_id_front",
+        "national_id_back",
+        "engineer_card_front",
+        "engineer_card_back",
+      ];
+
+      const missing = requiredFields.filter(
+        (field) => !userIdentifiesFields[field]
+      );
+      if (missing.length > 0) {
+        toast.error(t("profile.please_upload_required_images"));
+        return;
+      }
+    } else {
+      const requiredFields = [
+        "company_logo",
+        "tax_record_front",
+        "tax_record_back",
+        "tax_card_front",
+        "tax_card_back",
+      ];
+
+      const missing = requiredFields.filter(
+        (field) => !userIdentifiesFields[field]
+      );
+      if (missing.length > 0) {
+        toast.error(t("profile.please_upload_required_images"));
+        return;
+      }
+    }
+
+    // build form data if validation passes
     const formData = new FormData();
     formData.append("type", userType);
 
@@ -200,11 +250,145 @@ const Profile = () => {
       formData.append("tax_card_back", userIdentifiesFields.tax_card_back);
     }
 
-   
-
     dispatch(storeUserIdentifies(formData));
   };
+  // handle user identifies update
+  const userIdentifiesUpdate = (e) => {
+    e.preventDefault();
 
+    // check required images depending on user type
+    if (userType === "individual") {
+      const requiredFields = [
+        "personal_photo",
+        "national_id_front",
+        "national_id_back",
+        "engineer_card_front",
+        "engineer_card_back",
+      ];
+
+      const missing = requiredFields.filter(
+        (field) => !userIdentifiesFields[field]
+      );
+      if (missing.length > 0) {
+        toast.error(t("profile.please_upload_required_images"));
+        return;
+      }
+    } else {
+      const requiredFields = [
+        "company_logo",
+        "tax_record_front",
+        "tax_record_back",
+        "tax_card_front",
+        "tax_card_back",
+      ];
+
+      const missing = requiredFields.filter(
+        (field) => !userIdentifiesFields[field]
+      );
+      if (missing.length > 0) {
+        toast.error(t("profile.please_upload_required_images"));
+        return;
+      }
+    }
+
+    // build form data if validation passes
+    const formData = new FormData();
+    formData.append("type", userType);
+
+    if (userType === "individual") {
+      formData.append(
+        "national_id_number",
+        userIdentifiesFields.national_id_number
+      );
+      formData.append("personal_photo", userIdentifiesFields.personal_photo);
+      formData.append(
+        "national_id_front",
+        userIdentifiesFields.national_id_front
+      );
+      formData.append(
+        "national_id_back",
+        userIdentifiesFields.national_id_back
+      );
+      formData.append(
+        "engineer_card_front",
+        userIdentifiesFields.engineer_card_front
+      );
+      formData.append(
+        "engineer_card_back",
+        userIdentifiesFields.engineer_card_back
+      );
+    } else {
+      formData.append("tax_number", userIdentifiesFields.tax_number);
+      formData.append("company_logo", userIdentifiesFields.company_logo);
+      formData.append(
+        "tax_record_front",
+        userIdentifiesFields.tax_record_front
+      );
+      formData.append("tax_record_back", userIdentifiesFields.tax_record_back);
+      formData.append("tax_card_front", userIdentifiesFields.tax_card_front);
+      formData.append("tax_card_back", userIdentifiesFields.tax_card_back);
+    }
+
+    dispatch(updateUserIdentifies(formData));
+  };
+
+  // fetch identifiers
+  const getUserIdentifiers = async () => {
+    try {
+      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      const { data } = await axios.get(
+        `https://3ayin.resporthub.com/api/profile/identifies`,
+        {
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
+            Lang: i18n.language,
+          },
+        }
+      );
+
+      if (data?.code === 200) {
+        const identifiers = data.data;
+
+        
+        setUserIdentifiesFields((prev) => ({
+          ...prev,
+          national_id_number: identifiers.national_id_number || "",
+          personal_photo: identifiers.personal_photo,
+          national_id_front: identifiers.national_id_front,
+          national_id_back: identifiers.national_id_back,
+          engineer_card_front: identifiers.engineer_card_front,
+          engineer_card_back: identifiers.engineer_card_back,
+          tax_number: identifiers.tax_number || "",
+          company_logo: identifiers.company_logo,
+          tax_record_front: identifiers.tax_record_front,
+          tax_record_back: identifiers.tax_record_back,
+          tax_card_front: identifiers.tax_card_front,
+          tax_card_back: identifiers.tax_card_back,
+          previews: {
+            personal_photo: identifiers.personal_photo,
+            national_id_front: identifiers.national_id_front,
+            national_id_back: identifiers.national_id_back,
+            engineer_card_front: identifiers.engineer_card_front,
+            engineer_card_back: identifiers.engineer_card_back,
+            company_logo: identifiers.company_logo,
+            tax_record_front: identifiers.tax_record_front,
+            tax_record_back: identifiers.tax_record_back,
+            tax_card_front: identifiers.tax_card_front,
+            tax_card_back: identifiers.tax_card_back,
+          },
+        }));
+        setHasIdentifiers(true);
+      }
+      else {setHasIdentifiers(false);}
+    } catch (error) {
+      console.error("Error fetching identifiers:", error);
+    }
+  };
+
+  useEffect(() => {
+    getUserIdentifiers();
+  }, [i18n.language]);
   useEffect(() => {
     if (success) {
       toast.success(t("addedSuccessfully"));
@@ -215,6 +399,16 @@ const Profile = () => {
       dispatch(clearState());
     }
   }, [success, error]);
+  useEffect(() => {
+    if (successUpdate) {
+      toast.success(t("updatedSuccessfully"));
+      dispatch(clearState());
+    }
+    if (errorUpdate) {
+      toast.error(t("failedToUpdate"));
+      dispatch(clearState());
+    }
+  }, [successUpdate, errorUpdate]);
 
   // fetch job titles & company types
   useEffect(() => {
@@ -259,7 +453,6 @@ const Profile = () => {
     }
   }, [companyTypes, i18n.language]);
 
-  
   useEffect(() => {
     if (jobTitles.length && userData?.user?.profile?.job_title_id) {
       const match = jobTitles.find(
@@ -285,7 +478,10 @@ const Profile = () => {
       const matchedJobTitle = jobTitles.find(
         (jt) => jt.value === existing.user.profile.job_title_id
       );
-      if (matchedJobTitle && existing.user.profile.job_title !== matchedJobTitle.label) {
+      if (
+        matchedJobTitle &&
+        existing.user.profile.job_title !== matchedJobTitle.label
+      ) {
         existing.user.profile.job_title = matchedJobTitle.label;
         updated = true;
       }
@@ -296,7 +492,10 @@ const Profile = () => {
       const matchedCompanyType = companyTypes.find(
         (ct) => ct.value === existing.user.profile.company_type_id
       );
-      if (matchedCompanyType && existing.user.profile.company_type !== matchedCompanyType.label) {
+      if (
+        matchedCompanyType &&
+        existing.user.profile.company_type !== matchedCompanyType.label
+      ) {
         existing.user.profile.company_type = matchedCompanyType.label;
         updated = true;
       }
@@ -311,9 +510,13 @@ const Profile = () => {
       setProfileData((prev) => ({
         ...prev,
         job_title_id:
-          jobTitles.find((jt) => jt.value === existing.user.profile.job_title_id) || prev.job_title_id,
+          jobTitles.find(
+            (jt) => jt.value === existing.user.profile.job_title_id
+          ) || prev.job_title_id,
         company_type_id:
-          companyTypes.find((ct) => ct.value === existing.user.profile.company_type_id) || prev.company_type_id,
+          companyTypes.find(
+            (ct) => ct.value === existing.user.profile.company_type_id
+          ) || prev.company_type_id,
       }));
     }
   }, [i18n.language, jobTitles, companyTypes]);
@@ -362,7 +565,6 @@ const Profile = () => {
       );
     }
 
-
     axios
       .post(`${BASE_URL}/api/profile/update`, formData, {
         headers: {
@@ -389,8 +591,12 @@ const Profile = () => {
               image: profileData.image,
               company_type: profileData.company_type_id?.label,
               job_title_id: profileData.job_title_id?.label,
-              company_type_id: profileData.company_type_id?.value ?? existing.user.profile?.company_type_id,
-              job_title_id: profileData.job_title_id?.value ?? existing.user.profile?.job_title_id
+              company_type_id:
+                profileData.company_type_id?.value ??
+                existing.user.profile?.company_type_id,
+              job_title_id:
+                profileData.job_title_id?.value ??
+                existing.user.profile?.job_title_id,
             },
           },
         };
@@ -681,7 +887,11 @@ const Profile = () => {
               role="tabpanel"
               aria-labelledby="identityVerification-tab"
             >
-              <form onSubmit={submitUserIdentifies}>
+              <form
+                onSubmit={
+                  hasIdentifiers ? userIdentifiesUpdate : submitUserIdentifies
+                }
+              >
                 {/* Individual */}
                 {userType === "individual" && (
                   <div className="form-style">
@@ -692,6 +902,7 @@ const Profile = () => {
                       required
                       placeholder={t("profile.nationalId")}
                       onChange={handleInputChange}
+                      value={userIdentifiesFields.national_id_number}
                     />
                     <div className="row">
                       {[
@@ -724,18 +935,29 @@ const Profile = () => {
                           <div className="photo_wrapper">
                             <input
                               type="file"
-                              required
                               accept=".jpg, .jpeg, .png"
                               name={field.name}
                               onChange={handleInputChange}
                             />
-                            <img src="/camera.png" alt="--" />
+                            <img
+                              src={
+                                userIdentifiesFields.previews[field.name] ||
+                                "/camera.png"
+                              }
+                              alt="--"
+                            />
                             <span>{t("create_ad.uploadImage")}</span>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <button type="submit">{t("pages.helpCenter.send")}</button>
+                    <button type="submit" disabled={loading}>
+                      {loading
+                        ? t("loading")
+                        : hasIdentifiers
+                        ? t("pages.update")
+                        : t("pages.helpCenter.send")}
+                    </button>
                   </div>
                 )}
 
@@ -747,6 +969,7 @@ const Profile = () => {
                       type="text"
                       required
                       name="tax_number"
+                      value={userIdentifiesFields.tax_number}
                       placeholder={t("profile.taxNumber")}
                       onChange={handleInputChange}
                     />
@@ -781,18 +1004,29 @@ const Profile = () => {
                           <div className="photo_wrapper">
                             <input
                               type="file"
-                              required
                               accept=".jpg, .jpeg, .png"
                               name={field.name}
                               onChange={handleInputChange}
                             />
-                            <img src="/camera.png" alt="--" />
+                            <img
+                              src={
+                                userIdentifiesFields.previews[field.name] ||
+                                "/camera.png"
+                              }
+                              alt="--"
+                            />
                             <span>{t("create_ad.uploadImage")}</span>
                           </div>
                         </div>
                       ))}
                     </div>
-                    <button type="submit">{t("pages.helpCenter.send")}</button>
+                    <button type="submit" disabled={loading}>
+                      {loading
+                        ? t("loading")
+                        : hasIdentifiers
+                        ? t("pages.update")
+                        : t("pages.helpCenter.send")}
+                    </button>
                   </div>
                 )}
               </form>

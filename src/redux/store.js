@@ -14,7 +14,6 @@ import ProviderDataSlice from "./Slices/ProviderDataSlice";
 import ProviderAdsSlice from "./Slices/ProviderAdsSlice"; 
 import ProviderAdsReviewsSlice from "./Slices/ProviderAdsReviewsSlice"; 
 import ProviderStatisticsSlice from "./Slices/ProviderStatisticsSlice"; 
-import SearchSlice from "./Slices/SearchSlice"; 
 import ContactSlice from "./Slices/ContactSlice"; 
 import PrivacyPolicySlice from "./Slices/PrivacyPolicySlice"; 
 import TermsAndConditionsSlice from "./Slices/TermsAndConditionsSlice"; 
@@ -24,6 +23,7 @@ import AddPropertySlice from "./Slices/AddPropertySlice";
 import AllPropertiesSlice from "./Slices/AllPropertiesSlice"; 
 import PlansSlice from "./Slices/PlansSlice"; 
 import SubscribePlanSlice from "./Slices/SubscribePlanSlice"; 
+import SearchSlice from "./Slices/SearchSlice"; 
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -51,6 +51,7 @@ const store = configureStore({
     properties: AllPropertiesSlice,
     plans: PlansSlice,
     subscribe: SubscribePlanSlice,
+    search: SearchSlice,
   },
 });
 

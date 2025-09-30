@@ -1,12 +1,15 @@
 .service_btns {
     display: flex;
     justify-content: center;
+    align-items: center;
+    padding: 0;
 }
 .service_btns button {
     background-color: var(--basic-color);
     border: 1px solid #ddd;
     padding: 20px;
-    margin-inline: 5px;
+    margin: 5px;
+    align-items: center;
     border-radius: 12px;
     transition: all .3s ease-in-out;
 }
@@ -21,16 +24,23 @@
 [dir='ltr'] {
     .service_btns {
     align-items: center;
+    align-items: center;
 }
 .service_btns button span {font-size: small;}
 .service_btns button {display: flex;text-align: left;}
 .service_btns button img {margin-inline: 7px;}
 }
+@media(max-width:768px) {
+    .vr_section .text {height: auto;}
+}
 @media(max-width:567px) {
+    .vr_map img {max-height: 26px;}
+    .vr_map {top: 8px;}
     .service_btns button {
-        width: 43%;
+        /* width: 43%; */
         margin-block: 10px;
     }
     .service_btns {flex-wrap: wrap;}
     .service_btns button span {font-size: small;}
+    .details_wrapper .contact_with_provider, .rating-form button[type="submit"], .provider_info .contact {font-size: 12px;}
 }

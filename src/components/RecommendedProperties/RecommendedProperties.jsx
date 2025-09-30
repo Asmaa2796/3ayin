@@ -6,30 +6,47 @@ import "swiper/css";
 import "swiper/css/navigation";
 import "./RecommendedServices.css";
 import { Link } from "react-router-dom";
-import { fetchAds } from "../../redux/Slices/AdsSlice";
+import { fetchAllProperties } from "../../redux/Slices/AllPropertiesSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { useEffect } from "react";
 import CardsLoader from "../../pages/CardsLoader";
-const RecommendedServices = () => {
+const RecommendedProperties = () => {
   const { t, i18n } = useTranslation("global");
   const swiperKey = useMemo(() => `swiper-${i18n.language}`, [i18n.language]);
   const isRTL = i18n.language === "ar";
   const dispatch = useDispatch();
-  const { ads, isLoading } = useSelector((state) => state.ads);
-  const cards = ads?.slice(0, 8) || [];
+  const { properties, isLoading } = useSelector((state) => state.properties);
+  const cards = properties?.slice(0, 8) || [];
   useEffect(() => {
-    dispatch(fetchAds());
+    dispatch(fetchAllProperties());
   }, [dispatch]);
-  const averageRating = (reviews = []) => {
-    if (!reviews.length) return 0;
-    const total = reviews.reduce((sum, r) => sum + parseInt(r.rate), 0);
-    return Math.round(total / reviews.length);
+  const categoryMap = {
+    sale: t("property.sale"),
+    rent: t("property.rent"),
+    share: t("property.share"),
+  };
+  const unitTypeMap = {
+    apartment: t("property.apartment"),
+    building: t("property.building"),
+    villa: t("property.villa"),
+    duplex: t("property.duplex"),
+    office: t("property.office"),
+    shop: t("property.shop"),
+    warehouse: t("property.warehouse"),
+    land: t("property.land"),
+    chalet: t("property.chalet"),
+  };
+  const finishingMap = {
+    semi: t("property.finishingSemi"),
+    full: t("property.finishingFull"),
+    superLux: t("property.finishingSuperLux"),
+    company: t("property.finishingCompany"),
   };
   return (
     <div className="recommended_services py-5">
       <div className="container-fluid">
         <h3 className="mb-4 text-center fw-bold main-color">
-          {t("recommendedServices.title")}
+          {t("property.title")}
         </h3>
         {isLoading ? (
           <CardsLoader />
@@ -63,35 +80,40 @@ const RecommendedServices = () => {
           >
             {cards.map((item, index) => (
               <SwiperSlide key={item.id || index}>
-                <div className="recommended_card border rounded-4 my-2 overflow-hidden">
+                <div
+                  key={item.id || index}
+                  className="recommended_card border rounded-4 my-2 overflow-hidden position-relative"
+                >
+                  <div className="finishing_status">
+                    {finishingMap[item?.finishing_status] ||
+                      item?.finishing_status}
+                  </div>
                   <img
-                    src={item.images?.[0]?.image || "/re.png"}
-                    alt={item.ad_name}
+                    src={item.images?.[0]?.url || "/image.jpg"}
+                    alt={item.title}
                     className="img-fluid mb-3 rounded-4"
                   />
                   <div className="p-3">
                     <p className="line-height mb-1">
-                      {item.small_desc?.slice(0, 60)}...
+                      {item.title?.slice(0, 60)}...
                     </p>
-                    <small className="mb-2 d-block">
-                      {item.user?.job_title ||
-                        t("recommendedServices.realEstateAgency")}
-                    </small>
-                    <div className="d-inline-block mb-2 rates">
-                      {[1, 2, 3, 4, 5].map((i) => (
-                        <i
-                          key={i}
-                          className={`bi bi-star-fill ${
-                            i <= averageRating(item.reviews)
-                              ? "text-warning"
-                              : "text-secondary"
-                          }`}
-                        ></i>
-                      ))}
-                      <span className="mx-2">
-                        ({item.reviews?.length || 0})
-                      </span>
-                    </div>
+                    <hr className="my-1" />
+                    <ul className="p-0 mb-0 list-unstyled">
+                      <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                        <small>{t("property.unitCategory")}</small> :{" "}
+                        <small>
+                          {categoryMap[item?.category] || item?.category}
+                        </small>
+                      </li>
+                      <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                        <small>{t("property.unitType")}</small> :{" "}
+                        <small>
+                          {unitTypeMap[item?.unit_type] || item?.unit_type}
+                        </small>
+                      </li>
+                    </ul>
+                    <hr className="my-1" />
+
                     <div className="text-sm d-flex justify-content-between align-items-center">
                       <div>
                         {t("recommendedServices.startingFrom")}{" "}
@@ -102,11 +124,13 @@ const RecommendedServices = () => {
                       <div>
                         <Link
                           className="view_details"
-                          to={`/serviceDetails/${item.id}`}
+                          to={`/propertyDetails/${item.id}`}
                         >
                           <i
                             className={`text-sm bi ${
-                              isRTL ? "bi-arrow-left" : "bi-arrow-right"
+                              i18n.language === "ar"
+                                ? "bi-arrow-left"
+                                : "bi-arrow-right"
                             }`}
                           ></i>
                         </Link>
@@ -124,7 +148,7 @@ const RecommendedServices = () => {
         )}
         {cards.length > 0 && (
           <div className="text-center">
-            <Link className="show_more" to="/all_ads">
+            <Link className="show_more" to="/all_properties">
               {t("recommendedServices.showMore")}{" "}
               <i
                 className={`bi ${
@@ -139,4 +163,4 @@ const RecommendedServices = () => {
   );
 };
 
-export default RecommendedServices;
+export default RecommendedProperties;

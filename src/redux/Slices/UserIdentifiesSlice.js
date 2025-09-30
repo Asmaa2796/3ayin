@@ -30,12 +30,40 @@ export const storeUserIdentifies = createAsyncThunk(
     }
   }
 );
+export const updateUserIdentifies = createAsyncThunk(
+  "userIdentifies/update",
+  async (formData, { rejectWithValue }) => {
+    try {
+      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+
+      const response = await axios.post(
+        `${BASE_URL}/api/profile/identifies/update`,
+        formData,
+        {
+          headers: {
+            "Content-Type": "multipart/form-data",
+            Authorization: `Bearer ${token}`,
+            Lang: i18n.language,
+          },
+        }
+      );
+
+      return response.data;
+    } catch (err) {
+      return rejectWithValue(
+        err.response?.data?.message || "Failed to submit contact form"
+      );
+    }
+  }
+);
 
 // Initial state
 const initialState = {
   isLoading: false,
   success: null,
   error: null,
+  errorUpdate: null,
+  successUpdate: null
 };
 
 // Slice
@@ -64,6 +92,20 @@ const UserIdentifiesSlice = createSlice({
         state.isLoading = false;
         state.success = false;
         state.error = action.payload || action.error?.message || "Something went wrong";
+      })
+      .addCase(updateUserIdentifies.pending, (state) => {
+        state.isLoading = true;
+        state.errorUpdate = null;
+        state.successUpdate = null;
+      })
+      .addCase(updateUserIdentifies.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.successUpdate = true;
+      })
+      .addCase(updateUserIdentifies.rejected, (state, action) => {
+        state.isLoading = false;
+        state.successUpdate = false;
+        state.errorUpdate = action.payload || action.errorUpdate?.message || "Something went wrong";
       });
   },
 });

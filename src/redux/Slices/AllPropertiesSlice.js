@@ -8,17 +8,20 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 // Async thunk for submitting the contact form
 export const fetchAllProperties = createAsyncThunk(
   "properties/submit",
-  async (_, { rejectWithValue }) => {
+  async (page = 1, { rejectWithValue }) => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
-      const response = await axios.get(`${BASE_URL}/api/properties`, {
+      const response = await axios.get(`${BASE_URL}/api/properties?page=${page}`, {
         headers: {
           Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Lang: i18n.language,
         },
       });
-      return response.data.data;
+      return {
+        data: response.data.data,
+        pagination: response.data.pagination,
+      };
     } catch (err) {
       return rejectWithValue(
         err.response?.data?.message || "Failed to submit contact form"
@@ -31,6 +34,7 @@ export const fetchAllProperties = createAsyncThunk(
 const initialState = {
   properties: [],
   isLoading: false,
+  pagination: null,
   success: null,
   error: null,
 };
@@ -55,7 +59,8 @@ const AllPropertiesSlice = createSlice({
       })
       .addCase(fetchAllProperties.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.properties = action.payload;
+        state.properties = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchAllProperties.rejected, (state, action) => {
         state.isLoading = false;

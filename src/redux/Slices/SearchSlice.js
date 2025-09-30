@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import i18n from "../../i18n/i18n";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
@@ -8,9 +9,19 @@ export const searchAds = createAsyncThunk(
   async (searchValue, { rejectWithValue }) => {
     try {
       const trimmedValue = searchValue.trim();
-      const response = await axios.post(`${BASE_URL}/ads/search`, {
-        search: trimmedValue,
-      });
+      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+
+      const response = await axios.post(
+        `${BASE_URL}/api/ads/search`,
+        { search: trimmedValue },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Lang: i18n.language,
+          },
+        }
+      );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response?.data?.message || error.message);
@@ -18,37 +29,79 @@ export const searchAds = createAsyncThunk(
   }
 );
 
-const searchSlice = createSlice({
+export const searchProperty = createAsyncThunk(
+  "search/properties",
+  async (searchValue, { rejectWithValue }) => {
+    try {
+      const trimmedValue = searchValue.trim();
+      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+
+      const response = await axios.post(
+        `${BASE_URL}/api/searchProperty`,
+        { search: trimmedValue },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+            Lang: i18n.language,
+          },
+        }
+      );
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response?.data?.message || error.message);
+    }
+  }
+);
+
+const SearchSlice = createSlice({
   name: "search",
   initialState: {
     adsList: [],
+    propertiesList: [],
     loading: false,
+    loadingFiltered: false,
     error: null,
   },
   reducers: {
     clearSearchResults: (state) => {
       state.adsList = [];
+      state.propertiesList = [];
       state.loading = false;
+      state.loadingFiltered = false;
       state.error = null;
     },
   },
   extraReducers: (builder) => {
     builder
       .addCase(searchAds.pending, (state) => {
-        state.loading = true;
+        state.loadingFiltered = true;
         state.error = null;
-        state.adsList = []; // Clear previous results while loading
+        state.adsList = [];
       })
       .addCase(searchAds.fulfilled, (state, action) => {
-        state.loading = false;
-        state.adsList = action.payload || [];
+        state.loadingFiltered = false;
+        state.adsList = action.payload?.data || [];
       })
       .addCase(searchAds.rejected, (state, action) => {
-        state.loading = false;
+        state.loadingFiltered = false;
+        state.error = action.payload || "Something went wrong.";
+      })
+      .addCase(searchProperty.pending, (state) => {
+        state.loadingFiltered = true;
+        state.error = null;
+        state.propertiesList = [];
+      })
+      .addCase(searchProperty.fulfilled, (state, action) => {
+        state.loadingFiltered = false;
+        state.propertiesList = action.payload?.data || [];
+      })
+      .addCase(searchProperty.rejected, (state, action) => {
+        state.loadingFiltered = false;
         state.error = action.payload || "Something went wrong.";
       });
   },
 });
 
-export const { clearSearchResults } = searchSlice.actions;
-export default searchSlice.reducer;
+export const { clearSearchResults } = SearchSlice.actions;
+export default SearchSlice.reducer;

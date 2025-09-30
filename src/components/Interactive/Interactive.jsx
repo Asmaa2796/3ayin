@@ -164,10 +164,16 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link to="/publish_ad">{t("navbar.add")}</Link>
+                    <Link to="/publish_ad">{t("create_ad.publishAd")}</Link>
                   </li>
                   <li>
                     <Link to="/all_ads">{t("labels.all_ads")}</Link>
+                  </li>
+                  <li>
+                    <Link to="/add_property">{t("navbar.add_service")}</Link>
+                  </li>
+                  <li>
+                    <Link to="/all_properties">{t("property.all")}</Link>
                   </li>
                 </ul>
               </div>

@@ -10,15 +10,17 @@ const Hero = () => {
   const [searchValue, setSearchValue] = useState("");
   const navigate = useNavigate();
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
+  const handleSearch = (type) => {
     if (searchValue.trim() === "") {
       toast.error(t("home.enterSearch"));
       return;
     }
 
-    navigate(`/all_ads?search=${encodeURIComponent(searchValue.trim())}`);
+    if (type === "ads") {
+      navigate(`/all_ads?search=${encodeURIComponent(searchValue.trim())}`);
+    } else if (type === "properties") {
+      navigate(`/all_properties?search=${encodeURIComponent(searchValue.trim())}`);
+    }
   };
 
   return (
@@ -37,7 +39,7 @@ const Hero = () => {
           {t("home.platform")}
         </p>
 
-        <form onSubmit={handleSubmit} className="hero-search-form">
+        <div className="hero-search-form d-flex">
           <FiSearch />
           <input
             type="text"
@@ -46,8 +48,40 @@ const Hero = () => {
             placeholder={t("home.searchHere")}
             aria-label="Search Input"
           />
-          <button type="submit">{t("home.search")}</button>
-        </form>
+
+          {/* Dropdown button as search */}
+          <div className="dropdown ms-2">
+            <button
+              className="btn btn-success dropdown-toggle text-sm"
+              type="button"
+              id="searchDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              {t("home.searchIn")}
+            </button>
+            <ul className="dropdown-menu" aria-labelledby="searchDropdown">
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handleSearch("ads")}
+                >
+                  {t("home.ads")}
+                </button>
+              </li>
+              <li>
+                <button
+                  className="dropdown-item"
+                  type="button"
+                  onClick={() => handleSearch("properties")}
+                >
+                  {t("home.properties")}
+                </button>
+              </li>
+            </ul>
+          </div>
+        </div>
 
         <Toaster position="top-center" reverseOrder={false} />
       </div>

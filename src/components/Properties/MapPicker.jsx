@@ -60,7 +60,7 @@ const MapPicker = ({ onSelect, lang = "en" }) => {
   return (
     <div>
       {/* 🔹 Custom search input */}
-      <div className="d-flex mb-2" style={{ maxWidth: "400px" }}>
+      <div className="d-flex mb-2 align-items-center" style={{ maxWidth: "400px" }}>
         <input
           type="text"
           className="form-control"
@@ -71,6 +71,7 @@ const MapPicker = ({ onSelect, lang = "en" }) => {
         />
         <button
           type="button"
+          className="mx-1"
           style={{fontSize:"16px"}}
           onClick={handleSearch}
         >

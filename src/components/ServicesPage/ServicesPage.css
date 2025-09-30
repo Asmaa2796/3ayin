@@ -188,6 +188,10 @@
     border: 1px solid #ddd;
     box-shadow: var(--box-shadow);
 }
+.file_wrapper > a,
+.rate_wrapper > a {
+    word-wrap: break-word;
+}
 
 .file_wrapper img,
 .rate_wrapper img {
@@ -438,5 +442,8 @@
         overflow-y: hidden;
     }
     .carousel_wrapper {margin-bottom: 35px;}
-    .vr_map {top: 36px;}
+    .vr_map img {max-height: 26px;}
+    .vr_map {top: 8px;}
+    .details_wrapper .contact_with_provider, .rating-form button[type="submit"], .provider_info .contact {font-size: 12px;}
+
 }

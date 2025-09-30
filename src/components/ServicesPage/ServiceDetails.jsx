@@ -9,6 +9,7 @@ import Ripples from "react-ripples";
 import RelatedServices from "../RelatedServices/RelatedServices";
 import DetailsLoader from "../../pages/DetailsLoader";
 import { getAdById } from "../../redux/Slices/GetAdSlice";
+import { Tooltip } from "react-tooltip";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -391,17 +392,22 @@ const ServiceDetails = () => {
 
                     <div className="vr_map">
                       {adItem?.AR_VR && (
-                        <Link
-                          className="d-block"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          to={adItem?.AR_VR}
-                        >
-                          <img src="/vr.png" alt="--" />
-                          <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                            VR / AR
-                          </small>
-                        </Link>
+                        <>
+                          <Link
+                            data-tooltip-id="tooltip1"
+                            data-tooltip-content={t("services.clickHere")}
+                            className="d-block"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            to={adItem?.AR_VR}
+                          >
+                            <img src="/vr.png" alt="--" />
+                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
+                              VR / AR
+                            </small>
+                          </Link>
+                          <Tooltip id="tooltip1" />
+                        </>
                       )}
                       {adItem?.location && <img src="/map.png" alt="--" />}
                     </div>
@@ -662,51 +668,57 @@ const ServiceDetails = () => {
                         role="tabpanel"
                         aria-labelledby="extraFiles-tab"
                       >
-                        {adItem?.files?.map((file, index) => {
-                          const isPdf = file.file
-                            ?.toLowerCase()
-                            .endsWith(".pdf");
-                          const fileIcon = isPdf ? "/pdf.png" : "/doc.png";
+                        {adItem?.files && adItem.files.length > 0 ? (
+                          adItem.files.map((file, index) => {
+                            const isPdf = file.file
+                              ?.toLowerCase()
+                              .endsWith(".pdf");
+                            const fileIcon = isPdf ? "/pdf.png" : "/doc.png";
 
-                          return (
-                            <div key={index} className="file_wrapper mb-3">
-                              <div className="row">
-                                <div className="col-xl-2 col-lg-2 col-md-2 col-12">
-                                  <a
-                                    href={file.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <img
-                                      src={fileIcon}
-                                      alt={file.original_name}
-                                      className="d-block my-2"
-                                    />
-                                  </a>
-                                </div>
-                                <div className="col-xl-10 col-lg-10 col-md-10 col-12">
-                                  <a
-                                    href={file.file}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-decoration-none"
-                                  >
-                                    {file.original_name || "File"}
-                                  </a>
+                            return (
+                              <div key={index} className="file_wrapper mb-3">
+                                <div className="row">
+                                  <div className="col-xl-2 col-lg-2 col-md-2 col-12">
+                                    <a
+                                      href={file.file}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <img
+                                        src={fileIcon}
+                                        alt={file.original_name}
+                                        className="d-block my-2"
+                                      />
+                                    </a>
+                                  </div>
+                                  <div className="col-xl-10 col-lg-10 col-md-10 col-12">
+                                    <a
+                                      href={file.file}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-decoration-none"
+                                    >
+                                      {file.original_name || "File"}
+                                    </a>
 
-                                  <p>{t("fileUploadDateNotAvailable")}</p>
-                                  <span className="d-block text-success fw-bold">
-                                    {`${(file.size / 1024).toFixed(1)} ${
-                                      i18n.language === "en"
-                                        ? "MB"
-                                        : "ميجا بايت"
-                                    }`}
-                                  </span>
+                                    <p>{t("fileUploadDateNotAvailable")}</p>
+                                    <span className="d-block text-success fw-bold">
+                                      {`${(file.size / 1024).toFixed(1)} ${
+                                        i18n.language === "en"
+                                          ? "MB"
+                                          : "ميجا بايت"
+                                      }`}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })
+                        ) : (
+                          <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
+                            <h5 className="mb-0">{t("no_data_exists")}</h5>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>

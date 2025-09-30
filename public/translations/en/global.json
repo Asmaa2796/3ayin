@@ -4,6 +4,9 @@
     "platform": "One platform that connects you to everything about real estate… anytime, anywhere.",
     "searchHere": "Search here",
     "search": "Search..",
+    "searchIn": "Search in",
+    "ads": "Ads",
+    "properties": "Properties",
     "enterSearch": "Please enter search word"
   },
   "topnav": {
@@ -226,6 +229,7 @@
   },
   "property": {
     "all": "All properties",
+    "title": "Recommended Properties for You",
     "add_property": "Add property",
     "unitCategory": "Unit Category",
     "sale": "Sale",
@@ -234,6 +238,7 @@
     "unitType": "Unit Type",
     "apartment": "Residential Apartment",
     "villa": "Villa",
+    "building": "Building",
     "duplex": "Duplex",
     "office": "Office",
     "shop": "Shop",
@@ -280,9 +285,12 @@
     "pickFromMap": "Pick From Map",
     "arLinkInvalid": "Please enter a valid AR link starting with https://",
     "vrLinkInvalid": "Please enter a valid VR link starting with https://",
+    "videoLinkInvalid": "Please enter a valid video link starting with https://",
     "property_status": "Property status",
     "address": "Address",
-    "property_area": "Property area"
+    "property_area": "Property area",
+    "relatedProperties": "Related Properties",
+    "video_url": "Video url"
   },
   "servicesPage": {
     "marketingAndAds": "Marketing and Advertising",
@@ -325,7 +333,9 @@
     "provideRate": "Please provide a rating and a comment.",
     "rateSuccess": "Your rate added successfully",
     "rateFail": "Failed to add your rate",
-    "share_now": "Share now"
+    "share_now": "Share now",
+    "alreadyRated": "Already Rated",
+    "video": "Video"
   },
   "serviceProvider": {
     "reviews": "Reviews",
@@ -363,7 +373,8 @@
     "q3": "Question 3?",
     "answer": "Answer",
     "privacy_policy": "Privacy policy",
-    "terms_and_conditions": "Terms & conditions"
+    "terms_and_conditions": "Terms & conditions",
+    "update": "Update"
   },
   "profile": {
     "title": "Profile",
@@ -400,10 +411,13 @@
     "emailUpdated": "Notification email updated",
     "emailUpdateFailed": "Failed to send email notification",
     "updatedSuccessfully": "Updated successfully",
-    "updateFailed": "Update failed"
+    "updateFailed": "Update failed",
+    "please_upload_required_images": "Please upload required images"
   },
   "addedSuccessfully": "Added successfully",
+  "updatedSuccessfully": "Updated successfully",
   "failedToAdd": "Failed to add",
+  "failedToUpdate": "Failed to update",
   "only_allowed": "Only allowed",
   "category": "Service category is required",
   "sub_category": "Service category type is required",
@@ -420,7 +434,11 @@
   "subscribed_successfully": "Subscribed successfully",
   "failed_to_subscribe": "Failed to subscribe",
   "labels": {
-    "all_ads": "All ads"
+    "all_ads": "All ads",
+    "previous": "Previous",
+    "page": "Page",
+    "of": "Of",
+    "next": "Next"
   },
   "loading": "Loading...",
   "not_found_title": "404 - Page Not Found",
@@ -434,7 +452,7 @@
       "monthlySubscription": "Monthly Subscription",
       "adsCount": "Number of Ads",
       "photosVideos": "Photos and Videos",
-      "vrTours": "Display VR Virtual Tours",
+      "vrTours": "Display VR - AR Virtual Tours",
       "searchAppearance": "Prominent Search Appearance",
       "statisticsReports": "Statistics and Performance Reports",
       "teamManagement": "Team Management (Special Control Panel)",

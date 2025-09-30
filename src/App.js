@@ -19,7 +19,7 @@ function App() {
       <AppRoutes />
       </BrowserRouter>
       <ToastContainer autoClose={2000}/>
-      {/* <ScrollToTop /> */}
+      <ScrollToTop />
     </>
   );
 }

@@ -4,71 +4,68 @@ import CardsLoader from "../../pages/CardsLoader";
 import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
-import { fetchAds, fetchAdsWithPagination } from "../../redux/Slices/AdsSlice";
+import { fetchAdsWithPagination } from "../../redux/Slices/AdsSlice";
+import { searchAds } from "../../redux/Slices/SearchSlice";
 
 const AdsPage = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
 
   const { ads, isLoading, pagination } = useSelector((state) => state.ads);
+  const { adsList, loadingFiltered } = useSelector((state) => state.search);
 
   const [searchParams] = useSearchParams();
   const searchValue = searchParams.get("search");
   const [page, setPage] = useState(1);
 
-  // 🔹 fetch paginated ads when page or language changes
- useEffect(() => {
-  if (searchValue) {
-    // 🔹 Fetch ALL ads when searching
-    dispatch(fetchAds()); 
-  } else {
-    // 🔹 Normal backend pagination
-    dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
-  }
-}, [dispatch, page, i18n.language, searchValue]);
-const showAds = searchValue
-  ? ads.filter(ad =>
-      ad.ad_name.toLowerCase().includes(searchValue.toLowerCase())
-    )
-  : ads;
+  useEffect(() => {
+    if (searchValue) {
+      dispatch(searchAds(searchValue));
+    } else {
+      dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
+    }
+  }, [dispatch, page, i18n.language, searchValue]);
+
+  const showAds = searchValue ? adsList : ads;
   const startIndex = (page - 1) * 9;
-const paginatedAds = searchValue 
-  ? showAds.slice(startIndex, startIndex + 9) 
-  : showAds;
+  const paginatedAds = showAds?.slice(startIndex, startIndex + 9);
   const isDataLoading = isLoading;
 
+  const paginationInfo = searchValue
+    ? {
+        current_page: page,
+        last_page: Math.ceil((adsList?.length || 0) / 9),
+      }
+    : pagination;
   const renderAdCard = (ad, index) => (
     <div className="col-xl-3 col-lg-3 col-md-4 col-12" key={ad.id || index}>
       <div className="recommended_card border rounded-4 mb-3 overflow-hidden">
         <img
-          src={ad?.images?.[0]?.image || "/placeholder.jpg"}
+          src={ad?.image || "/placeholder.jpg"}
           alt="service"
           className="img-fluid mb-3 rounded-4"
         />
         <div className="p-3">
           <p className="line-height mb-1">{ad?.ad_name}</p>
           <small className="mb-2 d-block">
-            {ad?.ad_category?.name} / {ad?.ad_sub_category?.name}
+            {ad?.category_name} / {ad?.sub_category_name}{" "}
+            {ad?.sub_sub_category_name && `/ ${ad?.sub_sub_category_name}`}
           </small>
 
           <div className="d-inline-block mb-2 rates">
-            {ad?.reviews?.length > 0 ? (
+            {ad?.reviews_count > 0 ? (
               <>
                 {Array.from({ length: 5 }, (_, i) => (
                   <i
                     key={i}
                     className={`bi bi-star-fill ${
-                      i <
-                      Math.round(
-                        ad.reviews.reduce((sum, r) => sum + Number(r.rate), 0) /
-                          ad.reviews.length
-                      )
+                      i < Math.round(Number(ad.average_rate))
                         ? "text-warning"
                         : "text-secondary"
                     }`}
                   ></i>
                 ))}
-                <span className="mx-2">({ad.reviews.length || 0})</span>
+                <span className="mx-2">({ad.reviews_count})</span>
               </>
             ) : (
               <>
@@ -104,9 +101,8 @@ const paginatedAds = searchValue
 
   // 🔹 Pagination component
   const renderPagination = () => {
-    if (!pagination) return null;
-
-    const { current_page, last_page } = pagination;
+    if (!paginationInfo) return null;
+    const { current_page, last_page } = paginationInfo;
     return (
       <nav className="mt-4">
         <ul className="pagination justify-content-center gap-2">
@@ -115,7 +111,13 @@ const paginatedAds = searchValue
               className="page-link rounded-3"
               onClick={() => setPage(current_page - 1)}
             >
-              <i className={`bi ${i18n.language === "ar" ? "bi-chevron-right" : "bi-chevron-left"}`}></i>
+              <i
+                className={`bi ${
+                  i18n.language === "ar"
+                    ? "bi-chevron-right"
+                    : "bi-chevron-left"
+                }`}
+              ></i>
             </button>
           </li>
 
@@ -142,7 +144,13 @@ const paginatedAds = searchValue
               className="page-link rounded-3"
               onClick={() => setPage(current_page + 1)}
             >
-              <i className={`bi ${i18n.language === "ar" ? "bi-chevron-left" : "bi-chevron-right"}`}></i>
+              <i
+                className={`bi ${
+                  i18n.language === "ar"
+                    ? "bi-chevron-left"
+                    : "bi-chevron-right"
+                }`}
+              ></i>
             </button>
           </li>
         </ul>
@@ -156,7 +164,7 @@ const paginatedAds = searchValue
 
       <div className="recommended_services py-5">
         <div className="container">
-          {isDataLoading ? (
+          {isDataLoading || loadingFiltered ? (
             <CardsLoader />
           ) : paginatedAds?.length > 0 ? (
             <>

@@ -5,23 +5,51 @@ import { Link, useSearchParams } from "react-router-dom";
 import { useDispatch, useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { fetchAllProperties } from "../../redux/Slices/AllPropertiesSlice";
+import { searchProperty } from "../../redux/Slices/SearchSlice";
 
 const PropertiesPage = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
+  const [page, setPage] = useState(1);
 
-  const { properties, isLoading } = useSelector((state) => state.properties);
-    useEffect(() => {
-        dispatch(fetchAllProperties());
-    }, [dispatch,i18n.language]);
-    console.log(properties);
-    const categoryMap = {
+  const [searchParams] = useSearchParams();
+  const searchValue = searchParams.get("search");
+
+  const { properties, isLoading, pagination } = useSelector(
+    (state) => state.properties
+  );
+  const { propertiesList,loadingFiltered } = useSelector((state) => state.search);
+
+  useEffect(() => {
+    if (searchValue) {
+      dispatch(searchProperty(searchValue));
+    } else {
+      dispatch(fetchAllProperties({ page, per_page: 9 }));
+    }
+  }, [dispatch, i18n.language, page, searchValue]);
+
+  const listToRender = searchValue ? propertiesList : properties;
+
+  const startIndex = (page - 1) * 9;
+  const paginatedList = searchValue
+    ? listToRender?.slice(startIndex, startIndex + 9)
+    : listToRender;
+
+  const paginationInfo = searchValue
+    ? {
+        current_page: page,
+        last_page: Math.ceil((listToRender?.length || 0) / 9),
+      }
+    : pagination;
+
+  const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
     share: t("property.share"),
   };
   const unitTypeMap = {
     apartment: t("property.apartment"),
+    building: t("property.building"),
     villa: t("property.villa"),
     duplex: t("property.duplex"),
     office: t("property.office"),
@@ -30,25 +58,36 @@ const PropertiesPage = () => {
     land: t("property.land"),
     chalet: t("property.chalet"),
   };
+  const finishingMap = {
+    semi: t("property.finishingSemi"),
+    full: t("property.finishingFull"),
+    superLux: t("property.finishingSuperLux"),
+    company: t("property.finishingCompany"),
+  };
+
   return (
     <>
       <Breadcrumb title={t("property.all")} />
 
       <div className="recommended_services py-5">
         <div className="container">
-          {isLoading ? (
+          {(isLoading || loadingFiltered) ? (
             <CardsLoader />
-          ) : properties?.length > 0 ? (
+          ) : paginatedList?.length > 0 ? (
             <>
               <div className="row">
-                {properties.map((item, index) => (
+                {paginatedList.map((item, index) => (
                   <div
                     className="col-xl-3 col-lg-3 col-md-6 col-12"
                     key={item.id || index}
                   >
-                    <div className="recommended_card border rounded-4 overflow-hidden">
+                    <div className="recommended_card border rounded-4 my-2 overflow-hidden position-relative">
+                      <div className="finishing_status">
+                        {finishingMap[item?.finishing_status] ||
+                          item?.finishing_status}
+                      </div>
                       <img
-                        src={item.images?.[0]?.image || "/image.jpg"}
+                        src={item.images?.[0]?.url || "/image.jpg"}
                         alt={item.title}
                         className="img-fluid mb-3 rounded-4"
                       />
@@ -100,6 +139,31 @@ const PropertiesPage = () => {
                   </div>
                 ))}
               </div>
+
+              {paginationInfo && (
+                <div className="d-flex justify-content-center mt-4 align-items-center">
+                  <button
+                    className="btn btn-outline-primary mx-1"
+                    disabled={page === 1}
+                    onClick={() => setPage((prev) => prev - 1)}
+                  >
+                    {t("labels.previous")}
+                  </button>
+
+                  <span className="mx-2">
+                    {t("labels.page")} {paginationInfo.current_page}{" "}
+                    {t("labels.of")} {paginationInfo.last_page}
+                  </span>
+
+                  <button
+                    className="btn btn-outline-primary mx-1"
+                    disabled={page === paginationInfo.last_page}
+                    onClick={() => setPage((prev) => prev + 1)}
+                  >
+                    {t("labels.next")}
+                  </button>
+                </div>
+              )}
             </>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">

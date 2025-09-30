@@ -4,6 +4,7 @@ import Hero from '../../components/Hero/Hero';
 import Interactive from '../../components/Interactive/Interactive';
 import Services from '../../components/Services/Services';
 import RecommendedServices from '../../components/RecommendedServices/RecommendedServices';
+import RecommendedProperties from '../../components/RecommendedProperties/RecommendedProperties';
 import VR from '../../components/VR/VR';
 
 const Home = () => {
@@ -13,6 +14,7 @@ const Home = () => {
       <Hero/>
       <Interactive/>
       <Services/>
+      <RecommendedProperties/>
       <RecommendedServices/>
       <VR/>
     </>

@@ -5,8 +5,9 @@ import { useTranslation } from "react-i18next";
 import { MdWifiCalling3 } from "react-icons/md";
 import toast, { Toaster } from "react-hot-toast";
 import { data, Link, useParams } from "react-router-dom";
+import { Tooltip } from "react-tooltip";
 import Ripples from "react-ripples";
-import RelatedServices from "../RelatedServices/RelatedServices";
+import RelatedProperties from "../RelatedProperties/RelatedProperties";
 import DetailsLoader from "../../pages/DetailsLoader";
 import { propertyRecord } from "../../redux/Slices/AddPropertySlice";
 import { useDispatch, useSelector } from "react-redux";
@@ -35,7 +36,6 @@ const PropertyDetails = () => {
   const [theme, setTheme] = useState(
     () => sessionStorage.getItem("theme") || "light"
   );
-  console.log(propertyItem);
   const finishingMap = {
     semi: t("property.finishingSemi"),
     full: t("property.finishingFull"),
@@ -55,6 +55,7 @@ const PropertyDetails = () => {
   };
   const unitTypeMap = {
     apartment: t("property.apartment"),
+    building: t("property.building"),
     villa: t("property.villa"),
     duplex: t("property.duplex"),
     office: t("property.office"),
@@ -66,7 +67,7 @@ const PropertyDetails = () => {
   const paymentMethodMap = {
     cash: t("property.paymentCash"),
     installments: t("property.paymentInstallments"),
-    monthly: t("property.paymentMonthly")
+    monthly: t("property.paymentMonthly"),
   };
   useEffect(() => {
     if (!propertyItem?.images?.length) return;
@@ -143,15 +144,13 @@ const PropertyDetails = () => {
     const property_id = propertyItem?.id;
 
     const formData = new FormData();
-    formData.append("user_id", userID);
     formData.append("property_id", property_id);
     formData.append("rate", rating);
     formData.append("comment", comment);
-
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const res = await axios.post(
-        "https://3ayin.resporthub.com/api/ad/review",
+        "https://3ayin.resporthub.com/api/rate_property",
         formData,
         {
           headers: {
@@ -162,34 +161,44 @@ const PropertyDetails = () => {
         }
       );
 
-      if (res?.data?.code === 200) {
+      if (res?.data?.code === 201) {
         toast.success(t("servicesPage.rateSuccess"));
         setComment("");
         setRating(0);
         setHovered(0);
         dispatch(propertyRecord(id));
-        getAdReview();
+        getPropertyReview();
       } else {
         toast.error(t("servicesPage.rateFail"));
       }
     } catch (error) {
-      toast.error(t("servicesPage.rateFail"));
+      if (error.response?.data?.message === "rate_before") {
+        toast.error(t("servicesPage.alreadyRated"));
+        setComment("");
+        setRating(0);
+        setHovered(0);
+      } else {
+        toast.error(t("servicesPage.rateFail"));
+        setComment("");
+        setRating(0);
+        setHovered(0);
+      }
       console.error("Rating error:", error);
     }
   };
 
   useEffect(() => {
     setReviews([]);
-    getAdReview();
+    getPropertyReview();
     dispatch(propertyRecord(id));
   }, [id, i18n, t]);
 
   // get ad review
-  const getAdReview = async () => {
+  const getPropertyReview = async () => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const { data } = await axios.get(
-        `https://3ayin.resporthub.com/api/ad/${id}/reviews`,
+        `https://3ayin.resporthub.com/api/property/${id}/reviews`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -209,7 +218,7 @@ const PropertyDetails = () => {
 
   useEffect(() => {
     if (id) {
-      getAdReview();
+      getPropertyReview();
     }
   }, [id]);
 
@@ -218,6 +227,7 @@ const PropertyDetails = () => {
       <div className="services_details_page bg_overlay">
         <Breadcrumb
           title={t("property.all")}
+          pageLink="/all_proprties"
           subTitle={propertyItem?.title}
         />
         <div className="container">
@@ -248,8 +258,8 @@ const PropertyDetails = () => {
                             >
                               <img
                                 src={
-                                  img?.image?.trim()
-                                    ? img.image
+                                  img?.url?.trim()
+                                    ? img.url
                                     : "/placeholder.jpg"
                                 }
                                 onError={(e) => {
@@ -292,8 +302,8 @@ const PropertyDetails = () => {
                             >
                               <img
                                 src={
-                                  img?.image?.trim()
-                                    ? img.image
+                                  img?.url?.trim()
+                                    ? img.url
                                     : "/placeholder.jpg"
                                 }
                                 onError={(e) => {
@@ -429,33 +439,59 @@ const PropertyDetails = () => {
                     </div>
 
                     <div className="vr_map">
+                      {propertyItem?.video_url && (
+                        <>
+                          <Link
+                            data-tooltip-id="tooltip1"
+                            data-tooltip-content={t("services.clickHere")}
+                            className="d-block"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            to={propertyItem?.video_url}
+                          >
+                            <img src="/youtube.png" alt="--" />
+                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
+                              {t("servicesPage.video")}
+                            </small>
+                          </Link>
+                          <Tooltip id="tooltip1" />
+                        </>
+                      )}
                       {propertyItem?.ar_link && (
-                        <Link
-                          className="d-block"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          to={propertyItem?.ar_link}
-                        >
-                          <img src="/ar.png" alt="--" />
-                          <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                            AR
-                          </small>
-                        </Link>
-                        
+                        <>
+                          <Link
+                            data-tooltip-id="tooltip2"
+                            data-tooltip-content={t("services.clickHere")}
+                            className="d-block"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            to={propertyItem?.ar_link}
+                          >
+                            <img src="/ar.png" alt="--" />
+                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
+                              AR
+                            </small>
+                          </Link>
+                          <Tooltip id="tooltip2" />
+                        </>
                       )}
                       {propertyItem?.vr_link && (
-                        <Link
-                          className="d-block"
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          to={propertyItem?.vr_link}
-                        >
-                          <img src="/vr.png" alt="--" />
-                          <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                            VR
-                          </small>
-                        </Link>
-                        
+                        <>
+                          <Link
+                            data-tooltip-id="tooltip3"
+                            data-tooltip-content={t("services.clickHere")}
+                            className="d-block"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            to={propertyItem?.vr_link}
+                          >
+                            <img src="/vr.png" alt="--" />
+                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
+                              VR
+                            </small>
+                          </Link>
+                          <Tooltip id="tooltip3" />
+                        </>
                       )}
                       {propertyItem?.location && (
                         <img src="/map.png" alt="--" />
@@ -515,23 +551,28 @@ const PropertyDetails = () => {
                           </button>
                         </Ripples>
                       </li>
-                      <li className="nav-item" role="presentation">
-                        <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
-                          <button
-                            className="nav-link"
-                            id="ratings-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#ratings"
-                            type="button"
-                            role="tab"
-                            aria-controls="ratings"
-                            aria-selected="false"
+                      {propertyItem?.category === "rent" && (
+                        <li className="nav-item" role="presentation">
+                          <Ripples
+                            color="rgba(219, 147, 12, 0.21)"
+                            during={1500}
                           >
-                            {t("servicesPage.ratings")}{" "}
-                            <span>({reviews?.length || 0})</span>
-                          </button>
-                        </Ripples>
-                      </li>
+                            <button
+                              className="nav-link"
+                              id="ratings-tab"
+                              data-bs-toggle="tab"
+                              data-bs-target="#ratings"
+                              type="button"
+                              role="tab"
+                              aria-controls="ratings"
+                              aria-selected="false"
+                            >
+                              {t("servicesPage.ratings")}{" "}
+                              <span>({reviews?.length || 0})</span>
+                            </button>
+                          </Ripples>
+                        </li>
+                      )}
                       <li className="nav-item" role="presentation">
                         <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
                           <button
@@ -736,210 +777,219 @@ const PropertyDetails = () => {
                             )}
                         </div>
                       </div>
-                      <div
-                        className="tab-pane fade p-3"
-                        id="ratings"
-                        role="tabpanel"
-                        aria-labelledby="ratings-tab"
-                      >
-                        {reviews.length > 0 ? (
-                          reviews.map((review) => (
-                            <div key={review.id} className="rate_wrapper mb-2">
-                              <div className="row">
-                                {/* User Image */}
-                                <div className="col-xl-2 col-lg-2 col-md-2 col-12">
-                                  <img
-                                    src={review.user?.image || "/user.webp"}
-                                    alt={review.user?.name || "User"}
-                                    className="d-block my-2"
-                                    style={{
-                                      borderRadius: "50%",
-                                      width: "60px",
-                                      height: "60px",
-                                      objectFit: "cover",
-                                    }}
-                                    onError={(e) =>
-                                      (e.target.src = "/user.webp")
-                                    }
-                                  />
-                                </div>
+                      {propertyItem?.category === "rent" && (
+                        <div
+                          className="tab-pane fade p-3"
+                          id="ratings"
+                          role="tabpanel"
+                          aria-labelledby="ratings-tab"
+                        >
+                          {reviews.length > 0 ? (
+                            reviews.map((review) => (
+                              <div
+                                key={review.id}
+                                className="rate_wrapper mb-2"
+                              >
+                                <div className="row">
+                                  {/* User Image */}
+                                  <div className="col-xl-2 col-lg-2 col-md-2 col-12">
+                                    <img
+                                      src={review.user?.image || "/user.webp"}
+                                      alt={review.user?.name || "User"}
+                                      className="d-block my-2"
+                                      style={{
+                                        borderRadius: "50%",
+                                        width: "60px",
+                                        height: "60px",
+                                        objectFit: "cover",
+                                      }}
+                                      onError={(e) =>
+                                        (e.target.src = "/user.webp")
+                                      }
+                                    />
+                                  </div>
 
-                                {/* User Info */}
-                                <div className="col-xl-7 col-lg-7 col-md-7 col-12">
-                                  <b>{review.user?.name}</b>
-                                  <p>{review.created_at}</p>
-                                  <p
-                                    className={`line-height ${
-                                      i18n.language === "en"
-                                        ? "custom-font"
-                                        : ""
-                                    }`}
-                                  >
-                                    {review.comment}
-                                  </p>
-                                </div>
+                                  {/* User Info */}
+                                  <div className="col-xl-7 col-lg-7 col-md-7 col-12">
+                                    <b>{review.user?.name}</b>
+                                    <p>{review.created_at}</p>
+                                    <p
+                                      className={`line-height ${
+                                        i18n.language === "en"
+                                          ? "custom-font"
+                                          : ""
+                                      }`}
+                                    >
+                                      {review.comment}
+                                    </p>
+                                  </div>
 
-                                {/* Rating */}
-                                <div className="col-xl-3 col-lg-3 col-md-3 col-12">
-                                  <div className="mb-1 text-center">
-                                    {[1, 2, 3, 4, 5].map((star) => (
-                                      <i
-                                        key={star}
-                                        className={`bi ${
-                                          star <= parseInt(review.rate)
-                                            ? "bi-star-fill text-warning"
-                                            : "bi-star text-secondary"
-                                        }`}
-                                      ></i>
-                                    ))}
+                                  {/* Rating */}
+                                  <div className="col-xl-3 col-lg-3 col-md-3 col-12">
+                                    <div className="mb-1 text-center">
+                                      {[1, 2, 3, 4, 5].map((star) => (
+                                        <i
+                                          key={star}
+                                          className={`bi ${
+                                            star <= parseInt(review.rate)
+                                              ? "bi-star-fill text-warning"
+                                              : "bi-star text-secondary"
+                                          }`}
+                                        ></i>
+                                      ))}
+                                    </div>
                                   </div>
                                 </div>
                               </div>
+                            ))
+                          ) : (
+                            <div className="text-center text-center text-sm my-3">
+                              <div className="main-color">
+                                <i className="bi bi-star"></i>
+                                <i className="bi bi-star-half"></i>
+                                <i className="bi bi-star-half"></i>
+                                <i className="bi bi-star-fill"></i>
+                                <i className="bi bi-star-fill"></i>
+                              </div>
+                              <span className="d-block">
+                                {t("no_reviews_yet")}
+                              </span>
                             </div>
-                          ))
-                        ) : (
-                          <div className="text-center text-center text-sm my-3">
-                            <div className="main-color">
-                              <i className="bi bi-star"></i>
-                              <i className="bi bi-star-half"></i>
-                              <i className="bi bi-star-half"></i>
-                              <i className="bi bi-star-fill"></i>
-                              <i className="bi bi-star-fill"></i>
-                            </div>
-                            <span className="d-block">
-                              {t("no_reviews_yet")}
-                            </span>
-                          </div>
-                        )}
+                          )}
 
-                        {reviews.length > 3 && (
-                          <div className="text-center">
-                            <Link className="show_more">
-                              {t("recommendedServices.showMore")}{" "}
+                          {reviews.length > 3 && (
+                            <div className="text-center">
+                              <Link className="show_more">
+                                {t("recommendedServices.showMore")}{" "}
+                                <i
+                                  className={`bi ${
+                                    i18n.language === "ar"
+                                      ? "bi-arrow-left"
+                                      : "bi-arrow-right"
+                                  }`}
+                                ></i>
+                              </Link>
+                            </div>
+                          )}
+                          <form
+                            onSubmit={handleSubmit}
+                            className="rating-form my-3"
+                          >
+                            <div className="mt-5 mb-4 d-flex align-items-center">
+                              <label className="d-block mb-0 fw-bold">
+                                {t("servicesPage.rating")}
+                              </label>
+                              <div className="mx-2">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                  <i
+                                    key={star}
+                                    className={`bi ${
+                                      star <= (hovered || rating)
+                                        ? "bi-star-fill"
+                                        : "bi-star"
+                                    } text-warning fs-4 me-1 cursor-pointer`}
+                                    onMouseEnter={() => setHovered(star)}
+                                    onMouseLeave={() => setHovered(0)}
+                                    onClick={() => setRating(star)}
+                                    style={{ cursor: "pointer" }}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+
+                            <div>
+                              <label
+                                htmlFor="comment"
+                                className="d-block fw-bold"
+                              >
+                                {t("servicesPage.writeReview")}
+                              </label>
+                              <textarea
+                                id="comment"
+                                rows="4"
+                                value={comment}
+                                placeholder={t("servicesPage.writeComment")}
+                                onChange={(e) => setComment(e.target.value)}
+                              ></textarea>
+                            </div>
+
+                            <button type="submit" className="fw-bold border-0 ">
+                              {t("servicesPage.submit")}{" "}
                               <i
-                                className={`bi ${
+                                className={`text-sm bi ${
                                   i18n.language === "ar"
                                     ? "bi-arrow-left"
                                     : "bi-arrow-right"
                                 }`}
                               ></i>
-                            </Link>
-                          </div>
-                        )}
-                        <form
-                          onSubmit={handleSubmit}
-                          className="rating-form my-3"
-                        >
-                          <div className="mt-5 mb-4 d-flex align-items-center">
-                            <label className="d-block mb-0 fw-bold">
-                              {t("servicesPage.rating")}
-                            </label>
-                            <div className="mx-2">
-                              {[1, 2, 3, 4, 5].map((star) => (
-                                <i
-                                  key={star}
-                                  className={`bi ${
-                                    star <= (hovered || rating)
-                                      ? "bi-star-fill"
-                                      : "bi-star"
-                                  } text-warning fs-4 me-1 cursor-pointer`}
-                                  onMouseEnter={() => setHovered(star)}
-                                  onMouseLeave={() => setHovered(0)}
-                                  onClick={() => setRating(star)}
-                                  style={{ cursor: "pointer" }}
-                                />
-                              ))}
-                            </div>
-                          </div>
-
-                          <div>
-                            <label
-                              htmlFor="comment"
-                              className="d-block fw-bold"
-                            >
-                              {t("servicesPage.writeReview")}
-                            </label>
-                            <textarea
-                              id="comment"
-                              rows="4"
-                              value={comment}
-                              placeholder={t("servicesPage.writeComment")}
-                              onChange={(e) => setComment(e.target.value)}
-                            ></textarea>
-                          </div>
-
-                          <button type="submit" className="fw-bold border-0 ">
-                            {t("servicesPage.submit")}{" "}
-                            <i
-                              className={`text-sm bi ${
-                                i18n.language === "ar"
-                                  ? "bi-arrow-left"
-                                  : "bi-arrow-right"
-                              }`}
-                            ></i>
-                          </button>
-                        </form>
-                      </div>
+                            </button>
+                          </form>
+                        </div>
+                      )}
                       <div
                         className="tab-pane fade p-3"
                         id="extraFiles"
                         role="tabpanel"
                         aria-labelledby="extraFiles-tab"
                       >
-                        {propertyItem?.files?.map((file, index) => {
-                          const isPdf = file.file
-                            ?.toLowerCase()
-                            .endsWith(".pdf");
-                          const fileIcon = isPdf ? "/pdf.png" : "/doc.png";
+                        {propertyItem?.files &&
+                        propertyItem.files.length > 0 ? (
+                          propertyItem.files.map((file, index) => {
+                            const isPdf = file.file
+                              ?.toLowerCase()
+                              .endsWith(".pdf");
+                            const fileIcon = isPdf ? "/pdf.png" : "/doc.png";
 
-                          return (
-                            <div key={index} className="file_wrapper mb-3">
-                              <div className="row">
-                                <div className="col-xl-2 col-lg-2 col-md-2 col-12">
-                                  <a
-                                    href={file.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                  >
-                                    <img
-                                      src={fileIcon}
-                                      alt={file.id}
-                                      className="d-block my-2"
-                                    />
-                                  </a>
-                                </div>
-                                <div className="col-xl-10 col-lg-10 col-md-10 col-12">
-                                  <a
-                                    href={file.url}
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    className="text-decoration-none"
-                                  >
-                                    {file.url || "File"}
-                                  </a>
+                            return (
+                              <div key={index} className="file_wrapper mb-3">
+                                <div className="row">
+                                  <div className="col-xl-2 col-lg-2 col-md-2 col-12">
+                                    <a
+                                      href={file.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                    >
+                                      <img
+                                        src={fileIcon}
+                                        alt={file.id}
+                                        className="d-block my-2"
+                                      />
+                                    </a>
+                                  </div>
+                                  <div className="col-xl-10 col-lg-10 col-md-10 col-12">
+                                    <a
+                                      href={file.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-decoration-none"
+                                    >
+                                      {file.name || "File"}
+                                    </a>
 
-                                  <p>{t("fileUploadDateNotAvailable")}</p>
-                                  <span className="d-block text-success fw-bold">
-                                    {`${(file.size / 1024).toFixed(1)} ${
-                                      i18n.language === "en"
-                                        ? "MB"
-                                        : "ميجا بايت"
-                                    }`}
-                                  </span>
+                                    <p>{t("fileUploadDateNotAvailable")}</p>
+                                    <span className="d-block text-success fw-bold">
+                                      {`${(file.size / 1024).toFixed(1)} ${
+                                        i18n.language === "en"
+                                          ? "MB"
+                                          : "ميجا بايت"
+                                      }`}
+                                    </span>
+                                  </div>
                                 </div>
                               </div>
-                            </div>
-                          );
-                        })}
+                            );
+                          })
+                        ) : (
+                          <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
+                            <h5 className="mb-0">{t("no_data_exists")}</h5>
+                          </div>
+                        )}
                       </div>
                     </div>
                   </div>
                 </div>
                 <div className="col-xl-12 col-lg-12 xol-md-12 col-12 position-relative">
-                  <RelatedServices
-                    adCategory={propertyItem?.ad_category?.id}
-                    currentAdId={propertyItem?.id}
-                  />
+                  <RelatedProperties propertyID={propertyItem?.id} />
                 </div>
               </div>
             ) : (

@@ -10,9 +10,10 @@ import { fetchSubCategories } from "../../redux/Slices/SubCategoriesSlice";
 import { fetchSubCatsOfSubCategories } from "../../redux/Slices/SubCatsOfSubCategoriesSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import MapPicker from "../Properties/MapPicker";
 
 const PublishAd = () => {
-  const { t } = useTranslation("global");
+  const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
   const user3ayin = JSON.parse(sessionStorage.getItem("user3ayin"));
   const userID = user3ayin?.user?.id;
@@ -24,6 +25,7 @@ const PublishAd = () => {
   const [isSubSubRequired, setIsSubSubRequired] = useState(false);
   const { categories } = useSelector((state) => state.categories);
   const { subcategories } = useSelector((state) => state.subcategories);
+  const [showMap, setShowMap] = useState(false);
   const [previews, setPreviews] = useState({
     images: [null, null, null, null],
     user_works: [null, null, null, null],
@@ -56,6 +58,8 @@ const PublishAd = () => {
     images: [], // array of images
     files: [], // array of files
     location: "",
+    location_lat: "",
+    location_long: "",
     AR_VR: "",
     phone: "",
     ad_category_id: null, // take id of category
@@ -89,8 +93,6 @@ const PublishAd = () => {
 
     // Check if this subcategory has sub-sub-categories
     const hasSubSub = subcategory?.sub_sub_categories?.length > 0;
-
-
 
     setIsSubSubRequired(hasSubSub); // update state
 
@@ -221,6 +223,7 @@ const PublishAd = () => {
     formdata.user_works.forEach((file) => data.append("user_works[]", file));
     formdata.files.forEach((file) => data.append("files[]", file));
 
+    // console.log(formdata);
     dispatch(storeAd(data));
   };
 
@@ -430,6 +433,31 @@ const PublishAd = () => {
                   onChange={handleChange}
                   placeholder={t("create_ad.useCurrentLocation")}
                 />
+
+                <button
+                  type="button"
+                  className="btn btn-outline-primary mt-2"
+                  onClick={() => setShowMap(true)}
+                >
+                  {t("property.pickFromMap")}
+                </button>
+
+                {showMap && (
+                  <div className="mt-3">
+                    <MapPicker
+                      lang={i18n.language}
+                      onSelect={({ location_lat, location_long, location }) => {
+                        setFormata((prev) => ({
+                          ...prev,
+                          location_lat,
+                          location_long,
+                          location,
+                        }));
+                        setShowMap(false);
+                      }}
+                    />
+                  </div>
+                )}
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.arVr")}</label>

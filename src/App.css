@@ -569,9 +569,9 @@ select {
     color: var(--main-color) !important;
   }
   .navbar .nav-link,.hero p{color: var(--basic-color);}
-  .hero form button {background-color: var(--main-color);}
-  .hero form {border-color: var(--dark-color);}
-  .hero form input {background-color: var(--dark-color);color: var(--basic-color)}
+  .hero .hero-search-form button {background-color: var(--main-color);}
+  .hero .hero-search-form {border-color: var(--dark-color);}
+  .hero .hero-search-form input {background-color: var(--dark-color);color: var(--basic-color)}
   .interactive_btns button {background-color: var(--basic-color);}
   .service_btns button ,
   .recommended_card
