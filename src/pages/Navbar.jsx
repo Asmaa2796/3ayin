@@ -342,7 +342,7 @@ const Navbar = () => {
                   >
                     {t("services.about3ayinProperty")}
                   </Link>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
+                  <Link to="/properties_map" className="dropdown-item" style={{ fontSize: "13px" }}>
                     {t("services.3ayinMap")}
                   </Link>
                   <Link className="dropdown-item" style={{ fontSize: "13px" }}>

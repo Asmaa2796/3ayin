@@ -29,6 +29,7 @@ import TermsAndConditions from "../components/TermsAndConditions/TermsAndConditi
 import PrivacyPolicy from "../components/PrivacyPolicy/PrivacyPolicy";
 import AddProperty from "../components/Properties/AddProperty";
 import AllProperties from "../components/Properties/AllProperties";
+import PropertiesMap from "../components/Properties/PropertiesMap";
 import Packages from "../components/Packages/Packages";
 import NotFound from "../pages/NotFound";
 import PropertyDetails from "../components/Properties/PropertyDetails";
@@ -72,6 +73,7 @@ export default function Applayout() {
         <Route path="add_property" element={<AddProperty />} />
         <Route path="propertyDetails/:id" element={<PropertyDetails />} />
         <Route path="all_properties" element={<AllProperties />} />
+        <Route path="properties_map" element={<PropertiesMap />} />
         <Route path="all_services" element={<ServicesPage />} />
         <Route path="all_ads" element={<AdsPage />} />
         <Route path="serviceDetails/:id" element={<ServiceDetails />} />

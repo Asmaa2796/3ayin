@@ -4,72 +4,78 @@ import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { useTranslation } from "react-i18next";
 import { BiSolidDashboard } from "react-icons/bi";
 import { TiStarHalfOutline } from "react-icons/ti";
+import toast, { Toaster } from "react-hot-toast";
 import { GrCurrency } from "react-icons/gr";
 import "../RecommendedServices/RecommendedServices.css";
 import { Link } from "react-router-dom";
 import "./ServicesPage.css";
 import { fetchAllSubCategories } from "../../redux/Slices/FilterServicesSlice";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchAds } from "../../redux/Slices/AdsSlice";
+import { fetchAds, filterAds } from "../../redux/Slices/AdsSlice";
 import CardsLoader from "../../pages/CardsLoader";
 
 const ServicesPage = () => {
   const { t, i18n } = useTranslation("global");
-  const [rangeValue, setRangeValue] = useState(1000);
+  const [minPrice, setMinPrice] = useState(0);
+  const [maxPrice, setMaxPrice] = useState(100000000);
   const dispatch = useDispatch();
 
   const { filterByCats } = useSelector((state) => state.filterServices);
   const { ads, loading } = useSelector((state) => state.ads);
-  const [filteredAds, setFilteredAds] = useState([]);
 
+  //   const handleFilterClick = (subSubId) => {
+  //   if (!subSubId) {
+  //     // Show all ads
+  //     setFilteredAds(ads);
+  //     return;
+  //   }
+
+  //   const filtered = ads.filter((ad) => {
+  //     // Match if ad has a sub-sub-category directly
+  //     if (ad.ad_sub_sub_category) {
+  //       return ad.ad_sub_sub_category.id === subSubId;
+  //     }
+
+  //     // Or match if its sub-category contains the sub-sub-category
+  //     return ad.ad_sub_category?.sub_sub_categories?.some(
+  //       (sub) => sub.id === subSubId
+  //     );
+  //   });
+
+  //   setFilteredAds(filtered);
+  // };
   const handleFilterClick = (subSubId) => {
-  if (!subSubId) {
-    // Show all ads
-    setFilteredAds(ads);
-    return;
-  }
-
-  const filtered = ads.filter((ad) => {
-    // Match if ad has a sub-sub-category directly
-    if (ad.ad_sub_sub_category) {
-      return ad.ad_sub_sub_category.id === subSubId;
+    if (!subSubId) {
+      dispatch(fetchAds()); // Show all ads
+      return;
     }
+    dispatch(filterAds({ ad_sub_category_id: subSubId }));
+  };
 
-    // Or match if its sub-category contains the sub-sub-category
-    return ad.ad_sub_category?.sub_sub_categories?.some(
-      (sub) => sub.id === subSubId
-    );
-  });
-
-  setFilteredAds(filtered);
-};
-
-
-const handleShowAll = () => {
-  handleFilterClick(null);
-
-  // Close any open accordion panels
-  // const openItems = document.querySelectorAll(
-  //   "#servicesAccordion .accordion-collapse.show"
-  // );
-
-  // openItems.forEach((item) => {
-  //   const bsCollapse =
-  //     bootstrap.Collapse.getInstance(item) ||
-  //     new bootstrap.Collapse(item, { toggle: false });
-  //   bsCollapse.hide();
-  // });
-};
+  const handlePriceFilter = () => {
+    if (minPrice >= maxPrice) {
+      toast.error(t("min_max_price"));
+      return;
+    }
+    dispatch(filterAds({ min_price: minPrice, max_price: maxPrice }));
+  };
+  const handleRateFilter = (rate) => {
+    dispatch(filterAds({ rate }));
+  };
+  const handleCategoryFilter = (catId) => {
+    dispatch(filterAds({ ad_category_id: catId }));
+  };
+  const handleSubCategoryFilter = (subId) => {
+    dispatch(filterAds({ ad_sub_category_id: subId }));
+  };
+  const handleShowAll = () => {
+    handleFilterClick(null);
+  };
   useEffect(() => {
     dispatch(fetchAllSubCategories());
     dispatch(fetchAds());
   }, [dispatch, i18n.language]);
 
-  useEffect(() => {
-    if (ads && ads.length > 0) {
-      setFilteredAds(ads);
-    }
-  }, [ads]);
   return (
     <div className="services_page bg_overlay">
       <Breadcrumb title={t("servicesPage.filterServices")} />
@@ -122,27 +128,30 @@ const handleShowAll = () => {
                         >
                           <div className="accordion-body">
                             <ul className="list-unstyled">
-                              {category.sub_sub_categories?.length > 0 ? (
+                              {/* Category level */}
+                              <li>
+                                <Link
+                                  onClick={() =>
+                                    handleCategoryFilter(category.id)
+                                  }
+                                >
+                                  {category.name}
+                                </Link>
+                              </li>
+
+                              {/* Sub-sub-category level */}
+                              {category.sub_sub_categories?.length > 0 &&
                                 category.sub_sub_categories.map((sub) => (
                                   <li key={sub.id}>
                                     <Link
-                                      onClick={() => handleFilterClick(sub.id)}
+                                      onClick={() =>
+                                        handleSubCategoryFilter(sub.id)
+                                      }
                                     >
                                       {sub.name}
                                     </Link>
                                   </li>
-                                ))
-                              ) : (
-                                <li>
-                                  <Link
-                                    onClick={() =>
-                                      handleFilterClick(category.id)
-                                    }
-                                  >
-                                    {category.name}
-                                  </Link>
-                                </li>
-                              )}
+                                ))}
                             </ul>
                           </div>
                         </div>
@@ -158,22 +167,47 @@ const handleShowAll = () => {
                     {t("servicesPage.filterByPrice")}
                   </b>
                   <hr />
-                  <input
-                    type="range"
-                    className="w-100 mb-3"
-                    min={1000}
-                    max={100000000}
-                    step={100}
-                    value={rangeValue}
-                    onChange={(e) => setRangeValue(Number(e.target.value))}
-                  />
+
+                  <div className="mb-2">
+                    <label className="text-sm my-1">
+                      {t("servicesPage.min")}
+                    </label>
+                    <input
+                      type="number"
+                      style={{ fontSize: "13px" }}
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                      }}
+                      className="form-control"
+                      value={minPrice}
+                      onChange={(e) => setMinPrice(Number(e.target.value))}
+                    />
+                  </div>
+
+                  <div className="mb-2">
+                    <label className="text-sm my-1">
+                      {t("servicesPage.max")}
+                    </label>
+                    <input
+                      type="number"
+                      style={{ fontSize: "13px" }}
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                      }}
+                      className="form-control"
+                      value={maxPrice}
+                      onChange={(e) => setMaxPrice(Number(e.target.value))}
+                    />
+                  </div>
+
                   <div className="d-flex justify-content-between align-items-center">
                     <div>
                       <div className="text-secondary text-sm">
                         {t("servicesPage.min")}
                       </div>
                       <small className="fw-bold">
-                        <span>1000</span> {t("recommendedServices.currency")}
+                        <span>{minPrice}</span>{" "}
+                        {t("recommendedServices.currency")}
                       </small>
                     </div>
                     <div>
@@ -181,11 +215,17 @@ const handleShowAll = () => {
                         {t("servicesPage.max")}
                       </div>
                       <small className="text-danger fw-bold">
-                        <span>100,000,000</span>{" "}
+                        <span>{maxPrice}</span>{" "}
                         {t("recommendedServices.currency")}
                       </small>
                     </div>
                   </div>
+                  <button
+                    className="btn btn-sm btn-primary w-100 mt-2"
+                    onClick={handlePriceFilter}
+                  >
+                    {t("servicesPage.applyFilter")}
+                  </button>
                 </div>
 
                 {/* Rating Filter */}
@@ -197,7 +237,11 @@ const handleShowAll = () => {
                   <hr />
                   {[5, 4, 3, 2, 1].map((rate) => (
                     <label key={rate} className={`rate_${rate}`}>
-                      <input type="radio" name="rate" />
+                      <input
+                        type="radio"
+                        name="rate"
+                        onChange={() => handleRateFilter(rate)}
+                      />
                       <div className="mx-1">
                         {Array.from({ length: 5 }, (_, i) => (
                           <i
@@ -220,10 +264,10 @@ const handleShowAll = () => {
               <div className="row">
                 {loading ? (
                   <CardsLoader />
-                ) : filteredAds && filteredAds.length >= 1 ? (
+                ) : ads && ads.length >= 1 ? (
                   <>
                     <div className="row">
-                      {filteredAds.map((ad, index) => (
+                      {ads.map((ad, index) => (
                         <div
                           className="col-xl-4 col-lg-4 col-md-6 col-12"
                           key={ad.id || index}
@@ -241,8 +285,11 @@ const handleShowAll = () => {
                             <div className="p-3">
                               <p className="line-height mb-1">{ad?.ad_name}</p>
                               <small className="mb-2 d-block">
-                                {ad?.category_name} / {ad?.sub_category_name}
+                                {ad?.category_name} / {ad?.sub_category_name}{" "}
+                                {ad?.sub_sub_category_name &&
+                                  `/ ${ad?.sub_sub_category_name}`}
                               </small>
+                              <hr/>
 
                               <div className="d-inline-block mb-2 rates">
                                 {ad?.reviews?.length > 0 ? (

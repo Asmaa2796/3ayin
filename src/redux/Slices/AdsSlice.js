@@ -28,12 +28,27 @@ export const fetchAdsWithPagination = createAsyncThunk(
     }
   }
 );
+export const filterAds = createAsyncThunk(
+  "ads/filterAds",
+  async (filters, { rejectWithValue }) => {
+    try {
+      const response = await axios.post(
+        `${BASE_URL}/api/ad/filter`,
+        filters
+      );
+      return response.data.data; // ads array
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
 
 // Initial state
 const initialState = {
   ads: [],
   record: null,
   isLoading: false,
+  loading: false,
   pagination: null,
   error: null,
   success: null,
@@ -69,6 +84,17 @@ const AdsSlice = createSlice({
       })
       .addCase(fetchAdsWithPagination.rejected, (state, action) => {
         state.isLoading = false;
+        state.error = action.payload;
+      })
+      .addCase(filterAds.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(filterAds.fulfilled, (state, action) => {
+        state.loading = false;
+        state.ads = action.payload;
+      })
+      .addCase(filterAds.rejected, (state, action) => {
+        state.loading = false;
         state.error = action.payload;
       });
   },

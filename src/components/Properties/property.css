@@ -77,6 +77,71 @@
     border-radius: 25px;
     font-size: small;
 }
+.properties-map-wrapper { width: 100%; }
+.filters-row {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 8px;
+}
+.filter-btn {
+  border: 1px solid var(--main-color);
+  background: #fff;
+  padding: 6px 12px;
+  font-size: 13px;
+  color: var(--main-color);
+  border-radius: 6px;
+  cursor: pointer;
+  font-weight: 600;
+}
+.filter-btn.active {
+  background: var(--main-color);
+  color: #fff;
+  border-color: var(--main-color);
+}
+.filter-btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+/* map container sizing */
+.map-container { width: 100%; height: 500px; }
+
+/* simple footer status */
+.map-footer { text-align: center; margin-top: 8px; font-size: 14px; color: #444; }
+
+/* pin styles — uses rotated square to look like a pointy pin */
+.custom-pin-wrapper { background: transparent; }
+.pin {
+  width: 18px;
+  height: 18px;
+  border-radius: 4px;
+  transform: rotate(45deg);
+  box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+  border: 2px solid white;
+  margin-top: -6px;
+  margin-left: 0;
+  display: inline-block;
+}
+
+/* small white hole in the middle (gives 'pin' look) */
+.pin::after {
+  content: "";
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.95);
+  position: relative;
+  left: 4px;
+  top: 4px;
+  transform: rotate(-45deg);
+}
+
+/* colors by category */
+.pin.sale { background: #e74c3c; }   /* red */
+.pin.rent { background: #3498db; }   /* blue */
+.pin.share { background: #2ecc71; }  /* green */
+.pin.all { background: #9b59b6; }    /* purple - fallback */
+[dir='rtl'] .leaflet-popup-content {font-family: 'IBM Plex Sans Arabic';}
+[dir='ltr'] .leaflet-popup-content {font-family: 'LeagueSpartan';}
+[dir='rtl'] .leaflet-popup-content-wrapper {text-align: right;}
 [dir='ltr'] 
   .finishing_status {
     right: unset;

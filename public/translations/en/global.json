@@ -229,13 +229,14 @@
   },
   "property": {
     "all": "All properties",
+    "maps": "Properties Map",
     "title": "Recommended Properties for You",
     "add_property": "Add property",
     "unitCategory": "Unit Category",
     "sale": "Sale",
     "rent": "Rent",
     "share": "Share",
-    "unitType": "Unit Type",
+    "unitType": "Type",
     "apartment": "Residential Apartment",
     "villa": "Villa",
     "building": "Building",
@@ -336,7 +337,8 @@
     "rateFail": "Failed to add your rate",
     "share_now": "Share now",
     "alreadyRated": "Already Rated",
-    "video": "Video"
+    "video": "Video",
+    "applyFilter": "Apply Filter"
   },
   "serviceProvider": {
     "reviews": "Reviews",
@@ -437,6 +439,8 @@
   "already_subscribed_free_plan": "Already subscribed free_plan",
   "failed_to_subscribe": "Failed to subscribe",
   "please_complete_identification": "Please complete identification",
+  "failed_to_load_properties": "Failed to load properties",
+  "min_max_price": "Min price must be less than max price",
   "pending": "Pending",
   "approved": "Approved",
   "labels": {
@@ -447,6 +451,7 @@
     "next": "Next"
   },
   "loading": "Loading...",
+  "properties_shown": "Properties shown",
   "not_found_title": "404 - Page Not Found",
   "packages": {
     "title": "Subscription Packages",

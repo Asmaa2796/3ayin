@@ -179,6 +179,7 @@ const ServiceDetails = () => {
 
   return (
     <>
+      <Toaster position="top-center" />
       <div className="services_details_page bg_overlay">
         <Breadcrumb
           title={adItem?.category_name}

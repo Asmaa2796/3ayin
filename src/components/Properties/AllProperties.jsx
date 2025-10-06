@@ -6,6 +6,7 @@ import { useDispatch, useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { fetchAllProperties } from "../../redux/Slices/AllPropertiesSlice";
 import { searchProperty } from "../../redux/Slices/SearchSlice";
+import PropertiesMap from "./PropertiesMap";
 
 const PropertiesPage = () => {
   const { t, i18n } = useTranslation("global");
@@ -60,7 +61,6 @@ const PropertiesPage = () => {
   return (
     <>
       <Breadcrumb title={t("property.all")} />
-
       <div className="container">
         <div className="tab_status">
           {["all", "sale", "rent", "share"].map((type) => (

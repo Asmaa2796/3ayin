@@ -108,7 +108,7 @@ const Interactive = () => {
                     {subCategories.length > 0 ? (
                       subCategories.map((sub) => (
                         <li key={sub.id}>
-                          <Link to={`/all_services/${sub.id}`}>{sub.name}</Link>
+                          <Link className="d-block" to={`/all_services/${sub.id}`}>{sub.name}</Link>
                         </li>
                       ))
                     ) : (
@@ -137,10 +137,10 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link>{t("interactive.pdfFile")}</Link>
+                    <Link className="d-block">{t("interactive.pdfFile")}</Link>
                   </li>
                   <li>
-                    <Link>{t("interactive.map")}</Link>
+                    <Link className="d-block" to="/properties_map">{t("interactive.map")}</Link>
                   </li>
                 </ul>
               </div>
@@ -164,16 +164,16 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link to="/publish_ad">{t("create_ad.publishAd")}</Link>
+                    <Link className="d-block" to="/publish_ad">{t("create_ad.publishAd")}</Link>
                   </li>
                   <li>
-                    <Link to="/all_ads">{t("labels.all_ads")}</Link>
+                    <Link className="d-block" to="/all_ads">{t("labels.all_ads")}</Link>
                   </li>
                   <li>
-                    <Link to="/add_property">{t("navbar.add_service")}</Link>
+                    <Link className="d-block" to="/add_property">{t("navbar.add_service")}</Link>
                   </li>
                   <li>
-                    <Link to="/all_properties">{t("property.all")}</Link>
+                    <Link className="d-block" to="/all_properties">{t("property.all")}</Link>
                   </li>
                 </ul>
               </div>
@@ -197,10 +197,10 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link>{t("interactive.engineers")}</Link>
+                    <Link className="d-block">{t("interactive.engineers")}</Link>
                   </li>
                   <li>
-                    <Link>{t("interactive.marketers")}</Link>
+                    <Link className="d-block">{t("interactive.marketers")}</Link>
                   </li>
                 </ul>
               </div>

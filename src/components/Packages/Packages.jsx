@@ -13,7 +13,8 @@ const Packages = () => {
   const dispatch = useDispatch();
   const { plans,isLoading } = useSelector((state) => state.plans);
   const { success,error} = useSelector((state) => state.subscribe);
-
+ const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const had_free_subscription = userData?.user?.had_free_subscription;
   useEffect(() => {
     dispatch(fetchPlans());
   }, [dispatch, i18n.language]);
@@ -167,61 +168,87 @@ useEffect(() => {
   return (
     <div className="packages-page">
       <div className="container">
-        {isLoading ? <div className="bg-white p-4 rounded-3" style={{textAlign:i18n.language === "ar"?"right":"left"}}><FaqLoader/></div>:(
+        {isLoading ? (
           <div
-          className="packages-container bg-white py-3"
-          style={{ borderRadius: "40px" }}
-        >
-                <Link to="/"><img className="d-block mx-auto" style={{width:"130px",height:"130px",objectFit:"cover"}} src="/logo-white.png" /></Link>
-
-          <div className="packages-header">
-            <h1 className="packages-title my-3" style={{ fontSize: "30px" }}>
-              {t("packages.title")}
-            </h1>
+            className="bg-white p-4 rounded-3"
+            style={{ textAlign: i18n.language === "ar" ? "right" : "left" }}
+          >
+            <FaqLoader />
           </div>
+        ) : (
+          <div
+            className="packages-container bg-white py-3"
+            style={{ borderRadius: "40px" }}
+          >
+            <Link to="/">
+              <img
+                className="d-block mx-auto"
+                style={{ width: "130px", height: "130px", objectFit: "cover" }}
+                src="/logo-white.png"
+              />
+            </Link>
 
-          <div className="packages-table-container">
-            <table className="packages-table">
-              <thead>
-                <tr>
-                  <th className="package-header">
-                    {t("packages.features.monthlySubscription")}
-                  </th>
-                  {mappedPlans?.map((pkg) => (
-                    <th key={pkg.id} className="package-name">
-                      {pkg.name}
+            <div className="packages-header">
+              <h1 className="packages-title my-3" style={{ fontSize: "30px" }}>
+                {t("packages.title")}
+              </h1>
+            </div>
+
+            <div className="packages-table-container">
+              <table className="packages-table">
+                <thead>
+                  <tr>
+                    <th className="package-header">
+                      {t("packages.features.monthlySubscription")}
                     </th>
+                    {mappedPlans?.map((pkg) => (
+                      <th key={pkg.id} className="package-name">
+                        {pkg.name}
+                      </th>
+                    ))}
+                  </tr>
+                </thead>
+                <tbody>
+                  {features.map((feature) => (
+                    <tr key={feature.key}>
+                      <td className="feature-label">{feature.label}</td>
+                      {mappedPlans?.map((pkg) => (
+                        <td
+                          key={`${pkg.id}-${feature.key}`}
+                          className="feature-value"
+                        >
+                          {renderFeatureValue(pkg, feature.key)}
+                        </td>
+                      ))}
+                    </tr>
                   ))}
-                </tr>
-              </thead>
-              <tbody>
-                {features.map((feature) => (
-                  <tr key={feature.key}>
-                    <td className="feature-label">{feature.label}</td>
+                  <tr className="subscribe-row">
+                    <td className="feature-label"></td>
                     {mappedPlans?.map((pkg) => (
                       <td
-                        key={`${pkg.id}-${feature.key}`}
-                        className="feature-value"
+                        key={`subscribe-${pkg.id}`}
+                        className="subscribe-cell"
                       >
-                        {renderFeatureValue(pkg, feature.key)}
+                        {!(had_free_subscription === true && pkg.id === 1) && (
+  <button
+    type="button"
+    disabled={loadingPlan === pkg.id}
+    className="subscribe-btn"
+    onClick={() => handleSubmit(pkg.id)}
+  >
+    {loadingPlan === pkg.id
+      ? t("loading")
+      : t("packages.subscribe")}
+  </button>
+)}
+
                       </td>
                     ))}
                   </tr>
-                ))}
-                <tr className="subscribe-row">
-                  <td className="feature-label"></td>
-                  {mappedPlans?.map((pkg) => (
-                    <td key={`subscribe-${pkg.id}`} className="subscribe-cell">
-                      <button type="button" disabled={loadingPlan === pkg.id} className="subscribe-btn" onClick={() => handleSubmit(pkg.id)}>
-                        {loadingPlan === pkg.id ? t("loading") : t("packages.subscribe")}
-                      </button>
-                    </td>
-                  ))}
-                </tr>
-              </tbody>
-            </table>
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
         )}
       </div>
     </div>

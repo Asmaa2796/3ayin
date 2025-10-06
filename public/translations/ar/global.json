@@ -229,13 +229,14 @@
   },
   "property": {
     "all": "جميع العقارات",
+    "maps": "خريطة العقارات",
     "title": "عقارات نرشحها لك",
     "add_property": "إضافة عقار",
     "unitCategory": "فئة الوحدة",
     "sale": "بيع",
     "rent": "إيجار",
     "share": "مشاركة",
-    "unitType": "نوع الوحدة",
+    "unitType": "النوع",
     "apartment": "شقة سكنية",
     "villa": "فيلا",
     "building": "عمارة",
@@ -336,7 +337,8 @@
     "rateFail": "لم تتم إضافة تقييمك",
     "share_now": "شارك الآن",
     "alreadyRated": "لقد قمت بالتقييم من قبل",
-    "video": "فيديو"
+    "video": "فيديو",
+    "applyFilter": "تصفية النتائج"
   },
   "serviceProvider": {
     "reviews": "تقييمات",
@@ -437,6 +439,8 @@
   "already_subscribed_free_plan": "أنت مشترك في هذه الباقة بالفعل",
   "failed_to_subscribe": "لم يتم الاشتراك",
   "please_complete_identification": "يرجى استكمال بيانات توثيق الهوية",
+  "failed_to_load_properties": "خطأ أثناء تحميل العقارات",
+  "min_max_price": "الحد الأدنى يجب أن يكون أقل من الحد الأعلى",
   "pending": "قيد المراجعة",
   "approved": "مقبول",
   "labels": {
@@ -447,6 +451,7 @@
     "next": "التالي"
   },
   "loading": "جار التحميل...",
+  "properties_shown": "عقارات معروضة",
   "not_found_title": "٤٠٤ - الصفحة غير موجودة",
   "packages": {
     "title": "باقات الاشتراك",
