@@ -79,7 +79,7 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
           >
             {relatedAds.map((ad, index) => (
               <SwiperSlide key={ad.id || index}>
-                <div className="recommended_card border rounded-4 overflow-hidden">
+                <Link to={`/serviceDetails/${ad.id}`} className="recommended_card border rounded-4 overflow-hidden d-block">
                   <img
                     src={ad?.image?.trim() ? ad.image : "/placeholder.jpg"}
                     onError={(e) => {
@@ -90,8 +90,8 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
                     className="img-fluid mb-3 rounded-4"
                   />
                   <div className="p-3">
-                    <p className="line-height mb-1">{ad?.small_desc}</p>
-                    <small className="mb-2 d-block">
+                    <p className="line-height mb-1 text-dark">{ad?.small_desc}</p>
+                    <small className="mb-2 d-block text-dark">
                       {ad?.category_name} / {ad?.sub_category_name}
                     </small>
                     <div className="d-inline-block mb-2 rates">
@@ -105,11 +105,11 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
                           }`}
                         ></i>
                       ))}
-                      <span className="mx-2">({ad?.reviews_count || 0})</span>
+                      <span className="mx-2 text-dark">({ad?.reviews_count || 0})</span>
                     </div>
 
                     <div className="text-sm d-flex justify-content-between align-items-center">
-                      <div>
+                      <div className="text-dark">
                         {t("recommendedServices.startingFrom")}
                         <span className="fw-bold">
                           {ad?.price} {t("recommendedServices.currency")}
@@ -118,7 +118,6 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
                       <div>
                         <Link
                           className="view_details"
-                          to={`/serviceDetails/${ad.id}`}
                         >
                           <i
                             className={`text-sm bi ${
@@ -131,7 +130,7 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

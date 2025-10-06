@@ -4,53 +4,59 @@ import "./Packages.css";
 import { fetchPlans } from "../../redux/Slices/PlansSlice";
 import { useDispatch, useSelector } from "react-redux";
 import FaqLoader from "../../pages/FaqLoader";
-import { useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { subscribePlan,clearState } from "../../redux/Slices/SubscribePlanSlice";
 import { toast } from "react-toastify";
 
 const Packages = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
-  const navigate = useNavigate();
   const { plans,isLoading } = useSelector((state) => state.plans);
   const { success,error} = useSelector((state) => state.subscribe);
-  const { name } = useParams();
 
-  useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user3ayin"));
-    if (!user || !user.token) {
-      navigate("/login");
-    }
-
-    if (name) {
-      navigate("/");
-    }
-  }, [navigate, name]);
   useEffect(() => {
     dispatch(fetchPlans());
   }, [dispatch, i18n.language]);
 
   const [loadingPlan, setLoadingPlan] = useState(null);
   const handleSubmit = (planId) => {
-    setLoadingPlan(planId);
-    console.log("plan",planId);
-    dispatch(subscribePlan({ plan_id: planId }))
+  const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+  if (!token) {
+    toast.error(t("please_log_in_to_continue"));
+    return;
+  }
+
+  setLoadingPlan(planId);
+  dispatch(subscribePlan({ plan_id: planId }))
     .unwrap()
     .then(() => setLoadingPlan(null))
     .catch(() => setLoadingPlan(null));
-  };
+};
 
-  useEffect(() => {
-    if (success) {
-      toast.success(t("subscribed_successfully"));
-      dispatch(clearState());
+
+useEffect(() => {
+  if (success) {
+    toast.success(t("subscribed_successfully"));
+    dispatch(clearState());
+  }
+
+  if (error) {
+    let errorMessage = t("failed_to_subscribe");
+
+    if (typeof error === "string") {
+      if (error.includes("already subscribed")) {
+        errorMessage = t("already_subscribed_free_plan");
+      } else {
+        errorMessage = error;
+      }
     }
 
-    if (error) {
-      toast.error(t("failed_to_subscribe"));
-      dispatch(clearState());
-    }
-  }, [success, error, t, dispatch]);
+    toast.error(errorMessage);
+    dispatch(clearState());
+  }
+}, [success, error, t, dispatch]);
+
+
 
   const mappedPlans = plans?.map((plan) => ({
     id: plan.id,
@@ -127,28 +133,20 @@ const Packages = () => {
 
       case "searchAppearance":
         return pkg.hasSearchAppearance ? (
-          <>
-            {pkg.searchAppearance}
-          </>
+          <>{pkg.searchAppearance}</>
         ) : (
-          <>
-            {pkg.searchAppearance}
-          </>
+          <>{pkg.searchAppearance}</>
         );
 
       case "statisticsReports":
         return pkg.hasStatisticsReports ? (
-          <>
-            {pkg.statisticsReports}
-          </>
+          <>{pkg.statisticsReports}</>
         ) : (
-          <>
-            {pkg.statisticsReports}
-          </>
+          <>{pkg.statisticsReports}</>
         );
 
       case "teamManagement":
-        return pkg.hasTeamManagement === t("packages.features.yes") ? (
+        return pkg.hasTeamManagement ? (
           <>
             <i className="bi bi-check-circle-fill text-success"></i>{" "}
             {t("packages.features.yes")}
@@ -174,8 +172,10 @@ const Packages = () => {
           className="packages-container bg-white py-3"
           style={{ borderRadius: "40px" }}
         >
+                <Link to="/"><img className="d-block mx-auto" style={{width:"130px",height:"130px",objectFit:"cover"}} src="/logo-white.png" /></Link>
+
           <div className="packages-header">
-            <h1 className="packages-title my-3" style={{ fontSize: "40px" }}>
+            <h1 className="packages-title my-3" style={{ fontSize: "30px" }}>
               {t("packages.title")}
             </h1>
           </div>

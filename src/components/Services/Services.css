@@ -31,7 +31,7 @@
 .service_btns button img {margin-inline: 7px;}
 }
 @media(max-width:768px) {
-    .vr_section .text {height: auto;}
+    .vr_section .text {height: auto !important;}
 }
 @media(max-width:567px) {
     .vr_map img {max-height: 26px;}

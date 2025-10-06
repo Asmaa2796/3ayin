@@ -89,7 +89,10 @@ const handleShowAll = () => {
                   {/* "All" button */}
                   <ul className="list-unstyled mb-0 p-0">
                     <li>
-                      <Link className="text-sm main-color d-block" onClick={handleShowAll}>
+                      <Link
+                        className="text-sm main-color d-block"
+                        onClick={handleShowAll}
+                      >
                         {t("servicesPage.all")}
                       </Link>
                     </li>
@@ -126,7 +129,7 @@ const handleShowAll = () => {
                                       onClick={() => handleFilterClick(sub.id)}
                                     >
                                       {sub.name}
-                                    </Link> 
+                                    </Link>
                                   </li>
                                 ))
                               ) : (
@@ -178,7 +181,8 @@ const handleShowAll = () => {
                         {t("servicesPage.max")}
                       </div>
                       <small className="text-danger fw-bold">
-                        <span>100,000,000</span> {t("recommendedServices.currency")}
+                        <span>100,000,000</span>{" "}
+                        {t("recommendedServices.currency")}
                       </small>
                     </div>
                   </div>
@@ -226,15 +230,18 @@ const handleShowAll = () => {
                         >
                           <div className="recommended_card border rounded-4 mb-3 overflow-hidden">
                             <img
-                              src={ad?.images?.[0]?.image || "/placeholder.jpg"}
+                              src={ad.images?.[0]?.image || "/placeholder.jpg"}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder.jpg";
+                              }}
                               alt="service"
                               className="img-fluid mb-3 rounded-4"
                             />
                             <div className="p-3">
                               <p className="line-height mb-1">{ad?.ad_name}</p>
                               <small className="mb-2 d-block">
-                                {ad?.ad_category?.name} /{" "}
-                                {ad?.ad_sub_category?.name}
+                                {ad?.category_name} / {ad?.sub_category_name}
                               </small>
 
                               <div className="d-inline-block mb-2 rates">

@@ -12,6 +12,7 @@ import AboutSlice from "./Slices/AboutSlice";
 import SettingsSlice from "./Slices/SettingsSlice"; 
 import ProviderDataSlice from "./Slices/ProviderDataSlice"; 
 import ProviderAdsSlice from "./Slices/ProviderAdsSlice"; 
+import ProviderPropertiesSlice from "./Slices/ProviderPropertiesSlice"; 
 import ProviderAdsReviewsSlice from "./Slices/ProviderAdsReviewsSlice"; 
 import ProviderStatisticsSlice from "./Slices/ProviderStatisticsSlice"; 
 import ContactSlice from "./Slices/ContactSlice"; 
@@ -39,6 +40,7 @@ const store = configureStore({
     settings: SettingsSlice,
     providerData: ProviderDataSlice,
     providerAds: ProviderAdsSlice,
+    providerProperties: ProviderPropertiesSlice,
     providerAdsReviews: ProviderAdsReviewsSlice,
     providerStatistics: ProviderStatisticsSlice,
     adsList: SearchSlice,

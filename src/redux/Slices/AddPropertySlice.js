@@ -1,6 +1,9 @@
 // src/redux/PropertySlice.js
-import { createSlice } from "@reduxjs/toolkit";
+import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { crudFactory, addCrudExtraReducers } from "../helpers/CrudToolkit";
+import i18n from "../../i18n/i18n";
+import axios from "axios";
+
 // Generate thunks for this resource
 const {
   fetchAll,
@@ -8,6 +11,24 @@ const {
   getById,
   update
 } = crudFactory("properties");
+export const fetchPropertyById = createAsyncThunk(
+  "properties/fetchPropertyById",
+  async (id, { rejectWithValue }) => {
+    try {
+      const res = await axios.get(`https://3ayin.resporthub.com/api/properties/${id}`,{
+        headers: {
+            "Content-Type": "application/json",
+            Lang: i18n.language,
+          },
+        }
+      );
+      return res.data.data;
+    } catch (err) {
+      return rejectWithValue(err.response?.data || err.message);
+    }
+  }
+);
+
 // Initial state
 const initialState = {
   properties: [],
@@ -34,6 +55,21 @@ const PropertySlice = createSlice({
       update,
       key: "property",
     });
+    
+    // Custom reducer for fetchPropertyById
+    builder
+      .addCase(fetchPropertyById.pending, (state) => {
+        state.isLoading = true;
+        state.error = null;
+      })
+      .addCase(fetchPropertyById.fulfilled, (state, action) => {
+        state.isLoading = false;
+        state.record = action.payload;
+      })
+      .addCase(fetchPropertyById.rejected, (state, action) => {
+        state.isLoading = false;
+        state.error = action.payload;
+      });
   },
 });
 // Export

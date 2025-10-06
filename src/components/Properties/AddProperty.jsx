@@ -27,7 +27,8 @@ const AddProperty = () => {
   const [formdata, setFormata] = useState({
     category: "",
     unit_type: "",
-    title: "",
+    title_ar: "",
+    title_en: "",
     rooms: "",
     floor: "",
     area_sqm: "",
@@ -129,6 +130,11 @@ const AddProperty = () => {
     formdata.images.forEach((file) => data.append("images[]", file));
     formdata.files.forEach((file) => data.append("files[]", file));
 
+    // console.log("FormData contents:");
+    // for (let [key, value] of data.entries()) {
+    //   console.log(key, value instanceof File ? value.name : value);
+    // }
+
     dispatch(addProperty(data));
   };
 
@@ -214,13 +220,23 @@ const AddProperty = () => {
                 </h4>
               </div>
               <div className="col-xl-6 col-lg-6 col-md-6 col-12">
-                <label className="fw-bold">{t("property.unitName")}</label>
+                <label className="fw-bold">{t("property.unitNameAr")}</label>
                 <input
                   type="text"
-                  name="title"
+                  name="title_ar"
                   required
                   onChange={handleChange}
-                  value={formdata.title}
+                  value={formdata.title_ar}
+                />
+              </div>
+              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
+                <label className="fw-bold">{t("property.unitNameEn")}</label>
+                <input
+                  type="text"
+                  name="title_en"
+                  required
+                  onChange={handleChange}
+                  value={formdata.title_en}
                 />
               </div>
 
@@ -319,6 +335,10 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="price"
+                   min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   required
                   onChange={handleChange}
                   value={formdata.price}
@@ -434,16 +454,16 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="ar_link"
-                  placeholder={t("create_ad.link")}
+                  placeholder={`${t("create_ad.link")} AR`}
                   onChange={handleChange}
-                  value={formdata.AR_VR}
+                  value={formdata.ar_link}
                 />
                 <input
                   type="text"
                   name="vr_link"
-                  placeholder={t("create_ad.link")}
+                  placeholder={`${t("create_ad.link")} VR`}
                   onChange={handleChange}
-                  value={formdata.AR_VR}
+                  value={formdata.vr_link}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">

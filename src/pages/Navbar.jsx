@@ -97,8 +97,7 @@ const Navbar = () => {
       (!user && location.pathname === "/publish_ad") ||
       (!user && location.pathname === "/add_property") ||
       (!user && location.pathname === "/profile") ||
-      (!user && location.pathname.startsWith("/service_provider")) ||
-      (!user && location.pathname.startsWith("/propertyDetails"))
+      (!user && location.pathname.startsWith("/service_provider"))
     ) {
       toast.warning(t("please_log_in_to_continue"));
       navigate("/login");

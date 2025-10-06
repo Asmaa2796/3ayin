@@ -181,8 +181,8 @@ const ServiceDetails = () => {
     <>
       <div className="services_details_page bg_overlay">
         <Breadcrumb
-          title={adItem?.ad_category?.name}
-          subTitle={adItem?.ad_sub_category?.name}
+          title={adItem?.category_name}
+          subTitle={adItem?.sub_category_name}
         />
         <div className="container">
           <div className="services_details_wrapper py-5 position-relative">

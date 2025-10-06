@@ -41,12 +41,10 @@ const RelatedProperties = ({ propertyID }) => {
 
     const fetchRelated = async () => {
       try {
-        const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
         const response = await axios.get(
           `https://3ayin.resporthub.com/api/properties/${propertyID}/related`,
           {
             headers: {
-              Authorization: `Bearer ${token}`,
               Lang: i18n.language,
             },
           }
@@ -102,14 +100,14 @@ const RelatedProperties = ({ propertyID }) => {
           >
             {relatedProperties.map((property, index) => (
               <SwiperSlide key={property.id || index}>
-                <div className="recommended_card border rounded-4 my-2 overflow-hidden position-relative">
+                <Link to={`/propertyDetails/${property.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
                   <img
                     src={property.image|| "/image.jpg"}
                     alt={property.title}
                     className="img-fluid mb-3 rounded-4"
                   />
                   <div className="p-3">
-                    <p className="line-height mb-1">
+                    <p className="line-height mb-1 text-dark">
                       {property.title?.slice(0, 60)}...
                     </p>
                     <ul className="p-0 mb-0 list-unstyled">
@@ -138,20 +136,19 @@ const RelatedProperties = ({ propertyID }) => {
                           }`}
                         ></i>
                       ))}
-                      <span className="mx-2">({property?.reviews_count || 0})</span>
+                      <span className="mx-2 text-dark">({property?.reviews_count || 0})</span>
                     </div>
 
                     <div className="text-sm d-flex justify-content-between align-items-center">
-                      <div>
+                      <div className="text-dark">
                         {t("recommendedServices.startingFrom")}{" "}
                         <span className="fw-bold">
                           {property.price} {t("recommendedServices.currency")}
                         </span>
                       </div>
                       <div>
-                        <Link
+                        <span
                           className="view_details"
-                          to={`/propertyDetails/${property.id}`}
                         >
                           <i
                             className={`text-sm bi ${
@@ -160,11 +157,11 @@ const RelatedProperties = ({ propertyID }) => {
                                 : "bi-arrow-right"
                             }`}
                           ></i>
-                        </Link>
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

@@ -10,38 +10,31 @@ import { searchProperty } from "../../redux/Slices/SearchSlice";
 const PropertiesPage = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
+  const [activeType, setActiveType] = useState("all");
   const [page, setPage] = useState(1);
 
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const searchValue = searchParams.get("search");
 
   const { properties, isLoading, pagination } = useSelector(
     (state) => state.properties
   );
-  const { propertiesList,loadingFiltered } = useSelector((state) => state.search);
+  const { propertiesList, loadingFiltered, propertiesPagination } = useSelector(
+    (state) => state.search
+  );
 
   useEffect(() => {
     if (searchValue) {
       dispatch(searchProperty(searchValue));
     } else {
-      dispatch(fetchAllProperties({ page, per_page: 9 }));
+      dispatch(fetchAllProperties({ type: activeType, page, per_page: 9 }));
     }
-  }, [dispatch, i18n.language, page, searchValue]);
+  }, [dispatch, i18n.language, page, searchValue, activeType]);
 
-  const listToRender = searchValue ? propertiesList : properties;
-
-  const startIndex = (page - 1) * 9;
-  const paginatedList = searchValue
-    ? listToRender?.slice(startIndex, startIndex + 9)
-    : listToRender;
-
-  const paginationInfo = searchValue
-    ? {
-        current_page: page,
-        last_page: Math.ceil((listToRender?.length || 0) / 9),
-      }
-    : pagination;
-
+  const searchMode = Boolean(searchValue);
+  const listToRender = searchMode ? propertiesList : properties;
+  const paginationInfo = searchMode ? propertiesPagination : pagination;
+  
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
@@ -64,36 +57,67 @@ const PropertiesPage = () => {
     superLux: t("property.finishingSuperLux"),
     company: t("property.finishingCompany"),
   };
-
   return (
     <>
       <Breadcrumb title={t("property.all")} />
 
+      <div className="container">
+        <div className="tab_status">
+          {["all", "sale", "rent", "share"].map((type) => (
+            <button
+              key={type}
+              className={activeType === type ? "active" : ""}
+              onClick={() => {
+                setActiveType(type);
+                setPage(1);
+                if (searchValue) {
+                  window.history.replaceState(
+                    {},
+                    "",
+                    window.location.pathname
+                  );
+                  setSearchParams({});
+                }
+              }}
+            >
+              {t(`property.${type}`)}
+            </button>
+          ))}
+        </div>
+      </div>
       <div className="recommended_services py-5">
         <div className="container">
-          {(isLoading || loadingFiltered) ? (
+          {isLoading || loadingFiltered ? (
             <CardsLoader />
-          ) : paginatedList?.length > 0 ? (
+          ) : listToRender?.length > 0 ? (
             <>
               <div className="row">
-                {paginatedList.map((item, index) => (
+                {listToRender.map((item, index) => (
                   <div
                     className="col-xl-3 col-lg-3 col-md-6 col-12"
                     key={item.id || index}
                   >
-                    <div className="recommended_card border rounded-4 my-2 overflow-hidden position-relative">
+                    <Link to={`/propertyDetails/${item.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
                       <div className="finishing_status">
                         {finishingMap[item?.finishing_status] ||
                           item?.finishing_status}
                       </div>
                       <img
-                        src={item.images?.[0]?.url || "/image.jpg"}
-                        alt={item.title}
+                        src={item.images?.[0]?.url || "/placeholder.jpg"}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/placeholder.jpg";
+                        }}
+                        alt={item.id}
                         className="img-fluid mb-3 rounded-4"
                       />
                       <div className="p-3">
-                        <p className="line-height mb-1">
-                          {item.title?.slice(0, 60)}...
+                        <p className="line-height mb-1 text-dark">
+                          {(
+                            (i18n.language === "ar"
+                              ? item.title_ar
+                              : item.title_en) || ""
+                          ).slice(0, 60)} ...
                         </p>
                         <hr className="my-1" />
                         <ul className="p-0 mb-0 list-unstyled">
@@ -113,16 +137,15 @@ const PropertiesPage = () => {
                         <hr className="my-1" />
 
                         <div className="text-sm d-flex justify-content-between align-items-center">
-                          <div>
+                          <div className="text-dark">
                             {t("recommendedServices.startingFrom")}{" "}
                             <span className="fw-bold">
                               {item.price} {t("recommendedServices.currency")}
                             </span>
                           </div>
                           <div>
-                            <Link
+                            <span
                               className="view_details"
-                              to={`/propertyDetails/${item.id}`}
                             >
                               <i
                                 className={`text-sm bi ${
@@ -131,11 +154,11 @@ const PropertiesPage = () => {
                                     : "bi-arrow-right"
                                 }`}
                               ></i>
-                            </Link>
+                            </span>
                           </div>
                         </div>
                       </div>
-                    </div>
+                    </Link>
                   </div>
                 ))}
               </div>

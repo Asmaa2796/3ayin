@@ -12,7 +12,9 @@ const AdsPage = () => {
   const dispatch = useDispatch();
 
   const { ads, isLoading, pagination } = useSelector((state) => state.ads);
-  const { adsList, loadingFiltered } = useSelector((state) => state.search);
+  const { adsList, loadingFiltered, adsPagination } = useSelector(
+    (state) => state.search
+  );
 
   const [searchParams] = useSearchParams();
   const searchValue = searchParams.get("search");
@@ -26,28 +28,26 @@ const AdsPage = () => {
     }
   }, [dispatch, page, i18n.language, searchValue]);
 
-  const showAds = searchValue ? adsList : ads;
-  const startIndex = (page - 1) * 9;
-  const paginatedAds = showAds?.slice(startIndex, startIndex + 9);
-  const isDataLoading = isLoading;
+  const searchMode = Boolean(searchValue);
+  const showAds = searchMode ? adsList : ads;
+  const paginationInfo = searchMode ? adsPagination : pagination;
+  const isDataLoading = isLoading || loadingFiltered;
 
-  const paginationInfo = searchValue
-    ? {
-        current_page: page,
-        last_page: Math.ceil((adsList?.length || 0) / 9),
-      }
-    : pagination;
   const renderAdCard = (ad, index) => (
     <div className="col-xl-3 col-lg-3 col-md-4 col-12" key={ad.id || index}>
-      <div className="recommended_card border rounded-4 mb-3 overflow-hidden">
+      <Link className="recommended_card border rounded-4 mb-3 overflow-hidden d-block" to={`/serviceDetails/${ad.id}`}>
         <img
           src={ad?.image || "/placeholder.jpg"}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/placeholder.jpg";
+          }}
           alt="service"
           className="img-fluid mb-3 rounded-4"
         />
         <div className="p-3">
-          <p className="line-height mb-1">{ad?.ad_name}</p>
-          <small className="mb-2 d-block">
+          <p className="line-height mb-1 text-dark">{ad?.ad_name}</p>
+          <small className="mb-2 d-block text-dark">
             {ad?.category_name} / {ad?.sub_category_name}{" "}
             {ad?.sub_sub_category_name && `/ ${ad?.sub_sub_category_name}`}
           </small>
@@ -65,41 +65,40 @@ const AdsPage = () => {
                     }`}
                   ></i>
                 ))}
-                <span className="mx-2">({ad.reviews_count})</span>
+                <span className="mx-2 text-dark">({ad.reviews_count})</span>
               </>
             ) : (
               <>
                 {[...Array(5)].map((_, i) => (
                   <i key={i} className="bi bi-star-fill text-secondary"></i>
                 ))}
-                <span className="mx-2">(0)</span>
+                <span className="mx-2 text-dark">(0)</span>
               </>
             )}
           </div>
 
           <div className="text-sm d-flex justify-content-between align-items-center">
-            <div>
+            <div className="text-dark">
               {t("recommendedServices.startingFrom")}{" "}
               <span className="fw-bold">
                 {ad?.price} {t("recommendedServices.currency")}
               </span>
             </div>
             <div>
-              <Link className="view_details" to={`/serviceDetails/${ad.id}`}>
+              <span className="view_details">
                 <i
                   className={`text-sm bi ${
                     i18n.language === "ar" ? "bi-arrow-left" : "bi-arrow-right"
                   }`}
                 ></i>
-              </Link>
+              </span>
             </div>
           </div>
         </div>
-      </div>
+      </Link>
     </div>
   );
 
-  // 🔹 Pagination component
   const renderPagination = () => {
     if (!paginationInfo) return null;
     const { current_page, last_page } = paginationInfo;
@@ -164,13 +163,11 @@ const AdsPage = () => {
 
       <div className="recommended_services py-5">
         <div className="container">
-          {isDataLoading || loadingFiltered ? (
+          {isDataLoading ? (
             <CardsLoader />
-          ) : paginatedAds?.length > 0 ? (
+          ) : showAds?.length > 0 ? (
             <>
-              <div className="row">
-                {paginatedAds.map((ad, index) => renderAdCard(ad, index))}
-              </div>
+              <div className="row">{showAds.map(renderAdCard)}</div>
               {renderPagination()}
             </>
           ) : (

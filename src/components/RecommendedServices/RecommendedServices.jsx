@@ -63,19 +63,25 @@ const RecommendedServices = () => {
           >
             {cards.map((item, index) => (
               <SwiperSlide key={item.id || index}>
-                <div className="recommended_card border rounded-4 my-2 overflow-hidden">
+                <Link
+                  to={`/serviceDetails/${item.id}`}
+                  className="recommended_card border d-block rounded-4 my-2 overflow-hidden"
+                >
                   <img
-                    src={item.images?.[0]?.image || "/re.png"}
+                    src={item.images?.[0]?.image || "/placeholder.jpg"}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.jpg";
+                    }}
                     alt={item.ad_name}
                     className="img-fluid mb-3 rounded-4"
                   />
                   <div className="p-3">
-                    <p className="line-height mb-1">
-                      {item.small_desc?.slice(0, 60)}...
+                    <p className="line-height mb-1 text-dark">
+                      {item.ad_name?.slice(0, 60)}...
                     </p>
-                    <small className="mb-2 d-block">
-                      {item.user?.job_title ||
-                        t("recommendedServices.realEstateAgency")}
+                    <small className="mb-2 d-block text-dark">
+                      {item?.category_name} / {item?.sub_category_name}
                     </small>
                     <div className="d-inline-block mb-2 rates">
                       {[1, 2, 3, 4, 5].map((i) => (
@@ -88,32 +94,29 @@ const RecommendedServices = () => {
                           }`}
                         ></i>
                       ))}
-                      <span className="mx-2">
+                      <span className="mx-2 text-dark">
                         ({item.reviews?.length || 0})
                       </span>
                     </div>
                     <div className="text-sm d-flex justify-content-between align-items-center">
-                      <div>
+                      <div className="text-dark">
                         {t("recommendedServices.startingFrom")}{" "}
                         <span className="fw-bold">
                           {item.price} {t("recommendedServices.currency")}
                         </span>
                       </div>
                       <div>
-                        <Link
-                          className="view_details"
-                          to={`/serviceDetails/${item.id}`}
-                        >
+                        <span className="view_details">
                           <i
                             className={`text-sm bi ${
                               isRTL ? "bi-arrow-left" : "bi-arrow-right"
                             }`}
                           ></i>
-                        </Link>
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

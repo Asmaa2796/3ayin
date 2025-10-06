@@ -11,6 +11,12 @@ export const subscribePlan = createAsyncThunk(
   async (formData, { rejectWithValue }) => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+
+      // if no token → reject before calling API
+      if (!token) {
+        return rejectWithValue("Please login to subscribe");
+      }
+
       const response = await axios.post(`${BASE_URL}/api/buy_plan`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
@@ -18,6 +24,7 @@ export const subscribePlan = createAsyncThunk(
           Lang: i18n.language,
         },
       });
+
       return response.data;
     } catch (err) {
       return rejectWithValue(

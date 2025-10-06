@@ -59,6 +59,8 @@ const SearchSlice = createSlice({
   initialState: {
     adsList: [],
     propertiesList: [],
+    adsPagination: null,
+    propertiesPagination: null,
     loading: false,
     loadingFiltered: false,
     error: null,
@@ -78,10 +80,12 @@ const SearchSlice = createSlice({
         state.loadingFiltered = true;
         state.error = null;
         state.adsList = [];
+        state.adsPagination = null;
       })
       .addCase(searchAds.fulfilled, (state, action) => {
         state.loadingFiltered = false;
         state.adsList = action.payload?.data || [];
+        state.adsPagination = action.payload?.pagination || null;
       })
       .addCase(searchAds.rejected, (state, action) => {
         state.loadingFiltered = false;
@@ -91,10 +95,12 @@ const SearchSlice = createSlice({
         state.loadingFiltered = true;
         state.error = null;
         state.propertiesList = [];
+        state.propertiesPagination = null;
       })
       .addCase(searchProperty.fulfilled, (state, action) => {
         state.loadingFiltered = false;
         state.propertiesList = action.payload?.data || [];
+        state.propertiesPagination = action.payload?.pagination || null;
       })
       .addCase(searchProperty.rejected, (state, action) => {
         state.loadingFiltered = false;

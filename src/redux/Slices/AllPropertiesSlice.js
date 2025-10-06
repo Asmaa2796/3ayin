@@ -8,12 +8,12 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 // Async thunk for submitting the contact form
 export const fetchAllProperties = createAsyncThunk(
   "properties/submit",
-  async (page = 1, { rejectWithValue }) => {
+  async ({type = "all",page = 1}, { rejectWithValue }) => {
     try {
-      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
-      const response = await axios.get(`${BASE_URL}/api/properties?page=${page}`, {
+      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      const response = await axios.get(`${BASE_URL}/api/properties?type=${type}&page=${page}`, {
         headers: {
-          Authorization: `Bearer ${token}`,
+          // Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Lang: i18n.language,
         },

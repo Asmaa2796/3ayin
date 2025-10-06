@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import "./PublishAd.css";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
-import { storeAd } from "../../redux/Slices/PublishAdSlice";
+import { storeAd,clearState } from "../../redux/Slices/PublishAdSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../../redux/Slices/CategoriesSlice";
 import { fetchSubCategories } from "../../redux/Slices/SubCategoriesSlice";
@@ -60,7 +60,8 @@ const PublishAd = () => {
     location: "",
     location_lat: "",
     location_long: "",
-    AR_VR: "",
+    AR: "",
+    VR: "",
     phone: "",
     ad_category_id: null, // take id of category
     ad_sub_category_id: null, // take id of sub category
@@ -190,7 +191,7 @@ const PublishAd = () => {
     dispatch(fetchSubCatsOfSubCategories());
   }, [dispatch]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
 
     if (!formdata.ad_category_id) {
@@ -209,6 +210,15 @@ const PublishAd = () => {
       return;
     }
 
+    if (formdata.AR && !formdata.AR.startsWith("https://")) {
+      toast.error(t("property.arLinkInvalid"));
+      return;
+    }
+
+    if (formdata.VR && !formdata.VR.startsWith("https://")) {
+      toast.error(t("property.vrLinkInvalid"));
+      return;
+    }
     const data = new FormData();
 
     data.append("user_id", userID);
@@ -223,26 +233,35 @@ const PublishAd = () => {
     formdata.user_works.forEach((file) => data.append("user_works[]", file));
     formdata.files.forEach((file) => data.append("files[]", file));
 
-    // console.log(formdata);
-    dispatch(storeAd(data));
+    // console.log("FormData contents:");
+    // for (let [key, value] of data.entries()) {
+    //   console.log(key, value instanceof File ? value.name : value);
+    // }
+
+    try {
+    const res = await dispatch(storeAd(data)).unwrap(); 
+    // unwrap gives you the actual resolved payload or throws on reject
+
+    toast.success(t("request_added_success"));
+    dispatch(clearState());
+    navigate("/all_ads");
+  } catch (err) {
+    let errorMessage = t("failedToAdd");
+
+    if (
+      typeof err === "object" &&
+      err?.message?.includes("complete your identification information")
+    ) {
+      errorMessage = t("please_complete_identification");
+      toast.error(errorMessage);
+      navigate("/profile");
+    } else {
+      toast.error(typeof err === "string" ? err : err?.message || errorMessage);
+    }
+
+    dispatch(clearState());
+  }
   };
-
-  useEffect(() => {
-    if (success) {
-      toast.success(t("request_added_success"), {
-        onClose: () => {
-          dispatch({ type: "ad/clearState" });
-          navigate("/all_ads");
-        },
-      });
-    }
-
-    if (error) {
-      toast.error(t("failedToAdd"), {
-        onClose: () => dispatch({ type: "ad/clearState" }),
-      });
-    }
-  }, [success, error, t, dispatch, navigate]);
 
   return (
     <div className="form_holder">
@@ -367,6 +386,10 @@ const PublishAd = () => {
                 <input
                   type="number"
                   name="price"
+                   min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   onChange={handleChange}
                   value={formdata.price}
                 />
@@ -376,6 +399,10 @@ const PublishAd = () => {
                 <input
                   type="text"
                   name="phone"
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
                   onChange={handleChange}
                   value={formdata.phone}
                 />
@@ -446,11 +473,11 @@ const PublishAd = () => {
                   <div className="mt-3">
                     <MapPicker
                       lang={i18n.language}
-                      onSelect={({ location_lat, location_long, location }) => {
+                      onSelect={({ latitude, longitude, location }) => {
                         setFormata((prev) => ({
                           ...prev,
-                          location_lat,
-                          location_long,
+                          location_lat: latitude,
+                          location_long: longitude,
                           location,
                         }));
                         setShowMap(false);
@@ -463,10 +490,17 @@ const PublishAd = () => {
                 <label className="fw-bold">{t("create_ad.arVr")}</label>
                 <input
                   type="text"
-                  name="AR_VR"
-                  placeholder={t("create_ad.link")}
+                  name="AR"
+                  placeholder={`${t("create_ad.link")} AR`}
                   onChange={handleChange}
-                  value={formdata.AR_VR}
+                  value={formdata.AR}
+                />
+                <input
+                  type="text"
+                  name="VR"
+                  placeholder={`${t("create_ad.link")} VR`}
+                  onChange={handleChange}
+                  value={formdata.VR}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">

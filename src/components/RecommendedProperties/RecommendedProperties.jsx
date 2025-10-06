@@ -80,21 +80,26 @@ const RecommendedProperties = () => {
           >
             {cards.map((item, index) => (
               <SwiperSlide key={item.id || index}>
-                <div
+                <Link
                   key={item.id || index}
-                  className="recommended_card border rounded-4 my-2 overflow-hidden position-relative"
+                  to={`/propertyDetails/${item.id}`}
+                  className="d-block recommended_card border rounded-4 my-2 overflow-hidden position-relative"
                 >
                   <div className="finishing_status">
                     {finishingMap[item?.finishing_status] ||
                       item?.finishing_status}
                   </div>
                   <img
-                    src={item.images?.[0]?.url || "/image.jpg"}
+                    src={item.images?.[0]?.url || "/placeholder.jpg"}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.jpg";
+                    }}
                     alt={item.title}
                     className="img-fluid mb-3 rounded-4"
                   />
                   <div className="p-3">
-                    <p className="line-height mb-1">
+                    <p className="line-height mb-1 text-dark">
                       {item.title?.slice(0, 60)}...
                     </p>
                     <hr className="my-1" />
@@ -115,16 +120,15 @@ const RecommendedProperties = () => {
                     <hr className="my-1" />
 
                     <div className="text-sm d-flex justify-content-between align-items-center">
-                      <div>
+                      <div className="text-dark">
                         {t("recommendedServices.startingFrom")}{" "}
                         <span className="fw-bold">
                           {item.price} {t("recommendedServices.currency")}
                         </span>
                       </div>
                       <div>
-                        <Link
+                        <span
                           className="view_details"
-                          to={`/propertyDetails/${item.id}`}
                         >
                           <i
                             className={`text-sm bi ${
@@ -133,11 +137,11 @@ const RecommendedProperties = () => {
                                 : "bi-arrow-right"
                             }`}
                           ></i>
-                        </Link>
+                        </span>
                       </div>
                     </div>
                   </div>
-                </div>
+                </Link>
               </SwiperSlide>
             ))}
           </Swiper>

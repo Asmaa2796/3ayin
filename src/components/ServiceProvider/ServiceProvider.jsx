@@ -5,6 +5,7 @@ import { MdWifiCalling3 } from "react-icons/md";
 import { Link, useNavigate, useParams } from "react-router-dom";
 import { getProviderData } from "../../redux/Slices/ProviderDataSlice";
 import { getProviderAds } from "../../redux/Slices/ProviderAdsSlice";
+import { getProviderProperties } from "../../redux/Slices/ProviderPropertiesSlice";
 import { getProviderAdsReviews } from "../../redux/Slices/ProviderAdsReviewsSlice";
 import { getProviderStatistics } from "../../redux/Slices/ProviderStatisticsSlice";
 import { fetchSettings } from "../../redux/Slices/SettingsSlice";
@@ -16,13 +17,22 @@ const ServiceProvider = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const user = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const [tab, setTab] = useState("pending");
+  const [status, setStatus] = useState("pending");
   const userPhone = user?.user?.phone;
   const { isLoading, record: providerDataRecord } = useSelector(
     (state) => state.providerData
   );
-  const { record: getProviderAdsRecord } = useSelector(
-    (state) => state.providerAds
-  );
+  const {
+    providerAds,
+    pagination,
+    isLoading: loading,
+  } = useSelector((state) => state.providerAds);
+  const {
+    providerProperties,
+    paginationProps,
+    isLoading: loadingProps,
+  } = useSelector((state) => state.providerProperties);
   const { record: getProviderAdsReviewsRecord } = useSelector(
     (state) => state.providerAdsReviews
   );
@@ -30,13 +40,12 @@ const ServiceProvider = () => {
     (state) => state.providerStatistics
   );
   const { settings } = useSelector((state) => state.settings);
-  // ads
-  const [currentPage, setCurrentPage] = useState(1);
-  const adsPerPage = 3;
-  const indexOfLastAd = currentPage * adsPerPage;
-  const indexOfFirstAd = indexOfLastAd - adsPerPage;
-  const currentAds = getProviderAdsRecord?.slice(indexOfFirstAd, indexOfLastAd);
-  const totalPages = Math.ceil(getProviderAdsRecord?.length / adsPerPage);
+  // services pagination
+const [currentAdsPage, setCurrentAdsPage] = useState(1);
+
+// properties pagination
+const [currentPropsPage, setCurrentPropsPage] = useState(1);
+
   // reviews
 
   const [currentReviewPage, setCurrentReviewPage] = useState(1);
@@ -53,11 +62,37 @@ const ServiceProvider = () => {
 
   useEffect(() => {
     dispatch(getProviderData(id));
-    dispatch(getProviderAds(id));
     dispatch(getProviderAdsReviews(id));
     dispatch(getProviderStatistics(id));
     dispatch(fetchSettings());
   }, [id, i18n.language, dispatch]);
+  useEffect(() => {
+    if (id) {
+      dispatch(getProviderAds({ status: tab, page: currentAdsPage }));
+    }
+  }, [id, tab, currentAdsPage, dispatch, i18n.language]);
+  useEffect(() => {
+    if (id) {
+      dispatch(getProviderProperties({ status: status, page: currentPropsPage }));
+    }
+  }, [id, status, currentPropsPage, dispatch, i18n.language]);
+  
+  const categoryMap = {
+    sale: t("property.sale"),
+    rent: t("property.rent"),
+    share: t("property.share"),
+  };
+  const unitTypeMap = {
+    apartment: t("property.apartment"),
+    building: t("property.building"),
+    villa: t("property.villa"),
+    duplex: t("property.duplex"),
+    office: t("property.office"),
+    shop: t("property.shop"),
+    warehouse: t("property.warehouse"),
+    land: t("property.land"),
+    chalet: t("property.chalet"),
+  };
   return (
     <>
       <div className="service_provider position-relative">
@@ -148,6 +183,20 @@ const ServiceProvider = () => {
                     <li className="nav-item" role="presentation">
                       <button
                         className="nav-link"
+                        id="properties-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#properties"
+                        type="button"
+                        role="tab"
+                        aria-controls="properties"
+                        aria-selected="false"
+                      >
+                        {t("home.properties")}
+                      </button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className="nav-link"
                         id="ratings-tab"
                         data-bs-toggle="tab"
                         data-bs-target="#ratings"
@@ -178,15 +227,34 @@ const ServiceProvider = () => {
                       role="tabpanel"
                       aria-labelledby="services-tab"
                     >
+                      <div className="tab_status">
+                        <button
+                          className={tab === "pending" ? "active" : ""}
+                          onClick={() => setTab("pending")}
+                        >
+                          {t("pending")}
+                        </button>
+                        <button
+                          className={tab === "approved" ? "active" : ""}
+                          onClick={() => setTab("approved")}
+                        >
+                          {t("approved")}
+                        </button>
+                      </div>
+
                       <div className="row">
-                        {getProviderAdsRecord &&
-                        getProviderAdsRecord.length >= 1 ? (
-                          currentAds.map((ad, index) => (
+                        {loading ? (
+                          <ContentLoader />
+                        ) : providerAds && providerAds.length >= 1 ? (
+                          providerAds.map((ad, index) => (
                             <div
                               className="col-xl-4 col-lg-4 col-md-6 col-12"
                               key={ad?.id || index}
                             >
-                              <div className="recommended_card border rounded-4 mb-3 overflow-hidden">
+                              <Link
+                                to={`/serviceDetails/${ad?.id}`}
+                                className="recommended_card border rounded-4 mb-3 overflow-hidden d-block"
+                              >
                                 <img
                                   src={
                                     ad?.image?.trim()
@@ -201,10 +269,10 @@ const ServiceProvider = () => {
                                   className="img-fluid mb-3 rounded-4"
                                 />
                                 <div className="p-3">
-                                  <p className="line-height mb-1">
-                                    {ad?.small_desc}
+                                  <p className="line-height mb-1 text-dark">
+                                    {ad?.ad_name}
                                   </p>
-                                  <small className="mb-2 d-block">
+                                  <small className="mb-2 d-block text-dark">
                                     {ad?.category_name} /{" "}
                                     {ad?.sub_category_name}
                                   </small>
@@ -219,12 +287,12 @@ const ServiceProvider = () => {
                                         }`}
                                       ></i>
                                     ))}
-                                    <span className="mx-2">
+                                    <span className="mx-2 text-dark">
                                       ({ad.reviews_count})
                                     </span>
                                   </div>
                                   <div className="text-sm d-flex justify-content-between align-items-center">
-                                    <div>
+                                    <div className="text-dark">
                                       {t("recommendedServices.startingFrom")}
                                       <span className="fw-bold">
                                         {ad?.price}{" "}
@@ -232,10 +300,7 @@ const ServiceProvider = () => {
                                       </span>
                                     </div>
                                     <div>
-                                      <Link
-                                        to={`/serviceDetails/${ad?.id}`}
-                                        className="view_details"
-                                      >
+                                      <span className="view_details">
                                         <i
                                           className={`text-sm bi ${
                                             i18n.language === "ar"
@@ -243,28 +308,29 @@ const ServiceProvider = () => {
                                               : "bi-arrow-right"
                                           }`}
                                         ></i>
-                                      </Link>
+                                      </span>
                                     </div>
                                   </div>
                                 </div>
-                              </div>
+                              </Link>
                             </div>
                           ))
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0">{t("no_data_exists")}</h5>
+                            <h5 className="mb-0 text-md">
+                              {t("no_data_exists")}
+                            </h5>
                           </div>
                         )}
                       </div>
-                      {totalPages > 1 && (
-                        <div className="text-center my-3 d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                          {/* Previous Button */}
+                      {pagination?.last_page > 1 && (
+                        <div className="text-center my-3 d-flex justify-content-center gap-2 flex-wrap">
                           <button
                             className="btn btn-sm bg-white border text-dark"
                             onClick={() =>
-                              setCurrentPage((prev) => Math.max(prev - 1, 1))
+                              setCurrentAdsPage((prev) => prev - 1)
                             }
-                            disabled={currentPage === 1}
+                            disabled={pagination.current_page === 1}
                           >
                             <i
                               className={`bi bi-arrow-${
@@ -273,33 +339,190 @@ const ServiceProvider = () => {
                             ></i>
                           </button>
 
-                          {/* Page Buttons */}
                           {Array.from(
-                            { length: totalPages },
-                            (_, i) => i + 1
-                          ).map((pageNum) => (
-                            <button
-                              key={pageNum}
-                              className={`btn btn-sm bg-white border ${
-                                currentPage === pageNum
-                                  ? "main-color"
-                                  : "text-dark"
-                              }`}
-                              onClick={() => setCurrentPage(pageNum)}
-                            >
-                              {pageNum}
-                            </button>
-                          ))}
+                            { length: pagination.last_page },
+                            (_, i) => (
+                              <button
+                                key={i}
+                                className={`btn btn-sm bg-white border ${
+                                  pagination.current_page === i + 1
+                                    ? "main-color"
+                                    : "text-dark"
+                                }`}
+                                onClick={() => setCurrentAdsPage(i + 1)}
+                              >
+                                {i + 1}
+                              </button>
+                            )
+                          )}
 
-                          {/* Next Button */}
                           <button
                             className="btn btn-sm bg-white border text-dark"
                             onClick={() =>
-                              setCurrentPage((prev) =>
-                                Math.min(prev + 1, totalPages)
-                              )
+                              setCurrentAdsPage((prev) => prev + 1)
                             }
-                            disabled={currentPage === totalPages}
+                            disabled={
+                              pagination.current_page === pagination.last_page
+                            }
+                          >
+                            <i
+                              className={`bi bi-arrow-${
+                                i18n.language === "ar" ? "left" : "right"
+                              }`}
+                            ></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="tab-pane fade p-3"
+                      id="properties"
+                      role="tabpanel"
+                      aria-labelledby="properties-tab"
+                    >
+                      <div className="tab_status">
+                        <button
+                          className={status === "pending" ? "active" : ""}
+                          onClick={() => setStatus("pending")}
+                        >
+                          {t("pending")}
+                        </button>
+                        <button
+                          className={status === "published" ? "active" : ""}
+                          onClick={() => setStatus("published")}
+                        >
+                          {t("approved")}
+                        </button>
+                      </div>
+
+                      <div className="row">
+                        {loadingProps ? (
+                          <ContentLoader />
+                        ) : providerProperties &&
+                          providerProperties.length >= 1 ? (
+                          providerProperties.map((item, index) => (
+                            <div
+                              className="col-xl-4 col-lg-4 col-md-6 col-12"
+                              key={item.id || index}
+                            >
+                              <Link
+                                to={`/propertyDetails/${item.id}`}
+                                className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block"
+                              >
+                                <div className="finishing_status">
+                                  {item?.status === "pending"
+                                    ? t("pending")
+                                    : t("approved")}
+                                </div>
+                                <img
+                                  src={item.images?.[0]?.url || "/image.jpg"}
+                                  alt={item.title}
+                                  className="img-fluid mb-3 rounded-4"
+                                />
+                                <div className="p-3">
+                                  <p className="line-height mb-1 text-dark">
+                                    {(
+                                      (i18n.language === "ar"
+                                        ? item.title_ar
+                                        : item.title_en) || ""
+                                    ).slice(0, 60)} ...
+                                  </p>
+                                  <hr className="my-1" />
+                                  <ul className="p-0 mb-0 list-unstyled">
+                                    <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                                      <small>
+                                        {t("property.unitCategory")}
+                                      </small>{" "}
+                                      :{" "}
+                                      <small>
+                                        {categoryMap[item?.category] ||
+                                          item?.category}
+                                      </small>
+                                    </li>
+                                    <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                                      <small>{t("property.unitType")}</small> :{" "}
+                                      <small>
+                                        {unitTypeMap[item?.unit_type] ||
+                                          item?.unit_type}
+                                      </small>
+                                    </li>
+                                  </ul>
+                                  <hr className="my-1" />
+
+                                  <div className="text-sm d-flex justify-content-between align-items-center">
+                                    <div className="text-dark">
+                                      {t("recommendedServices.startingFrom")}{" "}
+                                      <span className="fw-bold">
+                                        {item.price}{" "}
+                                        {t("recommendedServices.currency")}
+                                      </span>
+                                    </div>
+                                    <div>
+                                      <span className="view_details">
+                                        <i
+                                          className={`text-sm bi ${
+                                            i18n.language === "ar"
+                                              ? "bi-arrow-left"
+                                              : "bi-arrow-right"
+                                          }`}
+                                        ></i>
+                                      </span>
+                                    </div>
+                                  </div>
+                                </div>
+                              </Link>
+                            </div>
+                          ))
+                        ) : (
+                          <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
+                            <h5 className="mb-0 text-md">
+                              {t("no_data_exists")}
+                            </h5>
+                          </div>
+                        )}
+                      </div>
+                      {paginationProps?.last_page > 1 && (
+                        <div className="text-center my-3 d-flex justify-content-center gap-2 flex-wrap">
+                          <button
+                            className="btn btn-sm bg-white border text-dark"
+                            onClick={() =>
+                              setCurrentPropsPage((prev) => prev - 1)
+                            }
+                            disabled={paginationProps.current_page === 1}
+                          >
+                            <i
+                              className={`bi bi-arrow-${
+                                i18n.language === "ar" ? "right" : "left"
+                              }`}
+                            ></i>
+                          </button>
+
+                          {Array.from(
+                            { length: paginationProps.last_page },
+                            (_, i) => (
+                              <button
+                                key={i}
+                                className={`btn btn-sm bg-white border ${
+                                  paginationProps.current_page === i + 1
+                                    ? "main-color"
+                                    : "text-dark"
+                                }`}
+                                onClick={() => setCurrentPropsPage(i + 1)}
+                              >
+                                {i + 1}
+                              </button>
+                            )
+                          )}
+
+                          <button
+                            className="btn btn-sm bg-white border text-dark"
+                            onClick={() =>
+                              setCurrentPropsPage((prev) => prev + 1)
+                            }
+                            disabled={
+                              paginationProps.current_page ===
+                              paginationProps.last_page
+                            }
                           >
                             <i
                               className={`bi bi-arrow-${
@@ -446,6 +669,10 @@ const ServiceProvider = () => {
                       <div>({getProviderStatisticsRecord?.ads_count})</div>
                     </div>
                     <div className="d-flex justify-content-between my-3">
+                      <span>{t("serviceProvider.publishedProperties")}</span>
+                      <div>({getProviderStatisticsRecord?.properties_count})</div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.registrationDate")}</span>
                       <div>{getProviderStatisticsRecord?.registered}</div>
                     </div>
@@ -471,7 +698,7 @@ const ServiceProvider = () => {
             </div>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-              <h5 className="mb-0">{t("no_data_exists")}</h5>
+              <h5 className="mb-0 text-md">{t("no_data_exists")}</h5>
             </div>
           )}
         </div>

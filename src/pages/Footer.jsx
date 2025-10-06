@@ -66,6 +66,9 @@ useEffect(() => {
                 <li className="mb-2">
                   <Link to="/all_services">{t("footer.services")}</Link>
                 </li>
+                <li className="mb-2">
+                  <Link to="/packages">{t("packages.title")}</Link>
+                </li>
                 
               </ul>
             </div>

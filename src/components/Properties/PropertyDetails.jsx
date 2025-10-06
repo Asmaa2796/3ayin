@@ -9,7 +9,7 @@ import { Tooltip } from "react-tooltip";
 import Ripples from "react-ripples";
 import RelatedProperties from "../RelatedProperties/RelatedProperties";
 import DetailsLoader from "../../pages/DetailsLoader";
-import { propertyRecord } from "../../redux/Slices/AddPropertySlice";
+import { fetchPropertyById } from "../../redux/Slices/AddPropertySlice";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -166,7 +166,7 @@ const PropertyDetails = () => {
         setComment("");
         setRating(0);
         setHovered(0);
-        dispatch(propertyRecord(id));
+        dispatch(fetchPropertyById(id));
         getPropertyReview();
       } else {
         toast.error(t("servicesPage.rateFail"));
@@ -190,19 +190,19 @@ const PropertyDetails = () => {
   useEffect(() => {
     setReviews([]);
     getPropertyReview();
-    dispatch(propertyRecord(id));
+    dispatch(fetchPropertyById(id));
   }, [id, i18n, t]);
 
   // get ad review
   const getPropertyReview = async () => {
     try {
-      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const { data } = await axios.get(
         `https://3ayin.resporthub.com/api/property/${id}/reviews`,
         {
           headers: {
             "Content-Type": "application/json",
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             Lang: i18n.language,
           },
         }
