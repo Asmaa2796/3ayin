@@ -111,13 +111,13 @@ const RelatedProperties = ({ propertyID }) => {
                       {property.title?.slice(0, 60)}...
                     </p>
                     <ul className="p-0 mb-0 list-unstyled">
-                      <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                      <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                         <small>{t("property.unitCategory")}</small> :{" "}
                         <small>
                           {categoryMap[property?.category] || property?.category}
                         </small>
                       </li>
-                      <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                      <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                         <small>{t("property.unitType")}</small> :{" "}
                         <small>
                           {unitTypeMap[property?.unit_type] || property?.unit_type}

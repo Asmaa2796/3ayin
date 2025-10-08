@@ -8,6 +8,7 @@ import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addProperty } from "../../redux/Slices/AddPropertySlice";
 import MapPicker from "./MapPicker";
+import { fetchFacilities } from "../../redux/Slices/FacilitiesSlice";
 
 const AddProperty = () => {
   const { t, i18n } = useTranslation("global");
@@ -23,7 +24,11 @@ const AddProperty = () => {
   const [showMap, setShowMap] = useState(false);
   const navigate = useNavigate();
   const { success, error, isLoading } = useSelector((state) => state.property);
+  const { facilities } = useSelector((state) => state.facilities);
 
+  useEffect(() => {
+    dispatch(fetchFacilities());
+  }, [dispatch, i18n.language]);
   const [formdata, setFormata] = useState({
     category: "",
     unit_type: "",
@@ -43,15 +48,41 @@ const AddProperty = () => {
     latitude: "",
     longitude: "",
     location: "",
-    ar_link: "",
-    vr_link: "",
+    AR_VR: "",
     video_url: "",
+    distinctive_signs: "",
+    count_of_bathrooms: "",
+    number_of_parking_spaces: "",
+    education: false,
+    health_and_medicine: false,
+    transportation: false,
+    unit_features: [],
   });
 
   const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormata((prev) => ({ ...prev, [name]: value }));
+    const { name, type, checked, value } = e.target;
+
+    setFormata((prev) => {
+      // Case 1: handle normal boolean checkboxes
+      if (
+        ["education", "health_and_medicine", "transportation"].includes(name)
+      ) {
+        return { ...prev, [name]: checked };
+      }
+
+      if (name === "unit_features") {
+        const featureId = Number(value);
+        const updatedFeatures = prev.unit_features.includes(featureId)
+          ? prev.unit_features.filter((id) => id !== featureId)
+          : [...prev.unit_features, featureId];
+
+        return { ...prev, unit_features: updatedFeatures };
+      }
+
+      return { ...prev, [name]: value };
+    });
   };
+
   const handleFileInput = (e, key, index) => {
     const file = e.target.files[0];
     if (!file) return;
@@ -103,13 +134,8 @@ const AddProperty = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    if (formdata.ar_link && !formdata.ar_link.startsWith("https://")) {
-      toast.error(t("property.arLinkInvalid"));
-      return;
-    }
-
-    if (formdata.vr_link && !formdata.vr_link.startsWith("https://")) {
-      toast.error(t("property.vrLinkInvalid"));
+    if (formdata.AR_VR && !formdata.AR_VR.startsWith("https://")) {
+      toast.error(t("property.AR_VRLinkInvalid"));
       return;
     }
     if (formdata.video_url && !formdata.video_url.startsWith("https://")) {
@@ -335,7 +361,7 @@ const AddProperty = () => {
                 <input
                   type="text"
                   name="price"
-                   min="0"
+                  min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
@@ -453,17 +479,10 @@ const AddProperty = () => {
                 <label className="fw-bold">{t("create_ad.arVr")}</label>
                 <input
                   type="text"
-                  name="ar_link"
-                  placeholder={`${t("create_ad.link")} AR`}
+                  name="AR_VR"
+                  placeholder={`${t("create_ad.link")} VR/AR`}
                   onChange={handleChange}
-                  value={formdata.ar_link}
-                />
-                <input
-                  type="text"
-                  name="vr_link"
-                  placeholder={`${t("create_ad.link")} VR`}
-                  onChange={handleChange}
-                  value={formdata.vr_link}
+                  value={formdata.AR_VR}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -476,6 +495,115 @@ const AddProperty = () => {
                   value={formdata.video_url}
                 />
               </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">
+                  {t("property.distinctive_signs")}
+                </label>
+                <input
+                  type="text"
+                  name="distinctive_signs"
+                  onChange={handleChange}
+                  value={formdata.distinctive_signs}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">
+                  {t("property.count_of_bathrooms")}
+                </label>
+                <input
+                  type="number"
+                  name="count_of_bathrooms"
+                  onChange={handleChange}
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
+                  value={formdata.count_of_bathrooms}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">
+                  {t("property.number_of_parking_spaces")}
+                </label>
+                <input
+                  type="number"
+                  name="number_of_parking_spaces"
+                  onChange={handleChange}
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
+                  }}
+                  value={formdata.number_of_parking_spaces}
+                />
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <div className="row">
+                  <div className="col-xl-4 col-lg-64 col-md-6 col-12">
+                    <label className="fw-bold">{t("property.education")}</label>
+                    <input
+                      type="checkbox"
+                      name="education"
+                      className="no-class"
+                      onChange={handleChange}
+                      checked={formdata.education}
+                    />
+                  </div>
+                  <div className="col-xl-4 col-lg-64 col-md-6 col-12">
+                    <label className="fw-bold">
+                      {t("property.health_and_medicine")}
+                    </label>
+                    <input
+                      type="checkbox"
+                      name="health_and_medicine"
+                      className="no-class"
+                      onChange={handleChange}
+                      checked={formdata.health_and_medicine}
+                    />
+                  </div>
+                  <div className="col-xl-4 col-lg-64 col-md-6 col-12">
+                    <label className="fw-bold">
+                      {t("property.transportation")}
+                    </label>
+                    <input
+                      type="checkbox"
+                      className="no-class"
+                      name="transportation"
+                      onChange={handleChange}
+                      checked={formdata.transportation}
+                    />
+                  </div>
+                </div>
+              </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("property.unit_features")}</label>
+                <div className="row">
+                  {facilities &&
+                    facilities.length > 0 &&
+                    facilities.map((f, index) => (
+                      <div
+                        className="col-xl-3 col-lg-3 col-md-6 col-12"
+                        key={f.id || index}
+                      >
+                        <label
+                          style={{ cursor: "pointer" }}
+                          className="d-inline-block my-2"
+                        >
+                          <input
+                            type="checkbox"
+                            name="unit_features"
+                            className="no-class mx-2"
+                            value={f.id}
+                            checked={formdata.unit_features.includes(f.id)}
+                            onChange={handleChange}
+                          />
+                          <span>{f.name}</span>
+                        </label>
+                      </div>
+                    ))}
+                </div>
+                <hr />
+              </div>
+
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">
                   {t("create_ad.additional_details")}

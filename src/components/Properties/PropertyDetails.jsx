@@ -457,25 +457,7 @@ const PropertyDetails = () => {
                           <Tooltip id="tooltip1" />
                         </>
                       )}
-                      {propertyItem?.ar_link && (
-                        <>
-                          <Link
-                            data-tooltip-id="tooltip2"
-                            data-tooltip-content={t("services.clickHere")}
-                            className="d-block"
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            to={propertyItem?.ar_link}
-                          >
-                            <img src="/ar.png" alt="--" />
-                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                              AR
-                            </small>
-                          </Link>
-                          <Tooltip id="tooltip2" />
-                        </>
-                      )}
-                      {propertyItem?.vr_link && (
+                      {propertyItem?.AR_VR && (
                         <>
                           <Link
                             data-tooltip-id="tooltip3"
@@ -483,11 +465,11 @@ const PropertyDetails = () => {
                             className="d-block"
                             target="_blank"
                             rel="noopener noreferrer"
-                            to={propertyItem?.vr_link}
+                            to={propertyItem?.AR_VR}
                           >
                             <img src="/vr.png" alt="--" />
                             <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                              VR
+                              AR/VR
                             </small>
                           </Link>
                           <Tooltip id="tooltip3" />
@@ -516,22 +498,6 @@ const PropertyDetails = () => {
                             aria-selected="true"
                           >
                             {t("property.property_status")}
-                          </button>
-                        </Ripples>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
-                          <button
-                            className="nav-link"
-                            id="property_area-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#property_area"
-                            type="button"
-                            role="tab"
-                            aria-controls="property_area"
-                            aria-selected="true"
-                          >
-                            {t("property.property_area")}
                           </button>
                         </Ripples>
                       </li>
@@ -598,7 +564,7 @@ const PropertyDetails = () => {
                         aria-labelledby="property_status-tab"
                       >
                         <ul className="p-0 list-unstyled mb-0 row">
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -612,7 +578,7 @@ const PropertyDetails = () => {
                                 propertyItem.category}
                             </span>
                           </li>
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -626,7 +592,7 @@ const PropertyDetails = () => {
                                 propertyItem.unit_type}
                             </span>
                           </li>
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -640,7 +606,7 @@ const PropertyDetails = () => {
                                 propertyItem.finishing_status}
                             </span>
                           </li>
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -654,7 +620,7 @@ const PropertyDetails = () => {
                                 propertyItem.furniture_status}
                             </span>
                           </li>
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -668,7 +634,7 @@ const PropertyDetails = () => {
                                 propertyItem.payment_method}
                             </span>
                           </li>
-                          <li className="my-4 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -681,16 +647,8 @@ const PropertyDetails = () => {
                               {propertyItem.deposit_amount}
                             </span>
                           </li>
-                        </ul>
-                      </div>
-                      <div
-                        className="tab-pane fade p-3"
-                        id="property_area"
-                        role="tabpanel"
-                        aria-labelledby="property_area-tab"
-                      >
-                        <ul className="p-0 list-unstyled mb-0">
-                          <li className="my-4 text-sm">
+                      
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -703,7 +661,7 @@ const PropertyDetails = () => {
                               {propertyItem.area_sqm}
                             </span>
                           </li>
-                          <li className="my-4 text-sm">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -716,7 +674,7 @@ const PropertyDetails = () => {
                               {propertyItem.rooms}
                             </span>
                           </li>
-                          <li className="my-4 text-sm">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -729,7 +687,7 @@ const PropertyDetails = () => {
                               {propertyItem.floor}
                             </span>
                           </li>
-                        </ul>
+                            </ul>
                       </div>
                       <div
                         className="tab-pane fade p-3"
@@ -749,7 +707,7 @@ const PropertyDetails = () => {
                           {propertyItem.address_details}
                         </p>
                         <ul className="p-0 list-unstyled mb-0">
-                          <li className="my-4 text-sm">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
                                 className={`bi bi-caret-${
@@ -758,14 +716,14 @@ const PropertyDetails = () => {
                               ></i>{" "}
                               {t("create_ad.location")} :{" "}
                             </span>
-                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                            <span className="text-success border bg-white rounded-5 px-3 py-1 d-block my-2">
                               {propertyItem.location}
                             </span>
                           </li>
                         </ul>
                         <div className="border rounded-3 p-2 shadow-sm bg-white">
                           {propertyItem?.latitude &&
-                            propertyItem?.longitude && (
+                            propertyItem?.longitude ? (
                               <iframe
                                 title="property-map"
                                 width="100%"
@@ -774,7 +732,7 @@ const PropertyDetails = () => {
                                 src={`https://www.google.com/maps?q=${propertyItem.latitude},${propertyItem.longitude}&hl=${i18n.language}&z=15&output=embed`}
                                 allowFullScreen
                               ></iframe>
-                            )}
+                            ):(<img className="w-100" style={{height:"180px"}} src="/map-location.svg"/>)}
                         </div>
                       </div>
                       {propertyItem?.category === "rent" && (

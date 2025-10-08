@@ -4,10 +4,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import "../PublishAd/PublishAd.css";
 import "./Profile.css";
-import { Link } from "react-router-dom";
-import { getProviderAds } from "../../redux/Slices/ProviderAdsSlice";
 import { useDispatch, useSelector } from "react-redux";
-import CardsLoader from "../../pages/CardsLoader";
 import { toast } from "react-toastify";
 
 import axios from "axios";
@@ -22,16 +19,8 @@ const Profile = () => {
   const userID = user?.user?.id;
   const [previewImage, setPreviewImage] = useState("/user.webp");
   const dispatch = useDispatch();
-  const { record: getProviderAdsRecord, isLoading } = useSelector(
-    (state) => state.providerAds
-  );
+ 
   const { success, error,successUpdate,errorUpdate,isLoading:loading } = useSelector((state) => state.userIdentifies);
-  const [currentPage, setCurrentPage] = useState(1);
-  const adsPerPage = 4;
-  const indexOfLastAd = currentPage * adsPerPage;
-  const indexOfFirstAd = indexOfLastAd - adsPerPage;
-  const currentAds = getProviderAdsRecord?.slice(indexOfFirstAd, indexOfLastAd);
-  const totalPages = Math.ceil(getProviderAdsRecord?.length / adsPerPage);
 
   //   handle upload image
   const handleImageChange = (e) => {
@@ -52,10 +41,6 @@ const Profile = () => {
     }
   };
 
-  // services tab
-  useEffect(() => {
-    dispatch(getProviderAds(userID));
-  }, [userID, i18n.language]);
 
   const [jobTitles, setJobTitles] = useState([]);
   const [companyTypes, setCompanyTypes] = useState([]);
@@ -666,20 +651,6 @@ const Profile = () => {
                 {t("profile.identityVerification")}
               </button>
             </li>
-            <li className="nav-item" role="presentation">
-              <button
-                className="nav-link"
-                id="myServices-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#myServices"
-                type="button"
-                role="tab"
-                aria-controls="myServices"
-                aria-selected="false"
-              >
-                {t("profile.myServices")}
-              </button>
-            </li>
           </ul>
           <div className="tab-content" id="myTabContent">
             <div
@@ -1030,127 +1001,6 @@ const Profile = () => {
                   </div>
                 )}
               </form>
-            </div>
-
-            <div
-              className="tab-pane fade p-3"
-              id="myServices"
-              role="tabpanel"
-              aria-labelledby="myServices-tab"
-            >
-              <div className="row">
-                {isLoading ? (
-                  <CardsLoader />
-                ) : getProviderAdsRecord && getProviderAdsRecord.length >= 1 ? (
-                  currentAds.map((ad, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-12"
-                      key={ad?.id || index}
-                    >
-                      <div className="recommended_card border rounded-4 mb-3 overflow-hidden">
-                        <img
-                          src={ad?.image || "/re.png"}
-                          alt={ad?.ad_name}
-                          className="img-fluid mb-3 rounded-4"
-                        />
-                        <div className="p-3">
-                          <p className="line-height mb-1">{ad?.small_desc}</p>
-                          <small className="mb-2 d-block">
-                            {ad?.category_name} / {ad?.sub_category_name}
-                          </small>
-                          <div className="d-inline-block mb-2 rates">
-                            {[...Array(5)].map((_, i) => (
-                              <i
-                                key={i}
-                                className={`bi bi-star-fill ${
-                                  i < ad.average_rate
-                                    ? "text-warning"
-                                    : "text-secondary"
-                                }`}
-                              ></i>
-                            ))}
-                            <span className="mx-2">({ad.reviews_count})</span>
-                          </div>
-                          <div className="text-sm d-flex justify-content-between align-items-center">
-                            <div>
-                              {t("recommendedServices.startingFrom")}
-                              <span className="fw-bold">
-                                {ad?.price} {t("recommendedServices.currency")}
-                              </span>
-                            </div>
-                            <div>
-                              <Link
-                                to={`/serviceDetails/${ad?.id}`}
-                                className="view_details"
-                              >
-                                <i
-                                  className={`text-sm bi ${
-                                    i18n.language === "ar"
-                                      ? "bi-arrow-left"
-                                      : "bi-arrow-right"
-                                  }`}
-                                ></i>
-                              </Link>
-                            </div>
-                          </div>
-                        </div>
-                      </div>
-                    </div>
-                  ))
-                ) : (
-                  <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                    <h5 className="mb-0">{t("no_data_exists")}</h5>
-                  </div>
-                )}
-              </div>
-              {totalPages > 1 && (
-                <div className="text-center my-3 d-flex justify-content-center align-items-center gap-2 flex-wrap">
-                  {/* Previous Button */}
-                  <button
-                    className="btn btn-sm bg-white border text-dark"
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.max(prev - 1, 1))
-                    }
-                    disabled={currentPage === 1}
-                  >
-                    <i
-                      className={`bi bi-arrow-${
-                        i18n.language === "ar" ? "right" : "left"
-                      }`}
-                    ></i>
-                  </button>
-
-                  {/* Page Buttons */}
-                  {Array.from({ length: totalPages }, (_, i) => i + 1).map(
-                    (pageNum) => (
-                      <button
-                        key={pageNum}
-                        className={`btn btn-sm bg-white border ${
-                          currentPage === pageNum ? "main-color" : "text-dark"
-                        }`}
-                        onClick={() => setCurrentPage(pageNum)}
-                      >
-                        {pageNum}
-                      </button>
-                    )
-                  )}
-
-                  {/* Next Button */}
-                  <button
-                    className="btn btn-sm bg-white border text-dark"
-                    onClick={() =>
-                      setCurrentPage((prev) => Math.min(prev + 1, totalPages))
-                    }
-                    disabled={currentPage === totalPages}
-                  >
-                    <i
-                      className={`bi bi-arrow-${
-                        i18n.language === "ar" ? "left" : "right"
-                      }`}
-                    ></i>
-                  </button>
-                </div>
-              )}
             </div>
           </div>
         </div>

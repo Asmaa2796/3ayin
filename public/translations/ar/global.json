@@ -23,7 +23,8 @@
     "add": "إضافة",
     "add_property": "إضافة عقار",
     "add_service": "إضافة خدمة",
-    "real_estate_services": "خدمات عقارية"
+    "real_estate_services": "خدمات عقارية",
+    "no_subcategories": "لا يوجد تصنيفات"
   },
   "sign": {
     "login": "تسجيل الدخول",
@@ -170,6 +171,8 @@
     "engineeringServices": "خدمات هندسية",
     "educationalServices": "خدمات تعليمية",
     "additionalServices": "خدمات إضافية",
+    "engineering_programs": "برامج عقارية",
+    "realestate_programs": "برامج هندسية",
     "engineers": "مهندسين",
     "marketers": "مسوقين",
     "addProperty": "إضافة عقار",
@@ -229,6 +232,7 @@
   },
   "property": {
     "all": "جميع العقارات",
+    "unitName": "اسم الوحدة",
     "maps": "خريطة العقارات",
     "title": "عقارات نرشحها لك",
     "add_property": "إضافة عقار",
@@ -236,7 +240,7 @@
     "sale": "بيع",
     "rent": "إيجار",
     "share": "مشاركة",
-    "unitType": "النوع",
+    "unitType": "نوع الوحدة",
     "apartment": "شقة سكنية",
     "villa": "فيلا",
     "building": "عمارة",
@@ -285,6 +289,7 @@
     "select_category": "اختر فئة",
     "property_details": "تفاصيل العقار",
     "pickFromMap": "اختر من الخريطة",
+    "AR_VRLinkInvalid": "يرجى إدخال رابط AR/VR صحيح يبدأ بـ https://",
     "arLinkInvalid": "يرجى إدخال رابط AR صحيح يبدأ بـ https://",
     "vrLinkInvalid": "يرجى إدخال رابط VR صحيح يبدأ بـ https://",
     "videoLinkInvalid": "يرجى إدخال رابط فيديو صحيح يبدأ بـ https://",
@@ -292,7 +297,14 @@
     "address": "العنوان",
     "property_area": "مساحة العقار",
     "relatedProperties": "عقارات ذات صلة",
-    "video_url": "رابط فيديو"
+    "video_url": "رابط فيديو",
+    "distinctive_signs": "علامات مميزة",
+    "count_of_bathrooms": "عدد الحمامات",
+    "number_of_parking_spaces": "عدد أماكن الجراج",
+    "education": "التعليم",
+    "health_and_medicine": "الصحة والطب",
+    "transportation": "المواصلات",
+    "unit_features": "خصائص الوحدة"
   },
   "servicesPage": {
     "filterServices": "تصفية الخدمات",
@@ -350,7 +362,10 @@
     "registrationDate": "تاريخ التسجيل",
     "companyAddress": "عنوان الشركة",
     "contact": "تواصــل",
-    "profile": "الملف الشخصي"
+    "profile": "الملف الشخصي",
+    "package": "بيانات الباقة المشترك بها",
+    "customized_package": "باقة مخصصة",
+    "end_date": "تاريخ الانتهاء"
   },
   "pages": {
     "about": "حول عقارات عاين",
@@ -441,6 +456,16 @@
   "please_complete_identification": "يرجى استكمال بيانات توثيق الهوية",
   "failed_to_load_properties": "خطأ أثناء تحميل العقارات",
   "min_max_price": "الحد الأدنى يجب أن يكون أقل من الحد الأعلى",
+  "customize_package": "تخصيص باقة",
+  "cancel": "إلغاء",
+  "submit": "إرسال",
+  "normal": "عادي",
+  "highlighted": "مميز",
+  "top": "الأعلى",
+  "none": "بدون",
+  "basic": "أساسي",
+  "advanced": "متقدم",
+  "custom_package_submitted": "تم إرسال الباقة المخصصة بنجاح!",
   "pending": "قيد المراجعة",
   "approved": "مقبول",
   "labels": {
@@ -471,7 +496,10 @@
       "no_reports": "لا يوجد تقارير",
       "yes": "نعم",
       "no": "لا",
-      "video": "فيديو"
+      "video": "فيديو",
+      "images_limit": "عدد الصور",
+      "vr_tours": "عدد الجولات",
+      "reports": "تقارير"
     },
     "basic": {
       "name": "أساسي (الأفراد والبدايات)",

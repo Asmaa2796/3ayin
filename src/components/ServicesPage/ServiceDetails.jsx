@@ -179,7 +179,6 @@ const ServiceDetails = () => {
 
   return (
     <>
-      <Toaster position="top-center" />
       <div className="services_details_page bg_overlay">
         <Breadcrumb
           title={adItem?.category_name}
@@ -404,7 +403,7 @@ const ServiceDetails = () => {
                           >
                             <img src="/vr.png" alt="--" />
                             <small className="fw-bold main-color d-block my-2 text-xs text-center">
-                              VR / AR
+                              VR/AR
                             </small>
                           </Link>
                           <Tooltip id="tooltip1" />
@@ -492,6 +491,34 @@ const ServiceDetails = () => {
                         aria-labelledby="description-tab"
                       >
                         <p className="line-height">{adItem?.desc}</p>
+                        <ul className="p-0 list-unstyled mb-0">
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <i
+                                className={`bi bi-caret-${
+                                  i18n.language === "ar" ? "left" : "right"
+                                }-fill`}
+                              ></i>{" "}
+                              {t("create_ad.location")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1 d-block my-2">
+                              {adItem.location}
+                            </span>
+                          </li>
+                        </ul>
+                        <div className="border rounded-3 p-2 shadow-sm bg-white">
+                          {adItem?.location_lat &&
+                            adItem?.location_long ? (
+                              <iframe
+                                title="property-map"
+                                width="100%"
+                                height="300"
+                                style={{ border: 0 }}
+                                src={`https://www.google.com/maps?q=${adItem.location_lat},${adItem.location_long}&hl=${i18n.language}&z=15&output=embed`}
+                                allowFullScreen
+                              ></iframe>
+                            ):(<img className="w-100" style={{height:"180px"}} src="/map-location.svg"/>)}
+                        </div>
                       </div>
                       <div
                         className="tab-pane fade p-3"

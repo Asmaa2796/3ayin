@@ -60,8 +60,7 @@ const PublishAd = () => {
     location: "",
     location_lat: "",
     location_long: "",
-    AR: "",
-    VR: "",
+    AR_VR: "",
     phone: "",
     ad_category_id: null, // take id of category
     ad_sub_category_id: null, // take id of sub category
@@ -210,13 +209,8 @@ const PublishAd = () => {
       return;
     }
 
-    if (formdata.AR && !formdata.AR.startsWith("https://")) {
-      toast.error(t("property.arLinkInvalid"));
-      return;
-    }
-
-    if (formdata.VR && !formdata.VR.startsWith("https://")) {
-      toast.error(t("property.vrLinkInvalid"));
+    if (formdata.AR_VR && !formdata.AR_VR.startsWith("https://")) {
+      toast.error(t("property.AR_VRLinkInvalid"));
       return;
     }
     const data = new FormData();
@@ -490,17 +484,10 @@ const PublishAd = () => {
                 <label className="fw-bold">{t("create_ad.arVr")}</label>
                 <input
                   type="text"
-                  name="AR"
-                  placeholder={`${t("create_ad.link")} AR`}
+                  name="AR_VR"
+                  placeholder={`${t("create_ad.link")} AR/VR`}
                   onChange={handleChange}
-                  value={formdata.AR}
-                />
-                <input
-                  type="text"
-                  name="VR"
-                  placeholder={`${t("create_ad.link")} VR`}
-                  onChange={handleChange}
-                  value={formdata.VR}
+                  value={formdata.AR_VR}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">

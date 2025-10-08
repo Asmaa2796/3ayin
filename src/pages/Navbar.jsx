@@ -6,13 +6,14 @@ import { FiUser, FiSearch } from "react-icons/fi";
 import { FiChevronDown } from "react-icons/fi";
 import { useRef } from "react";
 import { logout } from "../redux/Slices/authSlice";
-import { useDispatch } from "react-redux";
-
+import { useDispatch, useSelector } from "react-redux";
+import { fetchAllCategoriesTree } from "../redux/Slices/FilterServicesSlice";
 const Navbar = () => {
   const { t, i18n } = useTranslation("global");
   const [isMobileScrolled, setIsMobileScrolled] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
+  const { filterByCats } = useSelector((state) => state.filterServices);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [searchValue, setSearchValue] = useState("");
   const [user, setUser] = useState(() =>
@@ -140,6 +141,9 @@ const Navbar = () => {
     }
     setIsSearchOpen(false); // close modal after search
   };
+  useEffect(() => {
+    dispatch(fetchAllCategoriesTree());
+  }, [dispatch, i18n.language]);
   return (
     <>
       <div
@@ -194,111 +198,48 @@ const Navbar = () => {
                 </button>
 
                 {isMegaOpen && (
-                  <div className="mega-menu">
+                  <div className="mega-menu shadow">
                     <div className="row">
-                      <div className="col-xl-2 col-lg-2">
-                        <div className="ul ul1">
-                          <h6>{t("interactive.realEstateMarketing")}</h6>
-                          <ul className="list-unstyled">
-                            <li>
-                              <Link to="">{t("services.3ayinMarketing")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.selfMarketing")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.agencyMarketing")}</Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="col-xl-2 col-lg-2">
-                        <div className="ul">
-                          <h6>{t("interactive.realEstateServices")}</h6>
-                          <ul className="list-unstyled">
-                            <li>
-                              <Link to="">{t("services.erp")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.crm")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.3ayinMarketing")}</Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="col-xl-3 col-lg-3">
-                        <div className="ul ul1">
-                          <h6>{t("interactive.engineeringServices")}</h6>
-                          <ul className="list-unstyled">
-                            <li>
-                              <Link to="">
-                                {t("services.designConsulting")}
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.construction")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.maintenance")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.vrAr")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">
-                                {t("services.3ayinEngineering")}
-                              </Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="col-xl-2 col-lg-2">
-                        <div className="ul">
-                          <h6>{t("interactive.educationalServices")}</h6>
-                          <ul className="list-unstyled">
-                            <li>
-                              <Link to="">
-                                {t("services.realEstateCourses")}
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="">
-                                {t("services.engineeringCourses")}
-                              </Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.vrCourses")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.educationCenter")}</Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
-                      <div className="col-xl-3 col-lg-3">
-                        <div className="ul ul1">
-                          <h6>{t("interactive.additionalServices")}</h6>
-                          <ul className="list-unstyled">
-                            <li>
-                              <Link to="">{t("services.pdfMaps")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.vrLocations")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.legalConsulting")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.financing")}</Link>
-                            </li>
-                            <li>
-                              <Link to="">{t("services.analysisReports")}</Link>
-                            </li>
-                          </ul>
-                        </div>
-                      </div>
+                      {filterByCats?.data
+                        ?.filter((cat) => cat.id === 1) // 3ayin Services
+                        ?.flatMap((mainCat) =>
+                          mainCat.sub_categories?.map((sub, index) => (
+                            <div
+                              key={sub.id}
+                              className={`col-xl-${
+                                [3, 5].includes(index + 1) ? "3" : "2"
+                              } col-lg-${
+                                [3, 5].includes(index + 1) ? "3" : "2"
+                              } col-md-4 col-sm-6`}
+                            >
+                              <div
+                                className={`ul ${index % 2 === 0 ? "ul1" : ""}`}
+                              >
+                                <h6 className="fw-bold">{sub.name}</h6>
+                                <ul className="list-unstyled">
+                                  {sub.sub_sub_categories?.length > 0 ? (
+                                    sub.sub_sub_categories.map((subSub) => (
+                                      <li key={subSub.id}>
+                                        <Link
+                                          to={`/services?sub_sub_category_id=${subSub.id}`}
+                                          onClick={() => setIsMegaOpen(false)}
+                                          className="text-decoration-none text-dark"
+                                          data-discover="true"
+                                        >
+                                          {subSub.name}
+                                        </Link>
+                                      </li>
+                                    ))
+                                  ) : (
+                                    <li className="text-muted small">
+                                      {t("navbar.no_subcategories")}
+                                    </li>
+                                  )}
+                                </ul>
+                              </div>
+                            </div>
+                          ))
+                        )}
                     </div>
                   </div>
                 )}
@@ -337,12 +278,16 @@ const Navbar = () => {
                   </h6>
                   <Link
                     className="dropdown-item"
-                    to="/about"
+                    to="/all_properties"
                     style={{ fontSize: "13px" }}
                   >
                     {t("services.about3ayinProperty")}
                   </Link>
-                  <Link to="/properties_map" className="dropdown-item" style={{ fontSize: "13px" }}>
+                  <Link
+                    to="/properties_map"
+                    className="dropdown-item"
+                    style={{ fontSize: "13px" }}
+                  >
                     {t("services.3ayinMap")}
                   </Link>
                   <Link className="dropdown-item" style={{ fontSize: "13px" }}>
@@ -353,7 +298,7 @@ const Navbar = () => {
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle d-flex align-items-center gap-1"
-                  id="navbarDropdown"
+                  id="affiliateDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-haspopup="true"
@@ -365,34 +310,44 @@ const Navbar = () => {
                 <div
                   className="dropdown-menu"
                   style={{
-                    backgroundColor: `${
-                      theme === "dark" ? "var(--dark-color)" : "#EBEBEB"
-                    }`,
+                    backgroundColor:
+                      theme === "dark" ? "var(--dark-color)" : "#EBEBEB",
                   }}
-                  aria-labelledby="navbarDropdown"
+                  aria-labelledby="affiliateDropdown"
                 >
                   <h6
                     className="mx-3"
                     style={{
-                      textAlign: `${i18n.language === "ar" ? "right" : "left"}`,
+                      textAlign: i18n.language === "ar" ? "right" : "left",
                       fontWeight: "bold",
                       fontSize: "15px",
                     }}
                   >
                     {t("navbar.3ayinAffiliate")}
                   </h6>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
-                    {t("services.individualMarketers")}
-                  </Link>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
-                    {t("services.individualEngineers")}
-                  </Link>
+
+                  {filterByCats?.data
+                    ?.filter((cat) => cat.id === 2)
+                    ?.flatMap((mainCat) =>
+                      mainCat.sub_categories?.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          className="dropdown-item"
+                          style={{ fontSize: "13px" }}
+                          to={`/services?sub_category_id=${sub.id}`}
+                          onClick={() => setIsMegaOpen(false)}
+                        >
+                          {sub.name}
+                        </Link>
+                      ))
+                    )}
                 </div>
               </li>
+
               <li className="nav-item dropdown">
                 <a
                   className="nav-link dropdown-toggle d-flex align-items-center gap-1"
-                  id="navbarDropdown"
+                  id="companiesDropdown"
                   role="button"
                   data-bs-toggle="dropdown"
                   aria-haspopup="true"
@@ -404,38 +359,45 @@ const Navbar = () => {
                 <div
                   className="dropdown-menu"
                   style={{
-                    backgroundColor: `${
-                      theme === "dark" ? "var(--dark-color)" : "#EBEBEB"
-                    }`,
+                    backgroundColor:
+                      theme === "dark" ? "var(--dark-color)" : "#EBEBEB",
                   }}
-                  aria-labelledby="navbarDropdown"
+                  aria-labelledby="companiesDropdown"
                 >
                   <h6
                     className="mx-3"
                     style={{
-                      textAlign: `${i18n.language === "ar" ? "right" : "left"}`,
+                      textAlign: i18n.language === "ar" ? "right" : "left",
                       fontWeight: "bold",
                       fontSize: "15px",
                     }}
                   >
                     {t("navbar.3ayinCompanies")}
                   </h6>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
-                    {t("services.realEstateCompanies")}
-                  </Link>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
-                    {t("services.engineeringCompanies")}
-                  </Link>
-                  <Link className="dropdown-item" style={{ fontSize: "13px" }}>
-                    {t("services.educationalCompanies")}
-                  </Link>
+
+                  {filterByCats?.data
+                    ?.filter((cat) => cat.id === 3)
+                    ?.flatMap((mainCat) =>
+                      mainCat.sub_categories?.map((sub) => (
+                        <Link
+                          key={sub.id}
+                          className="dropdown-item"
+                          style={{ fontSize: "13px" }}
+                          to={`/services?sub_category_id=${sub.id}`}
+                          onClick={() => setIsMegaOpen(false)}
+                        >
+                          {sub.name}
+                        </Link>
+                      ))
+                    )}
                 </div>
               </li>
-              <li className="nav-item">
+
+              {/* <li className="nav-item">
                 <Link className="nav-link" to="all_properties">
                   {t("navbar.real_estate_services")}
                 </Link>
-              </li>
+              </li> */}
             </ul>
           </div>
 
@@ -499,6 +461,46 @@ const Navbar = () => {
               >
                 <FiSearch />
               </button>
+            </li>
+
+            {/* Language Switcher */}
+            <li className="nav-item dropdown">
+              <button
+                className="nav-link dropdown-toggle bg-transparent border-0 d-flex align-items-center gap-1"
+                data-bs-toggle="dropdown"
+                aria-expanded="false"
+                aria-label="Language"
+              >
+                {i18n.language === "ar" ? "العربية" : "English"}
+                <FiChevronDown />
+              </button>
+              <ul
+                className="dropdown-menu dropdown-menu-end"
+                style={{
+                  backgroundColor: `${
+                    theme === "dark"
+                      ? "var(--dark-color)"
+                      : "var(--basic-color)"
+                  }`,
+                }}
+              >
+                <li>
+                  <button
+                    onClick={() => changeLanguage("en")}
+                    className="dropdown-item text-sm"
+                  >
+                    {i18n.language === "en" ? "English" : "الإنجليزية"}
+                  </button>
+                </li>
+                <li>
+                  <button
+                    onClick={() => changeLanguage("ar")}
+                    className="dropdown-item text-sm"
+                  >
+                    {i18n.language === "ar" ? "العربية" : "Arabic"}
+                  </button>
+                </li>
+              </ul>
             </li>
             {user ? (
               <li className="nav-item dropdown">
@@ -564,46 +566,6 @@ const Navbar = () => {
               </li>
             )}
 
-            {/* Language Switcher */}
-            <li className="nav-item dropdown">
-              <button
-                className="nav-link dropdown-toggle bg-transparent border-0 d-flex align-items-center gap-1"
-                data-bs-toggle="dropdown"
-                aria-expanded="false"
-                aria-label="Language"
-              >
-                {i18n.language === "ar" ? "العربية" : "English"}
-                <FiChevronDown />
-              </button>
-              <ul
-                className="dropdown-menu dropdown-menu-end"
-                style={{
-                  backgroundColor: `${
-                    theme === "dark"
-                      ? "var(--dark-color)"
-                      : "var(--basic-color)"
-                  }`,
-                }}
-              >
-                <li>
-                  <button
-                    onClick={() => changeLanguage("en")}
-                    className="dropdown-item text-sm"
-                  >
-                    {i18n.language === "en" ? "English" : "الإنجليزية"}
-                  </button>
-                </li>
-                <li>
-                  <button
-                    onClick={() => changeLanguage("ar")}
-                    className="dropdown-item text-sm"
-                  >
-                    {i18n.language === "ar" ? "العربية" : "Arabic"}
-                  </button>
-                </li>
-              </ul>
-            </li>
-
             {/* Custom Theme Switch */}
             {/* <li>
             <div className="switch">
@@ -629,7 +591,10 @@ const Navbar = () => {
           style={{ display: "block", background: "rgba(0,0,0,0.6)" }}
           onClick={() => setIsSearchOpen(false)}
         >
-          <div className="modal-dialog modal-dialog-centered" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="modal-dialog modal-dialog-centered"
+            onClick={(e) => e.stopPropagation()}
+          >
             <div className="modal-content p-4">
               <div className="d-flex justify-content-between align-items-center mb-3">
                 <h5 className="mb-0">{t("home.searchHere")}</h5>

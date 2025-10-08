@@ -148,8 +148,8 @@ const PropertiesMap = () => {
                 <Popup>
                   <div style={{ minWidth: 160 }}>
                     <strong>
-                      {t("property.unitCategory")} :{" "}
-                      {i18n.language === "ar" ? p.title_ar : p.title_en}
+                      {t("property.unitName")} :{" "}
+                      {p.title}
                     </strong>
                     <br />
                     {t("property.unitCategory")} : {t(`property.${p.category}`)}

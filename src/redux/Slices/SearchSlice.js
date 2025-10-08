@@ -9,14 +9,14 @@ export const searchAds = createAsyncThunk(
   async (searchValue, { rejectWithValue }) => {
     try {
       const trimmedValue = searchValue.trim();
-      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
 
       const response = await axios.post(
         `${BASE_URL}/api/ads/search`,
         { search: trimmedValue },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Lang: i18n.language,
           },
@@ -34,14 +34,14 @@ export const searchProperty = createAsyncThunk(
   async (searchValue, { rejectWithValue }) => {
     try {
       const trimmedValue = searchValue.trim();
-      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
 
       const response = await axios.post(
         `${BASE_URL}/api/searchProperty`,
         { search: trimmedValue },
         {
           headers: {
-            Authorization: `Bearer ${token}`,
+            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Lang: i18n.language,
           },

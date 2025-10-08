@@ -230,6 +230,7 @@ input[type="checkbox"] ,input[type="radio"]
   box-shadow: 0 2px 3px rgba(0, 0, 0, 0.15);
 }
 .form-style button:hover {background-color: var(--main-color);}
+.no-class {height: auto !important;width: auto !important;}
 /* registration forms */
 .registration_forms {
   background-position: center;
@@ -385,6 +386,9 @@ a {
 
 .main-color {
   color: var(--main-color) !important;
+}
+.bg-blue {
+  background-color: #0575b2 !important;
 }
 
 

@@ -19,6 +19,7 @@ const ServiceProvider = () => {
   const user = JSON.parse(sessionStorage.getItem("user3ayin"));
   const [tab, setTab] = useState("pending");
   const [status, setStatus] = useState("pending");
+ 
   const userPhone = user?.user?.phone;
   const { isLoading, record: providerDataRecord } = useSelector(
     (state) => state.providerData
@@ -41,10 +42,10 @@ const ServiceProvider = () => {
   );
   const { settings } = useSelector((state) => state.settings);
   // services pagination
-const [currentAdsPage, setCurrentAdsPage] = useState(1);
+  const [currentAdsPage, setCurrentAdsPage] = useState(1);
 
-// properties pagination
-const [currentPropsPage, setCurrentPropsPage] = useState(1);
+  // properties pagination
+  const [currentPropsPage, setCurrentPropsPage] = useState(1);
 
   // reviews
 
@@ -73,10 +74,12 @@ const [currentPropsPage, setCurrentPropsPage] = useState(1);
   }, [id, tab, currentAdsPage, dispatch, i18n.language]);
   useEffect(() => {
     if (id) {
-      dispatch(getProviderProperties({ status: status, page: currentPropsPage }));
+      dispatch(
+        getProviderProperties({ status: status, page: currentPropsPage })
+      );
     }
   }, [id, status, currentPropsPage, dispatch, i18n.language]);
-  
+
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
@@ -415,21 +418,19 @@ const [currentPropsPage, setCurrentPropsPage] = useState(1);
                                     : t("approved")}
                                 </div>
                                 <img
-                                  src={item.images?.[0]?.url || "/image.jpg"}
+                                  src={
+                                    item.images?.[0]?.url || "/placeholder.jpg"
+                                  }
                                   alt={item.title}
                                   className="img-fluid mb-3 rounded-4"
                                 />
                                 <div className="p-3">
                                   <p className="line-height mb-1 text-dark">
-                                    {(
-                                      (i18n.language === "ar"
-                                        ? item.title_ar
-                                        : item.title_en) || ""
-                                    ).slice(0, 60)} ...
+                                    {item?.title.slice(0, 60)} ...
                                   </p>
                                   <hr className="my-1" />
                                   <ul className="p-0 mb-0 list-unstyled">
-                                    <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                                    <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                                       <small>
                                         {t("property.unitCategory")}
                                       </small>{" "}
@@ -439,7 +440,7 @@ const [currentPropsPage, setCurrentPropsPage] = useState(1);
                                           item?.category}
                                       </small>
                                     </li>
-                                    <li className="text-sm bg-success text-white d-inline-block rounded-5 px-2 py-1 m-1">
+                                    <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                                       <small>{t("property.unitType")}</small> :{" "}
                                       <small>
                                         {unitTypeMap[item?.unit_type] ||
@@ -670,7 +671,9 @@ const [currentPropsPage, setCurrentPropsPage] = useState(1);
                     </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.publishedProperties")}</span>
-                      <div>({getProviderStatisticsRecord?.properties_count})</div>
+                      <div>
+                        ({getProviderStatisticsRecord?.properties_count})
+                      </div>
                     </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.registrationDate")}</span>
@@ -681,6 +684,137 @@ const [currentPropsPage, setCurrentPropsPage] = useState(1);
                         {t("serviceProvider.companyAddress")} :
                       </span>
                       <div>{settings?.site_address}</div>
+                    </div>
+                  </div>
+                  <div className="common text-sm ribbon">
+                    <b>{t("serviceProvider.package")}</b>
+                    <hr />
+                    <div className="ribbon-wrapper">
+                      <div className="glow">&nbsp;</div>
+                      <div className="ribbon-front fw-bold">
+                        {i18n.language === "ar" ? (
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.plan_name_ar
+                        ):(
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.plan_name_en
+                        )}
+                      </div>
+                      <div className="ribbon-edge-topleft"></div>
+                      <div className="ribbon-edge-topright"></div>
+                      <div className="ribbon-edge-bottomleft"></div>
+                      <div className="ribbon-edge-bottomright"></div>
+                    </div>
+
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.adsCount")}</span>
+                      <div>
+                        {
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.ads_limit
+                        }
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.images_limit")}</span>
+                      <div>
+                        {
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.images_limit
+                        }
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.video")}</span>
+                      <div>
+                        {
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.video
+                        }
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.vr_tours")}</span>
+                      <div>
+                        {
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.vr_tours
+                        }
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.teamManagement")}</span>
+                      <div>
+                        {JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                          ?.subscription?.team_members === "1" ? (
+                          <span>
+                            <i className="bi bi-check-circle-fill text-success ms-1"></i>
+                            {t("packages.features.yes")}
+                          </span>
+                        ) : (
+                          <span>
+                            {" "}
+                            <i className="bi bi-x-circle-fill text-danger ms-1"></i>
+                            {t("packages.features.no")}
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.reports")}</span>
+                      <div>
+                        {(() => {
+                          const reports = JSON.parse(
+                            sessionStorage.getItem("user3ayin")
+                          )?.user?.subscription?.reports;
+                          if (!reports) return t("none"); // fallback
+
+                          // Translate based on value
+                          switch (reports) {
+                            case "none":
+                              return t("none");
+                            case "basic":
+                              return t("basic");
+                            case "advanced":
+                              return t("advanced");
+                            default:
+                              return reports;
+                          }
+                        })()}
+                      </div>
+                    </div>
+
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.searchAppearance")}</span>
+                      <div>
+                        {(() => {
+                          const search = JSON.parse(
+                            sessionStorage.getItem("user3ayin")
+                          )?.user?.subscription?.search_priority;
+                          if (!search) return t("normal"); // fallback
+
+                          switch (search) {
+                            case "normal":
+                              return t("normal");
+                            case "highlighted":
+                              return t("highlighted");
+                            case "top":
+                              return t("top");
+                            default:
+                              return search;
+                          }
+                        })()}
+                      </div>
+                    </div>
+
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("serviceProvider.end_date")}</span>
+                      <div>
+                        {
+                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                            ?.subscription?.end_date
+                        }
+                      </div>
                     </div>
                   </div>
                   <div className="text-center my-3">

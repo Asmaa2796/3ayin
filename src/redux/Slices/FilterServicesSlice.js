@@ -3,14 +3,14 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import i18n from "../../i18n/i18n";
 
-export const fetchAllSubCategories = createAsyncThunk(
-  "subCategories/fetchAllSubCategories",
+export const fetchAllCategoriesTree = createAsyncThunk(
+  "subCategories/fetchAllCategoriesTree",
   async (_, { rejectWithValue }) => {
     try {
       const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
       const token = userData?.token;
       const response = await axios.get(
-        `${process.env.REACT_APP_BASE_URL}/api/sub-categories`,
+        `${process.env.REACT_APP_BASE_URL}/api/categories/sub-categories`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -38,15 +38,15 @@ const FilterServicesSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(fetchAllSubCategories.pending, (state) => {
+      .addCase(fetchAllCategoriesTree.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchAllSubCategories.fulfilled, (state, action) => {
+      .addCase(fetchAllCategoriesTree.fulfilled, (state, action) => {
         state.loading = false;
         state.filterByCats = action.payload;
       })
-      .addCase(fetchAllSubCategories.rejected, (state, action) => {
+      .addCase(fetchAllCategoriesTree.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload || "Failed to load subcategories";
       });

@@ -31,7 +31,7 @@ useEffect(() => {
         <div className="row">
           <div className="col-xl-3 col-lg-3 col-md-6">
             <div className="logo">
-              <Link to="/"><img src={theme === "light" ? settings?.logo_light : settings?.logo_dark} alt="--" /></Link>
+              <Link to="/"><img src={theme === "light" ? settings?.logo_dark : settings?.logo_white} alt="--" /></Link>
             </div>
             <p className="line-height">{settings?.site_desc}</p>
             <div className="flex_contact d-flex my-2">

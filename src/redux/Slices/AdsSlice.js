@@ -3,11 +3,10 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import { crudFactory, addCrudExtraReducers } from "../helpers/CrudToolkit";
 import axios from "axios";
 import i18n from "../../i18n/i18n";
+
 const BASE_URL = process.env.REACT_APP_BASE_URL;
-// Generate thunks for this resource (generic CRUD)
 const { fetchAll } = crudFactory("ads");
 
-// 🔹 Custom fetch with pagination
 export const fetchAdsWithPagination = createAsyncThunk(
   "ads/fetchWithPagination",
   async ({ page = 1, per_page = 9 } = {}, { rejectWithValue }) => {
@@ -20,30 +19,47 @@ export const fetchAdsWithPagination = createAsyncThunk(
         },
         params: { page, per_page },
       });
-      return res.data; // { data, pagination }
+
+      if (res.data.code === 200) {
+        return {
+          data: res.data.data,
+          pagination: res.data.pagination,
+        };
+      }
+      return rejectWithValue(res.data.message || "Failed to load ads");
     } catch (err) {
-      return rejectWithValue(
-        err.response?.data?.message || "Failed to load ads"
-      );
+      return rejectWithValue(err.response?.data?.message || "Failed to load ads");
     }
   }
 );
+
 export const filterAds = createAsyncThunk(
   "ads/filterAds",
   async (filters, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        `${BASE_URL}/api/ad/filter`,
-        filters
-      );
-      return response.data.data; // ads array
+      const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      const res = await axios.post(`${BASE_URL}/api/ad/filter`, filters, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Lang: i18n.language,
+        },
+      });
+
+      if (res.data.code === 200) {
+        return {
+          data: res.data.data,
+          pagination: res.data.pagination,
+        };
+      }
+
+      return rejectWithValue(res.data.message || "Failed to filter ads");
     } catch (err) {
       return rejectWithValue(err.response?.data || err.message);
     }
   }
 );
 
-// Initial state
+// 🔹 Initial state
 const initialState = {
   ads: [],
   record: null,
@@ -54,7 +70,6 @@ const initialState = {
   success: null,
 };
 
-// Create slice
 const AdsSlice = createSlice({
   name: "ads",
   initialState,
@@ -63,15 +78,15 @@ const AdsSlice = createSlice({
       state.error = null;
       state.success = null;
     },
+    appendAds: (state, action) => {
+      // For "Show More" functionality
+      state.ads = [...state.ads, ...action.payload.data];
+      state.pagination = action.payload.pagination;
+    },
   },
   extraReducers: (builder) => {
-    // keep generic CRUD reducers
-    addCrudExtraReducers(builder, {
-      fetchAll,
-      key: "ads",
-    });
+    addCrudExtraReducers(builder, { fetchAll, key: "ads" });
 
-    // add custom pagination reducer
     builder
       .addCase(fetchAdsWithPagination.pending, (state) => {
         state.isLoading = true;
@@ -79,19 +94,22 @@ const AdsSlice = createSlice({
       })
       .addCase(fetchAdsWithPagination.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.ads = action.payload.data; // ads list
-        state.pagination = action.payload.pagination; // backend pagination
+        state.ads = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(fetchAdsWithPagination.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
-      })
+      });
+
+    builder
       .addCase(filterAds.pending, (state) => {
         state.loading = true;
       })
       .addCase(filterAds.fulfilled, (state, action) => {
         state.loading = false;
-        state.ads = action.payload;
+        state.ads = action.payload.data;
+        state.pagination = action.payload.pagination;
       })
       .addCase(filterAds.rejected, (state, action) => {
         state.loading = false;
@@ -100,7 +118,6 @@ const AdsSlice = createSlice({
   },
 });
 
-// Export
-export const { clearState } = AdsSlice.actions;
+export const { clearState, appendAds } = AdsSlice.actions;
 export { fetchAll as fetchAds };
 export default AdsSlice.reducer;

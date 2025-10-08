@@ -23,7 +23,8 @@
     "add": "Add",
     "add_property": "Add property",
     "add_service": "Add service",
-    "real_estate_services": "Real estate services"
+    "real_estate_services": "Real estate services",
+    "no_subcategories": "No subcategories"
   },
   "sign": {
     "login": "Login",
@@ -170,6 +171,8 @@
     "engineeringServices": "Engineering Services",
     "educationalServices": "Educational Services",
     "additionalServices": "Additional Services",
+    "engineering_programs": "Engineering programs",
+    "realestate_programs": "Real Estate Programs",
     "engineers": "Engineers",
     "marketers": "Marketers",
     "addProperty": "Add Property",
@@ -229,6 +232,7 @@
   },
   "property": {
     "all": "All properties",
+    "unitName": "Unit Name",
     "maps": "Properties Map",
     "title": "Recommended Properties for You",
     "add_property": "Add property",
@@ -236,7 +240,7 @@
     "sale": "Sale",
     "rent": "Rent",
     "share": "Share",
-    "unitType": "Type",
+    "unitType": "Unit Type",
     "apartment": "Residential Apartment",
     "villa": "Villa",
     "building": "Building",
@@ -285,6 +289,7 @@
     "select_category": "Select category",
     "property_details": "Property details",
     "pickFromMap": "Pick From Map",
+    "AR_VRInvalid": "Please enter a valid AR/VR link starting with https://",
     "arLinkInvalid": "Please enter a valid AR link starting with https://",
     "vrLinkInvalid": "Please enter a valid VR link starting with https://",
     "videoLinkInvalid": "Please enter a valid video link starting with https://",
@@ -292,7 +297,14 @@
     "address": "Address",
     "property_area": "Property area",
     "relatedProperties": "Related Properties",
-    "video_url": "Video url"
+    "video_url": "Video url",
+    "distinctive_signs": "Distinctive signs",
+    "count_of_bathrooms": "Count of bathrooms",
+    "number_of_parking_spaces": "Number of parking spaces",
+    "education": "education",
+    "health_and_medicine": "Health and medicine",
+    "transportation": "transportation",
+    "unit_features": "Unit features"
   },
   "servicesPage": {
     "marketingAndAds": "Marketing and Advertising",
@@ -350,7 +362,10 @@
     "registrationDate": "Registration Date",
     "companyAddress": "Company Address",
     "contact": "Contact",
-    "profile": "Profile"
+    "profile": "Profile",
+    "package": "Subscribed package data",
+    "customized_package": "Customized package",
+    "end_date": "End date"
   },
   "pages": {
     "about": "About 3ayin Real Estate",
@@ -441,6 +456,16 @@
   "please_complete_identification": "Please complete identification",
   "failed_to_load_properties": "Failed to load properties",
   "min_max_price": "Min price must be less than max price",
+  "customize_package": "Customize Package",
+  "cancel": "Cancel",
+  "submit": "Submit",
+  "normal": "Normal",
+  "highlighted": "Highlighted",
+  "top": "Top",
+  "none": "None",
+  "basic": "Basic",
+  "custom_package_submitted": "Your custom package has been submitted!",
+  "advanced": "Advanced",
   "pending": "Pending",
   "approved": "Approved",
   "labels": {
@@ -471,7 +496,10 @@
       "no_reports": "No Reports",
       "yes": "Yes",
       "no": "No",
-      "video": "Video"
+      "video": "Video",
+      "images_limit": "Images limit",
+      "vr_tours": "VR tours",
+      "reports": "Reports"
     },
     "basic": {
       "name": "Basic (Individuals and Startups)",

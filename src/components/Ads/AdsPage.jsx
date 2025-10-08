@@ -35,7 +35,10 @@ const AdsPage = () => {
 
   const renderAdCard = (ad, index) => (
     <div className="col-xl-3 col-lg-3 col-md-4 col-12" key={ad.id || index}>
-      <Link className="recommended_card border rounded-4 mb-3 overflow-hidden d-block" to={`/serviceDetails/${ad.id}`}>
+      <Link
+        className="recommended_card border rounded-4 mb-3 overflow-hidden d-block"
+        to={`/serviceDetails/${ad.id}`}
+      >
         <img
           src={ad?.image || "/placeholder.jpg"}
           onError={(e) => {
@@ -53,19 +56,28 @@ const AdsPage = () => {
           </small>
 
           <div className="d-inline-block mb-2 rates">
-            {ad?.reviews_count > 0 ? (
+            {Number(ad?.reviews_count) > 0 ? (
               <>
-                {Array.from({ length: 5 }, (_, i) => (
-                  <i
-                    key={i}
-                    className={`bi bi-star-fill ${
-                      i < Math.round(Number(ad.average_rate))
-                        ? "text-warning"
-                        : "text-secondary"
-                    }`}
-                  ></i>
-                ))}
-                <span className="mx-2 text-dark">({ad.reviews_count})</span>
+                {Array.from({ length: 5 }, (_, i) => {
+                  const avg = Number(ad?.average_rate) || 0;
+                  // Decide icon based on average rating
+                  if (avg >= i + 1) {
+                    return (
+                      <i key={i} className="bi bi-star-fill text-warning"></i>
+                    );
+                  } else if (avg > i && avg < i + 1) {
+                    return (
+                      <i key={i} className="bi bi-star-half text-warning"></i>
+                    );
+                  } else {
+                    return (
+                      <i key={i} className="bi bi-star-fill text-secondary"></i>
+                    );
+                  }
+                })}
+                <span className="mx-2 text-dark">
+                  ({Number(ad?.reviews_count) || 0})
+                </span>
               </>
             ) : (
               <>
