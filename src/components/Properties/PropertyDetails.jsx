@@ -10,6 +10,7 @@ import Ripples from "react-ripples";
 import RelatedProperties from "../RelatedProperties/RelatedProperties";
 import DetailsLoader from "../../pages/DetailsLoader";
 import { fetchPropertyById } from "../../redux/Slices/AddPropertySlice";
+import { BsUiChecksGrid } from "react-icons/bs";
 import { useDispatch, useSelector } from "react-redux";
 import axios from "axios";
 import {
@@ -21,7 +22,12 @@ import {
   LinkedinIcon,
   WhatsappIcon,
 } from "react-share";
+import { PiBathtubFill } from "react-icons/pi";
+import { GiHomeGarage } from "react-icons/gi";
+import { FaSchool,FaMapPin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
+import { RiRoadMapFill } from "react-icons/ri";
+import { FaHospitalAlt } from "react-icons/fa";
 const PropertyDetails = () => {
   const { t, i18n } = useTranslation("global");
   const [rating, setRating] = useState(0);
@@ -338,7 +344,7 @@ const PropertyDetails = () => {
 
                 <div className="col-xl-8 col-lg-8 col-md-8 col-12">
                   <div className="details_wrapper px-4 mb-5 position-relative">
-                    <h4 className="fw-bold">{propertyItem?.ad_name}</h4>
+                    <h4 className="fw-bold">{propertyItem?.title}</h4>
                     <div className="user_info my-4 d-flex align-items-center">
                       <img
                         src={propertyItem?.user?.image || "/user.webp"}
@@ -348,7 +354,7 @@ const PropertyDetails = () => {
                         }}
                         alt="--"
                       />
-                      <Link to={`/service_provider/${propertyItem?.user?.id}`}>
+                      <Link to={`/provider_profile/${propertyItem?.user?.id}`}>
                         <span className="mx-2 fw-bold">
                           {propertyItem?.user?.name} {""}
                           <i
@@ -385,7 +391,7 @@ const PropertyDetails = () => {
                       {t("servicesPage.contactServiceProvider")}
                     </Link>
                     <div className="share d-flex align-items-center my-3">
-                      <small className="fw-bold">
+                      <small className="fw-bold d-block">
                         {t("servicesPage.share")}
                       </small>
                       <div className="d-flex mx-2 gap-2">
@@ -422,7 +428,7 @@ const PropertyDetails = () => {
                         </WhatsappShareButton>
                         {navigator.share && (
                           <button
-                            className="btn btn-sm btn-outline-dark fw-bold d-flex align-items-center"
+                            className="btn btn-sm btn-outline-dark fw-bold d-flex align-items-center share_now"
                             onClick={() =>
                               navigator.share({
                                 title: propertyItem?.ad_name,
@@ -644,10 +650,10 @@ const PropertyDetails = () => {
                               {t("property.deposit")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.deposit_amount}
+                              {propertyItem.deposit_amount || "--"}
                             </span>
                           </li>
-                      
+
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
@@ -671,7 +677,7 @@ const PropertyDetails = () => {
                               {t("property.rooms")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.rooms}
+                              {propertyItem.rooms || "--"}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
@@ -684,10 +690,103 @@ const PropertyDetails = () => {
                               {t("property.floor")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.floor}
+                              {propertyItem.floor || "--"}
                             </span>
                           </li>
-                            </ul>
+                        </ul>
+
+                        <div className="row">
+                          <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                            <hr />
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <PiBathtubFill className="mx-2" />
+                              {t("property.count_of_bathrooms")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.bathrooms || "--"}
+                            </span>
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <GiHomeGarage className="mx-2" />
+                              {t("property.number_of_parking_spaces")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.garages || "--"}
+                            </span>
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <FaSchool className="mx-2" />
+                              {t("property.education")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.education === "1"
+                                ? t("exist")
+                                : t("not_exist")}
+                            </span>
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <FaHospitalAlt className="mx-2" />
+                              {t("property.health_and_medicine")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.health === "1"
+                                ? t("exist")
+                                : t("not_exist")}
+                            </span>
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <RiRoadMapFill className="mx-2" />
+                              {t("property.transportation")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.transportation === "1"
+                                ? t("exist")
+                                : t("not_exist")}
+                            </span>
+                          </div>
+                          <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold d-block mb-3">
+                              <FaMapPin className="mx-2" />
+                              {t("property.distinctive_signs")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.feature_mark || "--"}
+                            </span>
+                          </div>
+                          <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                            <hr />
+
+                            <b>{t("property.unit_features")}</b>
+                          </div>
+                          {propertyItem?.facilities &&
+                          propertyItem?.facilities.length > 0 ? (
+                            propertyItem?.facilities?.map((f, index) => (
+                              <div
+                                className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12"
+                                key={f.id || index}
+                              >
+                                <span className="fw-bold mx-1">
+                                  <BsUiChecksGrid className="mx-1" />
+                                </span>
+                                <span className="text-success border bg-white rounded-5 px-3 py-1">
+                                  {f.name}
+                                </span>
+                              </div>
+                            ))
+                          ) : (
+                            <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
+                              <h5 className="mb-0 text-sm">
+                                {t("no_data_exists")}
+                              </h5>
+                            </div>
+                          )}
+                        </div>
                       </div>
                       <div
                         className="tab-pane fade p-3"
@@ -717,22 +816,27 @@ const PropertyDetails = () => {
                               {t("create_ad.location")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1 d-block my-2">
-                              {propertyItem.location}
+                              {propertyItem.location || "--"}
                             </span>
                           </li>
                         </ul>
                         <div className="border rounded-3 p-2 shadow-sm bg-white">
-                          {propertyItem?.latitude &&
-                            propertyItem?.longitude ? (
-                              <iframe
-                                title="property-map"
-                                width="100%"
-                                height="300"
-                                style={{ border: 0 }}
-                                src={`https://www.google.com/maps?q=${propertyItem.latitude},${propertyItem.longitude}&hl=${i18n.language}&z=15&output=embed`}
-                                allowFullScreen
-                              ></iframe>
-                            ):(<img className="w-100" style={{height:"180px"}} src="/map-location.svg"/>)}
+                          {propertyItem?.latitude && propertyItem?.longitude ? (
+                            <iframe
+                              title="property-map"
+                              width="100%"
+                              height="300"
+                              style={{ border: 0 }}
+                              src={`https://www.google.com/maps?q=${propertyItem.latitude},${propertyItem.longitude}&hl=${i18n.language}&z=15&output=embed`}
+                              allowFullScreen
+                            ></iframe>
+                          ) : (
+                            <img
+                              className="w-100"
+                              style={{ height: "180px" }}
+                              src="/map-location.svg"
+                            />
+                          )}
                         </div>
                       </div>
                       {propertyItem?.category === "rent" && (
@@ -939,7 +1043,9 @@ const PropertyDetails = () => {
                           })
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0">{t("no_data_exists")}</h5>
+                            <h5 className="mb-0 text-sm">
+                              {t("no_data_exists")}
+                            </h5>
                           </div>
                         )}
                       </div>
@@ -952,7 +1058,7 @@ const PropertyDetails = () => {
               </div>
             ) : (
               <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                <h5 className="mb-0">{t("no_data_exists")}</h5>
+                <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
               </div>
             )}
           </div>

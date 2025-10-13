@@ -167,7 +167,7 @@ const ServiceDetails = () => {
         setReviews(data.data);
       }
     } catch (error) {
-    } finally {
+      console.log(error);
     }
   };
 
@@ -302,7 +302,7 @@ const ServiceDetails = () => {
                         }}
                         alt="--"
                       />
-                      <Link to={`/service_provider/${adItem?.user?.id}`}>
+                      <Link to={`/provider_profile/${adItem?.user?.id}`}>
                         <span className="mx-2 fw-bold">
                           {adItem?.user?.name} {""}
                           <i
@@ -337,7 +337,7 @@ const ServiceDetails = () => {
                       {t("servicesPage.contactServiceProvider")}
                     </Link>
                     <div className="share d-flex align-items-center my-3">
-                      <small className="fw-bold">
+                      <small className="fw-bold d-block">
                         {t("servicesPage.share")}
                       </small>
                       <div className="d-flex mx-2 gap-2">
@@ -374,7 +374,7 @@ const ServiceDetails = () => {
                         </WhatsappShareButton>
                         {navigator.share && (
                           <button
-                            className="btn btn-sm btn-outline-dark fw-bold d-flex align-items-center"
+                            className="btn btn-sm btn-outline-dark fw-bold d-flex align-items-center share_now"
                             onClick={() =>
                               navigator.share({
                                 title: adItem?.ad_name,
@@ -502,7 +502,7 @@ const ServiceDetails = () => {
                               {t("create_ad.location")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1 d-block my-2">
-                              {adItem.location}
+                              {adItem.location || "--"}
                             </span>
                           </li>
                         </ul>
@@ -744,7 +744,7 @@ const ServiceDetails = () => {
                           })
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0">{t("no_data_exists")}</h5>
+                            <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
                           </div>
                         )}
                       </div>
@@ -760,7 +760,7 @@ const ServiceDetails = () => {
               </div>
             ) : (
               <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                <h5 className="mb-0">{t("no_data_exists")}</h5>
+                <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
               </div>
             )}
           </div>

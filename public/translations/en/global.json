@@ -21,8 +21,8 @@
     "3ayinAffiliate": "3ayin Affiliate",
     "3ayinCompanies": "3ayin Companies",
     "add": "Add",
-    "add_property": "Add property",
-    "add_service": "Add service",
+    "add_property": "Create property",
+    "add_service": "Create Ad",
     "real_estate_services": "Real estate services",
     "no_subcategories": "No subcategories"
   },
@@ -357,7 +357,7 @@
     "services": "Services",
     "ratings": "Ratings",
     "statistics": "Statistics",
-    "publishedServices": "Published Services",
+    "publishedServices": "Published Ads",
     "publishedProperties": "Published Properties",
     "registrationDate": "Registration Date",
     "companyAddress": "Company Address",
@@ -365,7 +365,10 @@
     "profile": "Profile",
     "package": "Subscribed package data",
     "customized_package": "Customized package",
-    "end_date": "End date"
+    "end_date": "End date",
+    "properties_reviews": "Properties reviews",
+    "ads_reviews": "Ads reviews",
+    "average_rate": "Average rate"
   },
   "pages": {
     "about": "About 3ayin Real Estate",
@@ -476,6 +479,8 @@
     "next": "Next"
   },
   "loading": "Loading...",
+  "exist": "Exist",
+  "not_exist": "Not exist",
   "properties_shown": "Properties shown",
   "not_found_title": "404 - Page Not Found",
   "packages": {

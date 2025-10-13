@@ -842,13 +842,13 @@ const Profile = () => {
                   value={emailNotify}
                   onChange={(e) => setEmailNotify(e.target.value)}
                 />
-                <label
+                {/* <label
                   htmlFor="sendSpecialOffers"
                   className="sendSpecialOffers"
                 >
                   <input id="sendSpecialOffers" type="checkbox" />
                   <span className="mx-2">{t("profile.sendSpecialOffers")}</span>
-                </label>
+                </label> */}
                 <button type="submit">{t("profile.save")}</button>
               </form>
             </div>

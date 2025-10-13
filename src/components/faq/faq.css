@@ -19,6 +19,8 @@
     background-color: #fff2d8;
 }
 .faq .accordion-item {border: none;border-radius: 10px;}
+.faq .accordion-button {text-align: right;font-size: small;}
+[dir='ltr'] .faq .accordion-button {text-align: left;}
 .faq .accordion-button:not(.collapsed)::after {background-image: url('../../../public/cross.png');}
 .faq .accordion-button::after {
     background-image: url('../../../public/plus.png');

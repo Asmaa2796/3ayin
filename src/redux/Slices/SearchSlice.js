@@ -6,17 +6,15 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 export const searchAds = createAsyncThunk(
   "search/ads",
-  async (searchValue, { rejectWithValue }) => {
+  async ({ search, page = 1, per_page = 9 }, { rejectWithValue }) => {
     try {
-      const trimmedValue = searchValue.trim();
-      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      const trimmedValue = search.trim();
 
       const response = await axios.post(
         `${BASE_URL}/api/ads/search`,
-        { search: trimmedValue },
+        { search: trimmedValue, page, per_page },
         {
           headers: {
-            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Lang: i18n.language,
           },
@@ -28,20 +26,19 @@ export const searchAds = createAsyncThunk(
     }
   }
 );
+
 
 export const searchProperty = createAsyncThunk(
   "search/properties",
-  async (searchValue, { rejectWithValue }) => {
+  async ({ search, page = 1, per_page = 9 }, { rejectWithValue }) => {
     try {
-      const trimmedValue = searchValue.trim();
-      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+      const trimmedValue = search.trim();
 
       const response = await axios.post(
         `${BASE_URL}/api/searchProperty`,
-        { search: trimmedValue },
+        { search: trimmedValue, page, per_page },
         {
           headers: {
-            // Authorization: `Bearer ${token}`,
             "Content-Type": "application/json",
             Lang: i18n.language,
           },
@@ -53,6 +50,7 @@ export const searchProperty = createAsyncThunk(
     }
   }
 );
+
 
 const SearchSlice = createSlice({
   name: "search",

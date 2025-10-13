@@ -31,7 +31,7 @@ useEffect(() => {
         <div className="row">
           <div className="col-xl-3 col-lg-3 col-md-6">
             <div className="logo">
-              <Link to="/"><img src={theme === "light" ? settings?.logo_dark : settings?.logo_white} alt="--" /></Link>
+              <Link to="/"><img className="mb-2" src={theme === "light" ? settings?.logo_dark : settings?.logo_white} alt="--" /></Link>
             </div>
             <p className="line-height">{settings?.site_desc}</p>
             <div className="flex_contact d-flex my-2">
@@ -58,7 +58,7 @@ useEffect(() => {
               <b className="d-block">{t("footer.quickLinks")}</b>
               <ul className="list-unstyled p-0">
                 <li className="mb-2">
-                  <Link to="/about">{t("pages.about")}</Link>
+                  <Link to="/all_properties">{t("pages.about")}</Link>
                 </li>
                 <li className="mb-2">
                   <Link to="/how_it_works">{t("pages.howItWorks")}</Link>

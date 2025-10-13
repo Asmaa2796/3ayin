@@ -265,6 +265,7 @@
     margin-inline: 5px;
 }
 
+.share_now {white-space: nowrap;}
 .vr_map {
     display: flex;
     flex-direction: column;
@@ -441,9 +442,26 @@
         overflow-x: scroll;
         overflow-y: hidden;
     }
-    .carousel_wrapper {margin-bottom: 35px;}
-    .vr_map img {max-height: 26px;}
-    .vr_map {top: 8px;}
-    .details_wrapper .contact_with_provider, .rating-form button[type="submit"], .provider_info .contact {font-size: 12px;}
 
+    .carousel_wrapper {
+        margin-bottom: 35px;
+    }
+
+    .vr_map img {
+        max-height: 26px;
+    }
+
+    .vr_map {
+        top: 8px;
+    }
+
+    .details_wrapper .contact_with_provider,
+    .rating-form button[type="submit"],
+    .provider_info .contact {
+        font-size: 12px;
+    }
+
+    .share {
+        flex-wrap: wrap
+    }
 }

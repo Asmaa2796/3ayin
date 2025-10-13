@@ -281,7 +281,7 @@ const ServicesPage = () => {
                   </div>
 
                   {/* Rating Filter */}
-                  <div className="filter_by_rating common">
+                  <div className="filter_by_rating common mb-2">
                     <b className="d-block">
                       <TiStarHalfOutline className="text-sm main-color" />{" "}
                       {t("servicesPage.filterByRating")}
@@ -321,7 +321,6 @@ const ServicesPage = () => {
                     <CardsLoader />
                   ) : ads && ads.length >= 1 ? (
                     <>
-                      <div className="row">
                         {ads.map((ad, index) => (
                           <div
                             className="col-xl-4 col-lg-4 col-md-6 col-12"
@@ -393,7 +392,6 @@ const ServicesPage = () => {
                             </Link>
                           </div>
                         ))}
-                      </div>
                       <div className="text-center">
                         {pagination && pagination.last_page > 1 && (
                           <div className="text-center">
@@ -426,7 +424,7 @@ const ServicesPage = () => {
                         }}
                         alt="--"
                       />
-                      <h5 className="mb-0">{t("no_data_exists")}</h5>
+                      <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
                     </div>
                   )}
                 </div>

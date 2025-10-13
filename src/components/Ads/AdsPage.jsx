@@ -18,18 +18,40 @@ const AdsPage = () => {
 
   const [searchParams] = useSearchParams();
   const searchValue = searchParams.get("search");
+  const subCategoryId = searchParams.get("sub_category_id");
+  const subSubCategoryId = searchParams.get("sub_sub_category_id");
   const [page, setPage] = useState(1);
 
+  // Fetch ads (backend always returns all ads)
+  // ✅ Fetch logic: search mode OR category/subcategory filtering
+useEffect(() => {
+  if (searchValue) {
+    // Search mode — use backend search
+    dispatch(searchAds({ search: searchValue, page, per_page: 9 }));
+  } else {
+    // Normal mode — fetch all ads and filter locally
+    dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
+  }
+}, [dispatch, page, i18n.language, searchValue]);
+
+  // Reset page when filters or search change
   useEffect(() => {
-    if (searchValue) {
-      dispatch(searchAds(searchValue));
-    } else {
-      dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
-    }
-  }, [dispatch, page, i18n.language, searchValue]);
+    setPage(1);
+  }, [searchValue, subCategoryId, subSubCategoryId]);
 
   const searchMode = Boolean(searchValue);
-  const showAds = searchMode ? adsList : ads;
+  const baseAds = searchMode ? adsList : ads;
+
+  // ✅ Client-side filtering
+  const showAds = baseAds?.filter((ad) => {
+    if (subSubCategoryId) {
+      return String(ad.sub_sub_category_id) === String(subSubCategoryId);
+    } else if (subCategoryId) {
+      return String(ad.sub_category_id) === String(subCategoryId);
+    }
+    return true;
+  });
+
   const paginationInfo = searchMode ? adsPagination : pagination;
   const isDataLoading = isLoading || loadingFiltered;
 
@@ -60,19 +82,12 @@ const AdsPage = () => {
               <>
                 {Array.from({ length: 5 }, (_, i) => {
                   const avg = Number(ad?.average_rate) || 0;
-                  // Decide icon based on average rating
                   if (avg >= i + 1) {
-                    return (
-                      <i key={i} className="bi bi-star-fill text-warning"></i>
-                    );
+                    return <i key={i} className="bi bi-star-fill text-warning"></i>;
                   } else if (avg > i && avg < i + 1) {
-                    return (
-                      <i key={i} className="bi bi-star-half text-warning"></i>
-                    );
+                    return <i key={i} className="bi bi-star-half text-warning"></i>;
                   } else {
-                    return (
-                      <i key={i} className="bi bi-star-fill text-secondary"></i>
-                    );
+                    return <i key={i} className="bi bi-star-fill text-secondary"></i>;
                   }
                 })}
                 <span className="mx-2 text-dark">
@@ -184,7 +199,7 @@ const AdsPage = () => {
             </>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-              <h5 className="mb-0">{t("no_data_exists")}</h5>
+              <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
             </div>
           )}
         </div>

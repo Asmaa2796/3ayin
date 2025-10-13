@@ -116,3 +116,9 @@
 .hero::after {top: -48px;max-width: 50px;}
 .hero::before {bottom: 27px;max-width: 50px;}
 }
+@media(max-width:260px) {
+.hero .hero-search-form input {
+    width: 56%;
+}
+.hero .hero-search-form {max-width: 100%;}
+}

@@ -51,7 +51,6 @@ const RelatedProperties = ({ propertyID }) => {
         );
 
         const allRelatedProperties = response.data?.data || [];
-        console.log(response.data?.data);
         setRelatedProperties(allRelatedProperties);
       } catch (err) {
         console.log(err);

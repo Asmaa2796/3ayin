@@ -22,7 +22,7 @@
     "3ayinCompanies": "عاين شركات",
     "add": "إضافة",
     "add_property": "إضافة عقار",
-    "add_service": "إضافة خدمة",
+    "add_service": "إضافة إعلان",
     "real_estate_services": "خدمات عقارية",
     "no_subcategories": "لا يوجد تصنيفات"
   },
@@ -357,7 +357,7 @@
     "services": "الخدمات",
     "ratings": "التقييمات",
     "statistics": "إحصائيات",
-    "publishedServices": "الخدمات المنشورة",
+    "publishedServices": "الإعلانات المنشورة",
     "publishedProperties": "العقارات المنشورة",
     "registrationDate": "تاريخ التسجيل",
     "companyAddress": "عنوان الشركة",
@@ -365,7 +365,10 @@
     "profile": "الملف الشخصي",
     "package": "بيانات الباقة المشترك بها",
     "customized_package": "باقة مخصصة",
-    "end_date": "تاريخ الانتهاء"
+    "end_date": "تاريخ الانتهاء",
+    "properties_reviews": "تقييمات العقارات",
+    "ads_reviews": "تقييمات الإعلانات",
+    "average_rate": "متوسط التقييم"
   },
   "pages": {
     "about": "حول عقارات عاين",
@@ -476,6 +479,8 @@
     "next": "التالي"
   },
   "loading": "جار التحميل...",
+  "exist": "يوجد",
+  "not_exist": "لا يوجد",
   "properties_shown": "عقارات معروضة",
   "not_found_title": "٤٠٤ - الصفحة غير موجودة",
   "packages": {

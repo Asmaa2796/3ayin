@@ -11,6 +11,7 @@ import { getProviderStatistics } from "../../redux/Slices/ProviderStatisticsSlic
 import { fetchSettings } from "../../redux/Slices/SettingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import ContentLoader from "../../pages/ContentLoader";
+import { getProviderPropertiesReviews } from "../../redux/Slices/ProviderPropertiesReviewsSlice";
 const ServiceProvider = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation("global");
@@ -19,7 +20,7 @@ const ServiceProvider = () => {
   const user = JSON.parse(sessionStorage.getItem("user3ayin"));
   const [tab, setTab] = useState("pending");
   const [status, setStatus] = useState("pending");
- 
+
   const userPhone = user?.user?.phone;
   const { isLoading, record: providerDataRecord } = useSelector(
     (state) => state.providerData
@@ -34,9 +35,11 @@ const ServiceProvider = () => {
     paginationProps,
     isLoading: loadingProps,
   } = useSelector((state) => state.providerProperties);
-  const { record: getProviderAdsReviewsRecord } = useSelector(
+  const { providerAdsReviews, pagination: paginationReviews } = useSelector(
     (state) => state.providerAdsReviews
   );
+  const { providerPropertiesReviews, pagination: paginationPropsReviews } =
+    useSelector((state) => state.providerPropertiesReviews);
   const { record: getProviderStatisticsRecord } = useSelector(
     (state) => state.providerStatistics
   );
@@ -47,23 +50,24 @@ const ServiceProvider = () => {
   // properties pagination
   const [currentPropsPage, setCurrentPropsPage] = useState(1);
 
-  // reviews
-
+  // reviews pagination
   const [currentReviewPage, setCurrentReviewPage] = useState(1);
+  const [currentPropsReviewPage, setCurrentPropsReviewPage] = useState(1);
   const reviewsPerPage = 3;
+  const propsreviewsPerPage = 3;
 
-  const totalReviewPages = Math.ceil(
-    getProviderAdsReviewsRecord?.length / reviewsPerPage
-  );
-
-  const currentReviews = getProviderAdsReviewsRecord?.slice(
+  const currentReviews = providerAdsReviews?.slice(
     (currentReviewPage - 1) * reviewsPerPage,
     currentReviewPage * reviewsPerPage
   );
-
+  const currentPropsReviews = providerPropertiesReviews?.slice(
+    (currentPropsReviewPage - 1) * propsreviewsPerPage,
+    currentPropsReviewPage * propsreviewsPerPage
+  );
   useEffect(() => {
     dispatch(getProviderData(id));
-    dispatch(getProviderAdsReviews(id));
+    dispatch(getProviderAdsReviews());
+    dispatch(getProviderPropertiesReviews());
     dispatch(getProviderStatistics(id));
     dispatch(fetchSettings());
   }, [id, i18n.language, dispatch]);
@@ -80,6 +84,9 @@ const ServiceProvider = () => {
     }
   }, [id, status, currentPropsPage, dispatch, i18n.language]);
 
+  useEffect(() => {
+    dispatch(getProviderAdsReviews({ page: currentReviewPage }));
+  }, [dispatch, currentReviewPage, i18n.language]);
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
@@ -111,7 +118,7 @@ const ServiceProvider = () => {
 
             <div className="info">
               <h3 className="fw-bold">{providerDataRecord?.name}</h3>
-              <div className="text-sm">
+              <div className="text-sm d-none">
                 {[...Array(5)].map((_, idx) => {
                   const fullStar =
                     idx + 1 <=
@@ -200,18 +207,31 @@ const ServiceProvider = () => {
                     <li className="nav-item" role="presentation">
                       <button
                         className="nav-link"
-                        id="ratings-tab"
+                        id="ads_reviews-tab"
                         data-bs-toggle="tab"
-                        data-bs-target="#ratings"
+                        data-bs-target="#ads_reviews"
                         type="button"
                         role="tab"
-                        aria-controls="ratings"
+                        aria-controls="ads_reviews"
                         aria-selected="false"
                       >
-                        {t("serviceProvider.ratings")}{" "}
-                        <span>
-                          ({getProviderAdsReviewsRecord?.length || 0})
-                        </span>
+                        {t("serviceProvider.ads_reviews")}{" "}
+                        <span>({providerAdsReviews?.length || 0})</span>
+                      </button>
+                    </li>
+                    <li className="nav-item" role="presentation">
+                      <button
+                        className="nav-link"
+                        id="properties_reviews-tab"
+                        data-bs-toggle="tab"
+                        data-bs-target="#properties_reviews"
+                        type="button"
+                        role="tab"
+                        aria-controls="properties_reviews"
+                        aria-selected="false"
+                      >
+                        {t("serviceProvider.properties_reviews")}{" "}
+                        <span>({providerPropertiesReviews?.length || 0})</span>
                       </button>
                     </li>
                   </ul>
@@ -320,7 +340,7 @@ const ServiceProvider = () => {
                           ))
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0 text-md">
+                            <h5 className="mb-0 text-sm">
                               {t("no_data_exists")}
                             </h5>
                           </div>
@@ -426,7 +446,7 @@ const ServiceProvider = () => {
                                 />
                                 <div className="p-3">
                                   <p className="line-height mb-1 text-dark">
-                                    {item?.title.slice(0, 60)} ...
+                                    {item?.title?.slice(0, 60)} ...
                                   </p>
                                   <hr className="my-1" />
                                   <ul className="p-0 mb-0 list-unstyled">
@@ -476,7 +496,7 @@ const ServiceProvider = () => {
                           ))
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0 text-md">
+                            <h5 className="mb-0 text-sm">
                               {t("no_data_exists")}
                             </h5>
                           </div>
@@ -536,9 +556,9 @@ const ServiceProvider = () => {
                     </div>
                     <div
                       className="tab-pane fade p-3"
-                      id="ratings"
+                      id="ads_reviews"
                       role="tabpanel"
-                      aria-labelledby="ratings-tab"
+                      aria-labelledby="ads_reviews-tab"
                     >
                       {currentReviews?.map((review, i) => (
                         <div className="rate_wrapper mb-3" key={i}>
@@ -575,14 +595,14 @@ const ServiceProvider = () => {
                       ))}
 
                       {/* Pagination */}
-                      {totalReviewPages > 1 && (
+                      {paginationReviews?.last_page > 1 && (
                         <div className="text-center my-3 d-flex justify-content-center align-items-center gap-2">
                           <button
                             className="btn btn-sm border"
                             onClick={() =>
                               setCurrentReviewPage((p) => Math.max(p - 1, 1))
                             }
-                            disabled={currentReviewPage === 1}
+                            disabled={paginationReviews.current_page === 1}
                           >
                             <i
                               className={`bi bi-arrow-${
@@ -591,28 +611,134 @@ const ServiceProvider = () => {
                             ></i>
                           </button>
 
-                          {Array.from({ length: totalReviewPages }, (_, i) => (
-                            <button
-                              key={i}
-                              className={`btn btn-sm mx-1 bg-white border ${
-                                currentReviewPage === i + 1
-                                  ? "main-color"
-                                  : "text-dark"
-                              }`}
-                              onClick={() => setCurrentReviewPage(i + 1)}
-                            >
-                              {i + 1}
-                            </button>
-                          ))}
+                          {Array.from(
+                            { length: paginationReviews.last_page },
+                            (_, i) => (
+                              <button
+                                key={i}
+                                className={`btn btn-sm mx-1 bg-white border ${
+                                  paginationReviews.current_page === i + 1
+                                    ? "main-color"
+                                    : "text-dark"
+                                }`}
+                                onClick={() => setCurrentReviewPage(i + 1)}
+                              >
+                                {i + 1}
+                              </button>
+                            )
+                          )}
 
                           <button
                             className="btn btn-sm border"
                             onClick={() =>
                               setCurrentReviewPage((p) =>
-                                Math.min(p + 1, totalReviewPages)
+                                Math.min(p + 1, paginationReviews.last_page)
                               )
                             }
-                            disabled={currentReviewPage === totalReviewPages}
+                            disabled={
+                              paginationReviews.current_page ===
+                              paginationReviews.last_page
+                            }
+                          >
+                            <i
+                              className={`bi bi-arrow-${
+                                i18n.language === "ar" ? "left" : "right"
+                              }`}
+                            ></i>
+                          </button>
+                        </div>
+                      )}
+                    </div>
+                    <div
+                      className="tab-pane fade p-3"
+                      id="properties_reviews"
+                      role="tabpanel"
+                      aria-labelledby="properties_reviews-tab"
+                    >
+                      {currentPropsReviews?.map((review, i) => (
+                        <div className="rate_wrapper mb-3" key={i}>
+                          <div className="row">
+                            <div className="col-xl-2 col-lg-2 col-md-2 col-12">
+                              <img
+                                src={review?.user?.image || "/user.webp"}
+                                style={{ borderRadius: "50%" }}
+                                alt="--"
+                                className="d-block my-2"
+                              />
+                            </div>
+                            <div className="col-xl-7 col-lg-7 col-md-7 col-12">
+                              <b>{review?.user?.name}</b>
+                              <p>{review?.created_at}</p>
+                              <p className="line-height">{review?.comment}</p>
+                            </div>
+                            <div className="col-xl-3 col-lg-3 col-md-3 col-12">
+                              <div className="mb-1 text-center">
+                                {[...Array(5)].map((_, idx) => (
+                                  <i
+                                    key={idx}
+                                    className={`bi ${
+                                      idx < Number(review?.rate)
+                                        ? "bi-star-fill text-warning"
+                                        : "bi-star text-secondary"
+                                    }`}
+                                  />
+                                ))}
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      ))}
+
+                      {/* Pagination */}
+                      {paginationPropsReviews?.last_page > 1 && (
+                        <div className="text-center my-3 d-flex justify-content-center align-items-center gap-2">
+                          <button
+                            className="btn btn-sm border"
+                            onClick={() =>
+                              setCurrentPropsReviewPage((p) =>
+                                Math.max(p - 1, 1)
+                              )
+                            }
+                            disabled={paginationPropsReviews.current_page === 1}
+                          >
+                            <i
+                              className={`bi bi-arrow-${
+                                i18n.language === "ar" ? "right" : "left"
+                              }`}
+                            ></i>
+                          </button>
+
+                          {Array.from(
+                            { length: paginationPropsReviews.last_page },
+                            (_, i) => (
+                              <button
+                                key={i}
+                                className={`btn btn-sm mx-1 bg-white border ${
+                                  paginationPropsReviews.current_page === i + 1
+                                    ? "main-color"
+                                    : "text-dark"
+                                }`}
+                                onClick={() => setCurrentPropsReviewPage(i + 1)}
+                              >
+                                {i + 1}
+                              </button>
+                            )
+                          )}
+
+                          <button
+                            className="btn btn-sm border"
+                            onClick={() =>
+                              setCurrentPropsReviewPage((p) =>
+                                Math.min(
+                                  p + 1,
+                                  paginationPropsReviews.last_page
+                                )
+                              )
+                            }
+                            disabled={
+                              paginationPropsReviews.current_page ===
+                              paginationPropsReviews.last_page
+                            }
                           >
                             <i
                               className={`bi bi-arrow-${
@@ -630,7 +756,7 @@ const ServiceProvider = () => {
                     <b>{t("serviceProvider.statistics")}</b>
                     <hr />
                     <div className="d-flex justify-content-between my-3">
-                      <span>{t("serviceProvider.reviews")}</span>
+                      <span>{t("home.ads")}</span>
                       <div>
                         {[...Array(5)].map((_, idx) => {
                           const fullStar =
@@ -660,11 +786,50 @@ const ServiceProvider = () => {
                           );
                         })}
                         <span>
-                          &nbsp; ({getProviderStatisticsRecord?.reviews_count}){" "}
-                          {t("serviceProvider.reviews")}
+                          &nbsp; ({getProviderStatisticsRecord?.average_rate}){" "}
+                          {t("serviceProvider.average_rate")}
                         </span>
                       </div>
                     </div>
+                     <div className="d-flex justify-content-between my-3">
+                        <span>{t("home.properties")}</span>
+                        <div>
+                          {[...Array(5)].map((_, idx) => {
+                            const fullStar =
+                              idx + 1 <=
+                              Math.floor(
+                                getProviderStatisticsRecord?.properties_average_rate
+                              );
+                            const halfStar =
+                              idx + 1 >
+                                Math.floor(
+                                  getProviderStatisticsRecord?.properties_average_rate
+                                ) &&
+                              idx + 1 <=
+                                getProviderStatisticsRecord?.properties_average_rate;
+
+                            return (
+                              <i
+                                key={idx}
+                                className={`bi ${
+                                  fullStar
+                                    ? "bi-star-fill text-warning"
+                                    : halfStar
+                                    ? "bi-star-half text-warning"
+                                    : "bi-star text-secondary"
+                                }`}
+                              />
+                            );
+                          })}
+                          <span>
+                            &nbsp; (
+                            {
+                              getProviderStatisticsRecord?.properties_average_rate
+                            }
+                            ) {t("serviceProvider.average_rate")}
+                          </span>
+                        </div>
+                      </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.publishedServices")}</span>
                       <div>({getProviderStatisticsRecord?.ads_count})</div>
@@ -692,13 +857,11 @@ const ServiceProvider = () => {
                     <div className="ribbon-wrapper">
                       <div className="glow">&nbsp;</div>
                       <div className="ribbon-front fw-bold">
-                        {i18n.language === "ar" ? (
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.plan_name_ar
-                        ):(
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.plan_name_en
-                        )}
+                        {i18n.language === "ar"
+                          ? JSON.parse(sessionStorage.getItem("user3ayin"))
+                              ?.user?.subscription?.plan_name_ar
+                          : JSON.parse(sessionStorage.getItem("user3ayin"))
+                              ?.user?.subscription?.plan_name_en}
                       </div>
                       <div className="ribbon-edge-topleft"></div>
                       <div className="ribbon-edge-topright"></div>
@@ -832,7 +995,7 @@ const ServiceProvider = () => {
             </div>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-              <h5 className="mb-0 text-md">{t("no_data_exists")}</h5>
+              <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
             </div>
           )}
         </div>

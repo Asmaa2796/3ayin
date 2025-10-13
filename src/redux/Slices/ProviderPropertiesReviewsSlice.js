@@ -4,14 +4,14 @@ import i18n from "../../i18n/i18n";
 
 const BASE_URL = process.env.REACT_APP_BASE_URL;
 
-export const getProviderAdsReviews = createAsyncThunk(
-  "providerAdsReviews/fetchAll",
+export const getProviderPropertiesReviews = createAsyncThunk(
+  "providerPropertiesReviews/fetchAll",
   async ({ page = 1 } = {}, { rejectWithValue }) => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
 
       const response = await axios.get(
-        `${BASE_URL}/api/provider/reviews/ads?page=${page}`,
+        `${BASE_URL}/api/provider/properties/reviews?page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -32,15 +32,15 @@ export const getProviderAdsReviews = createAsyncThunk(
 
 
 const initialState = {
-  providerAdsReviews: [],
+  providerPropertiesReviews: [],
   pagination: {},
   isLoading: false,
   error: null,
   success: null,
 };
 
-const ProviderAdsReviewsSlice = createSlice({
-  name: "providerAdsReviews",
+const ProviderPropertiesReviewsSlice = createSlice({
+  name: "providerPropertiesReviews",
   initialState,
   reducers: {
     clearState: (state) => {
@@ -50,21 +50,21 @@ const ProviderAdsReviewsSlice = createSlice({
   },
   extraReducers: (builder) => {
     builder
-      .addCase(getProviderAdsReviews.pending, (state) => {
+      .addCase(getProviderPropertiesReviews.pending, (state) => {
         state.isLoading = true;
         state.error = null;
       })
-      .addCase(getProviderAdsReviews.fulfilled, (state, action) => {
+      .addCase(getProviderPropertiesReviews.fulfilled, (state, action) => {
         state.isLoading = false;
-        state.providerAdsReviews = action.payload.data;
+        state.providerPropertiesReviews = action.payload.data;
         state.pagination = action.payload.pagination;
       })
-      .addCase(getProviderAdsReviews.rejected, (state, action) => {
+      .addCase(getProviderPropertiesReviews.rejected, (state, action) => {
         state.isLoading = false;
         state.error = action.payload;
       });
   },
 });
 
-export const { clearState } = ProviderAdsReviewsSlice.actions;
-export default ProviderAdsReviewsSlice.reducer;
+export const { clearState } = ProviderPropertiesReviewsSlice.actions;
+export default ProviderPropertiesReviewsSlice.reducer;

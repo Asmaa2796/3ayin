@@ -40,7 +40,7 @@ const HowItWorks = () => {
             </>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-              <h5 className="mb-0">{t("no_data_exists")}</h5>
+              <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
             </div>
           )}
         </div>

@@ -14,6 +14,7 @@ import ProviderDataSlice from "./Slices/ProviderDataSlice";
 import ProviderAdsSlice from "./Slices/ProviderAdsSlice"; 
 import ProviderPropertiesSlice from "./Slices/ProviderPropertiesSlice"; 
 import ProviderAdsReviewsSlice from "./Slices/ProviderAdsReviewsSlice"; 
+import ProviderPropertiesReviewsSlice from "./Slices/ProviderPropertiesReviewsSlice"; 
 import ProviderStatisticsSlice from "./Slices/ProviderStatisticsSlice"; 
 import ContactSlice from "./Slices/ContactSlice"; 
 import PrivacyPolicySlice from "./Slices/PrivacyPolicySlice"; 
@@ -44,6 +45,7 @@ const store = configureStore({
     providerAds: ProviderAdsSlice,
     providerProperties: ProviderPropertiesSlice,
     providerAdsReviews: ProviderAdsReviewsSlice,
+    providerPropertiesReviews: ProviderPropertiesReviewsSlice,
     providerStatistics: ProviderStatisticsSlice,
     adsList: SearchSlice,
     contact: ContactSlice,

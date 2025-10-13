@@ -7,7 +7,7 @@ import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { fetchAllProperties } from "../../redux/Slices/AllPropertiesSlice";
 import { searchProperty } from "../../redux/Slices/SearchSlice";
 
-const PropertiesPage = () => {
+const PropertiesARVRPage = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
   const [activeType, setActiveType] = useState("all");
@@ -22,12 +22,10 @@ const PropertiesPage = () => {
   const { propertiesList, loadingFiltered, propertiesPagination } = useSelector(
     (state) => state.search
   );
-  useEffect(() => {
-    setPage(1);
-  }, [searchValue]);
+
   useEffect(() => {
     if (searchValue) {
-      dispatch(searchProperty({ search: searchValue, page, per_page: 9 }));
+      dispatch(searchProperty(searchValue));
     } else {
       dispatch(fetchAllProperties({ type: activeType, page, per_page: 9 }));
     }
@@ -36,7 +34,7 @@ const PropertiesPage = () => {
   const searchMode = Boolean(searchValue);
   const listToRender = searchMode ? propertiesList : properties;
   const paginationInfo = searchMode ? propertiesPagination : pagination;
-
+  
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
@@ -72,7 +70,11 @@ const PropertiesPage = () => {
                 setActiveType(type);
                 setPage(1);
                 if (searchValue) {
-                  window.history.replaceState({}, "", window.location.pathname);
+                  window.history.replaceState(
+                    {},
+                    "",
+                    window.location.pathname
+                  );
                   setSearchParams({});
                 }
               }}
@@ -90,14 +92,12 @@ const PropertiesPage = () => {
             <>
               <div className="row">
                 {listToRender.map((item, index) => (
-                  <div
+                  item?.AR_VR && (
+                    <div
                     className="col-xl-3 col-lg-3 col-md-6 col-12"
                     key={item.id || index}
                   >
-                    <Link
-                      to={`/propertyDetails/${item.id}`}
-                      className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block"
-                    >
+                    <Link to={`/propertyDetails/${item.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
                       <div className="finishing_status">
                         {finishingMap[item?.finishing_status] ||
                           item?.finishing_status}
@@ -140,7 +140,9 @@ const PropertiesPage = () => {
                             </span>
                           </div>
                           <div>
-                            <span className="view_details">
+                            <span
+                              className="view_details"
+                            >
                               <i
                                 className={`text-sm bi ${
                                   i18n.language === "ar"
@@ -154,6 +156,7 @@ const PropertiesPage = () => {
                       </div>
                     </Link>
                   </div>
+                  ) 
                 ))}
               </div>
 
@@ -193,4 +196,4 @@ const PropertiesPage = () => {
   );
 };
 
-export default PropertiesPage;
+export default PropertiesARVRPage;

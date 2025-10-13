@@ -248,7 +248,7 @@ const PublishAd = () => {
     ) {
       errorMessage = t("please_complete_identification");
       toast.error(errorMessage);
-      navigate("/profile");
+      navigate("/user_profile");
     } else {
       toast.error(typeof err === "string" ? err : err?.message || errorMessage);
     }

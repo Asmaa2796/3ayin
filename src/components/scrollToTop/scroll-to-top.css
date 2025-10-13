@@ -13,7 +13,7 @@
   backdrop-filter: blur(10px);
   bottom: -70px;
   transition: 0.6s;
-  z-index: 99999;
+  z-index: 99;
 }
 
 .progress.active {
@@ -42,4 +42,13 @@
 
 [dir="ltr"] .dropdown-item {
   text-align: left;
+}
+
+@media(max-width:567px) {
+.progress {
+    width: 35px;
+    height: 35px;
+    border-radius: 8px;
+}
+.progress .progress-value {font-size: 11px;}
 }

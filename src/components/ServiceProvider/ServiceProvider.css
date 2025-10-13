@@ -204,3 +204,12 @@
         border-color: #16181b;
     }
 }
+@media(max-width:567px) {
+    .tab_status {
+        margin: 20px 0;
+        display: flex;
+        align-items: center;
+        white-space: nowrap;
+        overflow-y: scroll;
+    }
+}

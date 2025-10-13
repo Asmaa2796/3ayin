@@ -50,13 +50,13 @@ const AddProperty = () => {
     location: "",
     AR_VR: "",
     video_url: "",
-    distinctive_signs: "",
-    count_of_bathrooms: "",
-    number_of_parking_spaces: "",
-    education: false,
-    health_and_medicine: false,
-    transportation: false,
-    unit_features: [],
+    feature_mark: "",
+    bathrooms: "",
+    garages: "",
+    education: 0,
+    health: 0,
+    transportation: 0,
+    facilities: [],
   });
 
   const handleChange = (e) => {
@@ -64,19 +64,16 @@ const AddProperty = () => {
 
     setFormata((prev) => {
       // Case 1: handle normal boolean checkboxes
-      if (
-        ["education", "health_and_medicine", "transportation"].includes(name)
-      ) {
-        return { ...prev, [name]: checked };
+      if (["education", "health", "transportation"].includes(name)) {
+        return { ...prev, [name]: checked ? 1 : 0 };
       }
 
-      if (name === "unit_features") {
+      if (name === "facilities") {
         const featureId = Number(value);
-        const updatedFeatures = prev.unit_features.includes(featureId)
-          ? prev.unit_features.filter((id) => id !== featureId)
-          : [...prev.unit_features, featureId];
-
-        return { ...prev, unit_features: updatedFeatures };
+        const updatedFeatures = prev.facilities.includes(featureId)
+          ? prev.facilities.filter((id) => id !== featureId)
+          : [...prev.facilities, featureId];
+        return { ...prev, facilities: updatedFeatures };
       }
 
       return { ...prev, [name]: value };
@@ -147,10 +144,13 @@ const AddProperty = () => {
 
     data.append("user_id", userID);
     Object.entries(formdata).forEach(([key, value]) => {
-      if (["images", "files"].includes(key)) return;
+      if (["images", "files", "facilities"].includes(key)) return;
       if (value !== null && value !== undefined) {
         data.append(key, value);
       }
+    });
+    formdata.facilities.forEach((id, index) => {
+      data.append(`facilities[${index}]`, id);
     });
 
     formdata.images.forEach((file) => data.append("images[]", file));
@@ -501,9 +501,9 @@ const AddProperty = () => {
                 </label>
                 <input
                   type="text"
-                  name="distinctive_signs"
+                  name="feature_mark"
                   onChange={handleChange}
-                  value={formdata.distinctive_signs}
+                  value={formdata.feature_mark}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -512,13 +512,13 @@ const AddProperty = () => {
                 </label>
                 <input
                   type="number"
-                  name="count_of_bathrooms"
+                  name="bathrooms"
                   onChange={handleChange}
                   min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
-                  value={formdata.count_of_bathrooms}
+                  value={formdata.bathrooms}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -527,13 +527,13 @@ const AddProperty = () => {
                 </label>
                 <input
                   type="number"
-                  name="number_of_parking_spaces"
+                  name="garages"
                   onChange={handleChange}
                   min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
-                  value={formdata.number_of_parking_spaces}
+                  value={formdata.garages}
                 />
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -545,7 +545,7 @@ const AddProperty = () => {
                       name="education"
                       className="no-class"
                       onChange={handleChange}
-                      checked={formdata.education}
+                      checked={formdata.education === 1}
                     />
                   </div>
                   <div className="col-xl-4 col-lg-64 col-md-6 col-12">
@@ -554,10 +554,10 @@ const AddProperty = () => {
                     </label>
                     <input
                       type="checkbox"
-                      name="health_and_medicine"
+                      name="health"
                       className="no-class"
                       onChange={handleChange}
-                      checked={formdata.health_and_medicine}
+                      checked={formdata.health === 1}
                     />
                   </div>
                   <div className="col-xl-4 col-lg-64 col-md-6 col-12">
@@ -569,7 +569,7 @@ const AddProperty = () => {
                       className="no-class"
                       name="transportation"
                       onChange={handleChange}
-                      checked={formdata.transportation}
+                      checked={formdata.transportation === 1}
                     />
                   </div>
                 </div>
@@ -590,10 +590,10 @@ const AddProperty = () => {
                         >
                           <input
                             type="checkbox"
-                            name="unit_features"
+                            name="facilities"
                             className="no-class mx-2"
                             value={f.id}
-                            checked={formdata.unit_features.includes(f.id)}
+                            checked={formdata.facilities.includes(f.id)}
                             onChange={handleChange}
                           />
                           <span>{f.name}</span>

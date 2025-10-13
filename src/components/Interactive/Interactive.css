@@ -97,7 +97,7 @@
 .interactive_btns .react-ripples {border-radius: 50%;}
 /* media */
 @media(max-width:567px) {
-    .interactive .after_img {max-height: 75% !important;}
+    .interactive .after_img {max-height: 57% !important;}
     .interactive .main_img {max-height: 220px;}
     .interactive_btns button {width: 30px;height: 30px;}
     .spin-div {
