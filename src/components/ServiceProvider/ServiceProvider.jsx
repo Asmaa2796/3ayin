@@ -755,9 +755,9 @@ const ServiceProvider = () => {
                   <div className="common text-sm">
                     <b>{t("serviceProvider.statistics")}</b>
                     <hr />
-                    <div className="d-flex justify-content-between my-3">
+                    <div className="d-flex justify-content-between align-items-center my-3">
                       <span>{t("home.ads")}</span>
-                      <div>
+                      <div className="d-block text-center">
                         {[...Array(5)].map((_, idx) => {
                           const fullStar =
                             idx + 1 <=
@@ -785,15 +785,15 @@ const ServiceProvider = () => {
                             />
                           );
                         })}
-                        <span>
+                        <span className="d-block text-center">
                           &nbsp; ({getProviderStatisticsRecord?.average_rate}){" "}
                           {t("serviceProvider.average_rate")}
                         </span>
                       </div>
                     </div>
-                     <div className="d-flex justify-content-between my-3">
+                     <div className="d-flex justify-content-between align-items-center my-3">
                         <span>{t("home.properties")}</span>
-                        <div>
+                        <div className="d-block text-center">
                           {[...Array(5)].map((_, idx) => {
                             const fullStar =
                               idx + 1 <=
@@ -821,7 +821,7 @@ const ServiceProvider = () => {
                               />
                             );
                           })}
-                          <span>
+                          <span className="d-block text-center">
                             &nbsp; (
                             {
                               getProviderStatisticsRecord?.properties_average_rate

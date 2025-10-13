@@ -213,3 +213,10 @@
         overflow-y: scroll;
     }
 }
+@media(max-width:260px) {
+    .ribbon-front {
+        background-color: var(--main-color);
+        height: 38px;
+        width: 249px;
+    }
+}
