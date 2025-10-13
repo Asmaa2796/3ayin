@@ -133,3 +133,6 @@
 @media(max-width:991px) {
     .interactive_btns button,.interactive_btns .spinner {display: none;}
 }
+@media(max-width:1200px) {
+    .interactive .after_img {display: none;}
+}
