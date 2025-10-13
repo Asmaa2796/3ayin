@@ -19,7 +19,7 @@ const RecommendedServices = () => {
   const cards = ads?.slice(0, 8) || [];
   useEffect(() => {
     dispatch(fetchAds());
-  }, [dispatch]);
+  }, [dispatch,i18n.language]);
   const averageRating = (reviews = []) => {
     if (!reviews.length) return 0;
     const total = reviews.reduce((sum, r) => sum + parseInt(r.rate), 0);

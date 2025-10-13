@@ -19,7 +19,7 @@ const RecommendedProperties = () => {
   const cards = properties?.slice(0, 8) || [];
   useEffect(() => {
     dispatch(fetchAllProperties());
-  }, [dispatch]);
+  }, [dispatch,i18n.language]);
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),

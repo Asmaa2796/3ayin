@@ -197,7 +197,7 @@ const PropertyDetails = () => {
     setReviews([]);
     getPropertyReview();
     dispatch(fetchPropertyById(id));
-  }, [id, i18n, t]);
+  }, [id, i18n.language, t]);
 
   // get ad review
   const getPropertyReview = async () => {

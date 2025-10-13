@@ -147,7 +147,7 @@ const ServiceDetails = () => {
     setReviews([]);
     getAdReview();
     dispatch(getAdById(id));
-  }, [id, i18n, t]);
+  }, [id, i18n.language, t]);
 
   // get ad review
   const getAdReview = async () => {
