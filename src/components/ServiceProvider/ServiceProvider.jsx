@@ -155,7 +155,7 @@ const ServiceProvider = () => {
           ) : providerDataRecord ? (
             <div className="provider_info bg_overlay py-5">
               <div className="row position-relative">
-                <div className="col-xl-9 col-lg-9 col-md-9 col-12">
+                <div className="col-xl-9 col-lg-9 col-md-12 col-12">
                   {/* tabs */}
                   <ul
                     className="nav nav-tabs justify-content-center"
@@ -751,7 +751,7 @@ const ServiceProvider = () => {
                     </div>
                   </div>
                 </div>
-                <div className="col-xl-3 col-lg-3 col-md-3 col-12">
+                <div className="col-xl-3 col-lg-3 col-md-12 col-12">
                   <div className="common text-sm">
                     <b>{t("serviceProvider.statistics")}</b>
                     <hr />

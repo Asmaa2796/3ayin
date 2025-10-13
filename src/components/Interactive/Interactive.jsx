@@ -104,7 +104,7 @@ const Interactive = () => {
             {openDropdown === 1 && (
               <div className="dropdown" data-aos="fade-up">
                 <ul>
-                  <ul>
+                  {/* <ul>
                     {subCategories.length > 0 ? (
                       subCategories.map((sub) => (
                         <li key={sub.id}>
@@ -114,7 +114,13 @@ const Interactive = () => {
                     ) : (
                       <li>--</li>
                     )}
-                  </ul>
+                  </ul> */}
+                  <li>
+                    <Link className="d-block" to="/publish_ad">{t("create_ad.publishAd")}</Link>
+                  </li>
+                  <li>
+                    <Link className="d-block" to="/all_ads">{t("labels.all_ads")}</Link>
+                  </li>
                 </ul>
               </div>
             )}
@@ -137,10 +143,10 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link className="d-block">{t("interactive.pdfFile")}</Link>
+                    <Link className="d-block" to="/properties_AR_VR">{t("services.3ayinVrAr")}</Link>
                   </li>
                   <li>
-                    <Link className="d-block" to="/properties_map">{t("interactive.map")}</Link>
+                    <Link className="d-block" to="/properties_map">{t("services.3ayinMap")}</Link>
                   </li>
                 </ul>
               </div>
@@ -162,15 +168,9 @@ const Interactive = () => {
             <Tooltip id="tooltip3" />
             {openDropdown === 3 && (
               <div className="dropdown" data-aos="fade-up">
-                <ul>
+                <ul>                  
                   <li>
-                    <Link className="d-block" to="/publish_ad">{t("create_ad.publishAd")}</Link>
-                  </li>
-                  <li>
-                    <Link className="d-block" to="/all_ads">{t("labels.all_ads")}</Link>
-                  </li>
-                  <li>
-                    <Link className="d-block" to="/add_property">{t("navbar.add_service")}</Link>
+                    <Link className="d-block" to="/add_property">{t("navbar.add_property")}</Link>
                   </li>
                   <li>
                     <Link className="d-block" to="/all_properties">{t("property.all")}</Link>
@@ -197,10 +197,10 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link className="d-block">{t("interactive.engineers")}</Link>
+                    <Link className="d-block" to="/packages">{t("packages.title")}</Link>
                   </li>
                   <li>
-                    <Link className="d-block">{t("interactive.marketers")}</Link>
+                    <Link to="/faq" className="d-block">{t("footer.faq")}</Link>
                   </li>
                 </ul>
               </div>
