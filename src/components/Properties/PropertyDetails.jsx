@@ -917,9 +917,10 @@ const PropertyDetails = () => {
                                 ></i>
                               </button>
                             </form>
+                            
+                        <hr />
                           </div>
                         )}
-                        <hr />
                         <b className="d-block text-sm">
                               <i
                                 className={`bi bi-caret-${
