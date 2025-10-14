@@ -97,19 +97,25 @@ const Navbar = () => {
     };
   }, []);
 
-  useEffect(() => {
-    const user = JSON.parse(sessionStorage.getItem("user3ayin"));
+const isLoggedIn = !!user;
 
-    if (
-      (!user && location.pathname === "/publish_ad") ||
-      (!user && location.pathname === "/add_property") ||
-      (!user && location.pathname === "/profile") ||
-      (!user && location.pathname.startsWith("/provider_profile"))
-    ) {
-      toast.warning(t("please_log_in_to_continue"));
-      navigate("/login");
-    }
-  }, [location]);
+useEffect(() => {
+  if (
+    !isLoggedIn &&
+    ["/publish_ad", "/add_property", "/user_profile"].includes(
+      location.pathname
+    )
+  ) {
+    toast.warning(t("please_log_in_to_continue"));
+    navigate("/login");
+  }
+
+  if (!isLoggedIn && location.pathname.startsWith("/provider_profile")) {
+    toast.warning(t("please_log_in_to_continue"));
+    navigate("/login");
+  }
+}, [isLoggedIn, location, navigate]);
+
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     sessionStorage.setItem("theme", theme);
@@ -587,6 +593,8 @@ const Navbar = () => {
           </button>
         </div>
 
+        <div className="d-flex align-items-center gap-3">
+        
         <div className="dropdown">
           <button
             className="nav-link dropdown-toggle add btn p-0 border-0 bg-transparent d-flex align-items-center"
@@ -638,7 +646,6 @@ const Navbar = () => {
             </li>
           </ul>
         </div>
-        <div className="d-flex align-items-center gap-3">
           <button
             className="btn bg-transparent border-0 p-0"
             onClick={() => setIsSearchOpen(true)}
@@ -934,8 +941,7 @@ const Navbar = () => {
           </ul>
         </div>
       </div>
-      {/* open menu */}
-      {/* ✅ SIDE MENU + OVERLAY */}
+     
       <div
         className={`side_menu_overlay ${isSideMenuOpen ? "show" : ""}`}
         onClick={() => setIsSideMenuOpen(false)}

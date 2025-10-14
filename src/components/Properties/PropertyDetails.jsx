@@ -490,85 +490,16 @@ const PropertyDetails = () => {
                 <div className="col-xl-12 col-lg-12 xol-md-12 col-12">
                   {/* service info */}
                   <div className="service_info position-relative my-4">
-                    <ul className="nav nav-tabs" id="myTab" role="tablist">
-                      <li className="nav-item" role="presentation">
-                        <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
-                          <button
-                            className="nav-link active"
-                            id="property_status-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#property_status"
-                            type="button"
-                            role="tab"
-                            aria-controls="property_status"
-                            aria-selected="true"
-                          >
-                            {t("property.property_status")}
-                          </button>
-                        </Ripples>
-                      </li>
-                      <li className="nav-item" role="presentation">
-                        <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
-                          <button
-                            className="nav-link"
-                            id="address-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#address"
-                            type="button"
-                            role="tab"
-                            aria-controls="address"
-                            aria-selected="true"
-                          >
-                            {t("property.address")}
-                          </button>
-                        </Ripples>
-                      </li>
-                      {propertyItem?.category === "rent" && (
-                        <li className="nav-item" role="presentation">
-                          <Ripples
-                            color="rgba(219, 147, 12, 0.21)"
-                            during={1500}
-                          >
-                            <button
-                              className="nav-link"
-                              id="ratings-tab"
-                              data-bs-toggle="tab"
-                              data-bs-target="#ratings"
-                              type="button"
-                              role="tab"
-                              aria-controls="ratings"
-                              aria-selected="false"
-                            >
-                              {t("servicesPage.ratings")}{" "}
-                              <span>({reviews?.length || 0})</span>
-                            </button>
-                          </Ripples>
-                        </li>
-                      )}
-                      <li className="nav-item" role="presentation">
-                        <Ripples color="rgba(219, 147, 12, 0.21)" during={1500}>
-                          <button
-                            className="nav-link"
-                            id="extraFiles-tab"
-                            data-bs-toggle="tab"
-                            data-bs-target="#extraFiles"
-                            type="button"
-                            role="tab"
-                            aria-controls="extraFiles"
-                            aria-selected="false"
-                          >
-                            {t("servicesPage.extraFiles")}
-                          </button>
-                        </Ripples>
-                      </li>
-                    </ul>
-                    <div className="tab-content" id="myTabContent">
-                      <div
-                        className="tab-pane fade show active p-3"
-                        id="property_status"
-                        role="tabpanel"
-                        aria-labelledby="property_status-tab"
-                      >
+                    <h4 className="d-block main-color fw-bold">
+                      <i
+                        className={`bi bi-blockquote-${
+                          i18n.language === "ar" ? "left" : "right"
+                        }`}
+                      ></i>{" "}
+                      {t("property.propertyDetails")}
+                    </h4>
+                    <div>
+                      <div>
                         <ul className="p-0 list-unstyled mb-0 row">
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
@@ -787,13 +718,7 @@ const PropertyDetails = () => {
                             </div>
                           )}
                         </div>
-                      </div>
-                      <div
-                        className="tab-pane fade p-3"
-                        id="address"
-                        role="tabpanel"
-                        aria-labelledby="address-tab"
-                      >
+                        <hr />
                         <b className="d-block text-sm">
                           <i
                             className={`bi bi-caret-${
@@ -838,162 +763,171 @@ const PropertyDetails = () => {
                             />
                           )}
                         </div>
-                      </div>
-                      {propertyItem?.category === "rent" && (
-                        <div
-                          className="tab-pane fade p-3"
-                          id="ratings"
-                          role="tabpanel"
-                          aria-labelledby="ratings-tab"
-                        >
-                          {reviews.length > 0 ? (
-                            reviews.map((review) => (
-                              <div
-                                key={review.id}
-                                className="rate_wrapper mb-2"
-                              >
-                                <div className="row">
-                                  {/* User Image */}
-                                  <div className="col-xl-2 col-lg-2 col-md-2 col-12">
-                                    <img
-                                      src={review.user?.image || "/user.webp"}
-                                      alt={review.user?.name || "User"}
-                                      className="d-block my-2"
-                                      style={{
-                                        borderRadius: "50%",
-                                        width: "60px",
-                                        height: "60px",
-                                        objectFit: "cover",
-                                      }}
-                                      onError={(e) =>
-                                        (e.target.src = "/user.webp")
-                                      }
-                                    />
-                                  </div>
+                        <hr />
+                        {propertyItem?.category === "rent" && (
+                          <div>
+                            <b className="d-block text-sm">
+                              <i
+                                className={`bi bi-caret-${
+                                  i18n.language === "ar" ? "left" : "right"
+                                }-fill`}
+                              ></i>{" "}
+                              {t("servicesPage.ratings")}
+                            </b>
+                            {reviews.length > 0 ? (
+                              reviews.map((review) => (
+                                <div
+                                  key={review.id}
+                                  className="rate_wrapper mb-2"
+                                >
+                                  <div className="row">
+                                    {/* User Image */}
+                                    <div className="col-xl-2 col-lg-2 col-md-2 col-12">
+                                      <img
+                                        src={review.user?.image || "/user.webp"}
+                                        alt={review.user?.name || "User"}
+                                        className="d-block my-2"
+                                        style={{
+                                          borderRadius: "50%",
+                                          width: "60px",
+                                          height: "60px",
+                                          objectFit: "cover",
+                                        }}
+                                        onError={(e) =>
+                                          (e.target.src = "/user.webp")
+                                        }
+                                      />
+                                    </div>
 
-                                  {/* User Info */}
-                                  <div className="col-xl-7 col-lg-7 col-md-7 col-12">
-                                    <b>{review.user?.name}</b>
-                                    <p>{review.created_at}</p>
-                                    <p
-                                      className={`line-height ${
-                                        i18n.language === "en"
-                                          ? "custom-font"
-                                          : ""
-                                      }`}
-                                    >
-                                      {review.comment}
-                                    </p>
-                                  </div>
+                                    {/* User Info */}
+                                    <div className="col-xl-7 col-lg-7 col-md-7 col-12">
+                                      <b>{review.user?.name}</b>
+                                      <p>{review.created_at}</p>
+                                      <p
+                                        className={`line-height ${
+                                          i18n.language === "en"
+                                            ? "custom-font"
+                                            : ""
+                                        }`}
+                                      >
+                                        {review.comment}
+                                      </p>
+                                    </div>
 
-                                  {/* Rating */}
-                                  <div className="col-xl-3 col-lg-3 col-md-3 col-12">
-                                    <div className="mb-1 text-center">
-                                      {[1, 2, 3, 4, 5].map((star) => (
-                                        <i
-                                          key={star}
-                                          className={`bi ${
-                                            star <= parseInt(review.rate)
-                                              ? "bi-star-fill text-warning"
-                                              : "bi-star text-secondary"
-                                          }`}
-                                        ></i>
-                                      ))}
+                                    {/* Rating */}
+                                    <div className="col-xl-3 col-lg-3 col-md-3 col-12">
+                                      <div className="mb-1 text-center">
+                                        {[1, 2, 3, 4, 5].map((star) => (
+                                          <i
+                                            key={star}
+                                            className={`bi ${
+                                              star <= parseInt(review.rate)
+                                                ? "bi-star-fill text-warning"
+                                                : "bi-star text-secondary"
+                                            }`}
+                                          ></i>
+                                        ))}
+                                      </div>
                                     </div>
                                   </div>
                                 </div>
+                              ))
+                            ) : (
+                              <div className="text-center text-center text-sm my-3">
+                                <div className="main-color">
+                                  <i className="bi bi-star"></i>
+                                  <i className="bi bi-star-half"></i>
+                                  <i className="bi bi-star-half"></i>
+                                  <i className="bi bi-star-fill"></i>
+                                  <i className="bi bi-star-fill"></i>
+                                </div>
+                                <span className="d-block">
+                                  {t("no_reviews_yet")}
+                                </span>
                               </div>
-                            ))
-                          ) : (
-                            <div className="text-center text-center text-sm my-3">
-                              <div className="main-color">
-                                <i className="bi bi-star"></i>
-                                <i className="bi bi-star-half"></i>
-                                <i className="bi bi-star-half"></i>
-                                <i className="bi bi-star-fill"></i>
-                                <i className="bi bi-star-fill"></i>
-                              </div>
-                              <span className="d-block">
-                                {t("no_reviews_yet")}
-                              </span>
-                            </div>
-                          )}
+                            )}
 
-                          {reviews.length > 3 && (
-                            <div className="text-center">
-                              <Link className="show_more">
-                                {t("recommendedServices.showMore")}{" "}
+                            {reviews.length > 3 && (
+                              <div className="text-center">
+                                <Link className="show_more">
+                                  {t("recommendedServices.showMore")}{" "}
+                                  <i
+                                    className={`bi ${
+                                      i18n.language === "ar"
+                                        ? "bi-arrow-left"
+                                        : "bi-arrow-right"
+                                    }`}
+                                  ></i>
+                                </Link>
+                              </div>
+                            )}
+                            <form
+                              onSubmit={handleSubmit}
+                              className="rating-form my-3"
+                            >
+                              <div className="mt-5 mb-4 d-flex align-items-center">
+                                <label className="d-block mb-0 fw-bold">
+                                  {t("servicesPage.rating")}
+                                </label>
+                                <div className="mx-2">
+                                  {[1, 2, 3, 4, 5].map((star) => (
+                                    <i
+                                      key={star}
+                                      className={`bi ${
+                                        star <= (hovered || rating)
+                                          ? "bi-star-fill"
+                                          : "bi-star"
+                                      } text-warning fs-4 me-1 cursor-pointer`}
+                                      onMouseEnter={() => setHovered(star)}
+                                      onMouseLeave={() => setHovered(0)}
+                                      onClick={() => setRating(star)}
+                                      style={{ cursor: "pointer" }}
+                                    />
+                                  ))}
+                                </div>
+                              </div>
+
+                              <div>
+                                <label
+                                  htmlFor="comment"
+                                  className="d-block fw-bold"
+                                >
+                                  {t("servicesPage.writeReview")}
+                                </label>
+                                <textarea
+                                  id="comment"
+                                  rows="4"
+                                  value={comment}
+                                  placeholder={t("servicesPage.writeComment")}
+                                  onChange={(e) => setComment(e.target.value)}
+                                ></textarea>
+                              </div>
+
+                              <button
+                                type="submit"
+                                className="fw-bold border-0 "
+                              >
+                                {t("servicesPage.submit")}{" "}
                                 <i
-                                  className={`bi ${
+                                  className={`text-sm bi ${
                                     i18n.language === "ar"
                                       ? "bi-arrow-left"
                                       : "bi-arrow-right"
                                   }`}
                                 ></i>
-                              </Link>
-                            </div>
-                          )}
-                          <form
-                            onSubmit={handleSubmit}
-                            className="rating-form my-3"
-                          >
-                            <div className="mt-5 mb-4 d-flex align-items-center">
-                              <label className="d-block mb-0 fw-bold">
-                                {t("servicesPage.rating")}
-                              </label>
-                              <div className="mx-2">
-                                {[1, 2, 3, 4, 5].map((star) => (
-                                  <i
-                                    key={star}
-                                    className={`bi ${
-                                      star <= (hovered || rating)
-                                        ? "bi-star-fill"
-                                        : "bi-star"
-                                    } text-warning fs-4 me-1 cursor-pointer`}
-                                    onMouseEnter={() => setHovered(star)}
-                                    onMouseLeave={() => setHovered(0)}
-                                    onClick={() => setRating(star)}
-                                    style={{ cursor: "pointer" }}
-                                  />
-                                ))}
-                              </div>
-                            </div>
-
-                            <div>
-                              <label
-                                htmlFor="comment"
-                                className="d-block fw-bold"
-                              >
-                                {t("servicesPage.writeReview")}
-                              </label>
-                              <textarea
-                                id="comment"
-                                rows="4"
-                                value={comment}
-                                placeholder={t("servicesPage.writeComment")}
-                                onChange={(e) => setComment(e.target.value)}
-                              ></textarea>
-                            </div>
-
-                            <button type="submit" className="fw-bold border-0 ">
-                              {t("servicesPage.submit")}{" "}
+                              </button>
+                            </form>
+                          </div>
+                        )}
+                        <hr />
+                        <b className="d-block text-sm">
                               <i
-                                className={`text-sm bi ${
-                                  i18n.language === "ar"
-                                    ? "bi-arrow-left"
-                                    : "bi-arrow-right"
-                                }`}
-                              ></i>
-                            </button>
-                          </form>
-                        </div>
-                      )}
-                      <div
-                        className="tab-pane fade p-3"
-                        id="extraFiles"
-                        role="tabpanel"
-                        aria-labelledby="extraFiles-tab"
-                      >
+                                className={`bi bi-caret-${
+                                  i18n.language === "ar" ? "left" : "right"
+                                }-fill`}
+                              ></i>{" "}
+                              {t("servicesPage.extraFiles")}
+                            </b>
                         {propertyItem?.files &&
                         propertyItem.files.length > 0 ? (
                           propertyItem.files.map((file, index) => {

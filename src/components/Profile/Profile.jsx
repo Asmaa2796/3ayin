@@ -19,8 +19,14 @@ const Profile = () => {
   const userID = user?.user?.id;
   const [previewImage, setPreviewImage] = useState("/user.webp");
   const dispatch = useDispatch();
- 
-  const { success, error,successUpdate,errorUpdate,isLoading:loading } = useSelector((state) => state.userIdentifies);
+
+  const {
+    success,
+    error,
+    successUpdate,
+    errorUpdate,
+    isLoading: loading,
+  } = useSelector((state) => state.userIdentifies);
 
   //   handle upload image
   const handleImageChange = (e) => {
@@ -41,13 +47,13 @@ const Profile = () => {
     }
   };
 
-
   const [jobTitles, setJobTitles] = useState([]);
   const [companyTypes, setCompanyTypes] = useState([]);
   const BASE_URL = process.env.REACT_APP_BASE_URL;
   const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
   const token = userData?.token;
   const userType = userData?.user?.type;
+  const jobTitle = userData.user.profile?.job_title;
   const [emailNotify, setEmailNotify] = useState("");
   const [hasIdentifiers, setHasIdentifiers] = useState(false);
   const [profileData, setProfileData] = useState({
@@ -164,13 +170,15 @@ const Profile = () => {
 
     // check required images depending on user type
     if (userType === "individual") {
-      const requiredFields = [
+      let requiredFields = [
         "personal_photo",
         "national_id_front",
         "national_id_back",
-        "engineer_card_front",
-        "engineer_card_back",
       ];
+
+      if (!(jobTitle === "Marketer" || jobTitle === "مسوق")) {
+        requiredFields.push("engineer_card_front", "engineer_card_back");
+      }
 
       const missing = requiredFields.filter(
         (field) => !userIdentifiesFields[field]
@@ -241,15 +249,16 @@ const Profile = () => {
   const userIdentifiesUpdate = (e) => {
     e.preventDefault();
 
-    // check required images depending on user type
     if (userType === "individual") {
-      const requiredFields = [
+      let requiredFields = [
         "personal_photo",
         "national_id_front",
         "national_id_back",
-        "engineer_card_front",
-        "engineer_card_back",
       ];
+
+      if (!(jobTitle === "Marketer" || jobTitle === "مسوق")) {
+        requiredFields.push("engineer_card_front", "engineer_card_back");
+      }
 
       const missing = requiredFields.filter(
         (field) => !userIdentifiesFields[field]
@@ -294,14 +303,17 @@ const Profile = () => {
         "national_id_back",
         userIdentifiesFields.national_id_back
       );
-      formData.append(
-        "engineer_card_front",
-        userIdentifiesFields.engineer_card_front
-      );
-      formData.append(
-        "engineer_card_back",
-        userIdentifiesFields.engineer_card_back
-      );
+
+      if (!(jobTitle === "Marketer" || jobTitle === "مسوق")) {
+        formData.append(
+          "engineer_card_front",
+          userIdentifiesFields.engineer_card_front
+        );
+        formData.append(
+          "engineer_card_back",
+          userIdentifiesFields.engineer_card_back
+        );
+      }
     } else {
       formData.append("tax_number", userIdentifiesFields.tax_number);
       formData.append("company_logo", userIdentifiesFields.company_logo);
@@ -335,15 +347,21 @@ const Profile = () => {
       if (data?.code === 200) {
         const identifiers = data.data;
 
-        
+        const isMarketer = jobTitle === "Marketer" || jobTitle === "مسوق";
+
         setUserIdentifiesFields((prev) => ({
           ...prev,
           national_id_number: identifiers.national_id_number || "",
           personal_photo: identifiers.personal_photo,
           national_id_front: identifiers.national_id_front,
           national_id_back: identifiers.national_id_back,
-          engineer_card_front: identifiers.engineer_card_front,
-          engineer_card_back: identifiers.engineer_card_back,
+          // 🧩 Only include engineer cards if not a marketer
+          engineer_card_front: !isMarketer
+            ? identifiers.engineer_card_front
+            : null,
+          engineer_card_back: !isMarketer
+            ? identifiers.engineer_card_back
+            : null,
           tax_number: identifiers.tax_number || "",
           company_logo: identifiers.company_logo,
           tax_record_front: identifiers.tax_record_front,
@@ -354,8 +372,13 @@ const Profile = () => {
             personal_photo: identifiers.personal_photo,
             national_id_front: identifiers.national_id_front,
             national_id_back: identifiers.national_id_back,
-            engineer_card_front: identifiers.engineer_card_front,
-            engineer_card_back: identifiers.engineer_card_back,
+            // 🧩 Same for previews
+            engineer_card_front: !isMarketer
+              ? identifiers.engineer_card_front
+              : null,
+            engineer_card_back: !isMarketer
+              ? identifiers.engineer_card_back
+              : null,
             company_logo: identifiers.company_logo,
             tax_record_front: identifiers.tax_record_front,
             tax_record_back: identifiers.tax_record_back,
@@ -364,8 +387,9 @@ const Profile = () => {
           },
         }));
         setHasIdentifiers(true);
+      } else {
+        setHasIdentifiers(false);
       }
-      else {setHasIdentifiers(false);}
     } catch (error) {
       console.error("Error fetching identifiers:", error);
     }
@@ -592,6 +616,9 @@ const Profile = () => {
         );
 
         toast.success(t("profile.updatedSuccessfully"));
+        setTimeout(() => {
+          window.location.reload();
+        }, 2000);
       })
 
       .catch(() => {
@@ -875,6 +902,7 @@ const Profile = () => {
                       onChange={handleInputChange}
                       value={userIdentifiesFields.national_id_number}
                     />
+
                     <div className="row">
                       {[
                         {
@@ -897,31 +925,42 @@ const Profile = () => {
                           name: "engineer_card_back",
                           label: t("profile.engineerCardBack"),
                         },
-                      ].map((field, index) => (
-                        <div
-                          className="col-xl-4 col-lg-4 col-md-6 col-12"
-                          key={field.name}
-                        >
-                          <label>{field.label}</label>
-                          <div className="photo_wrapper">
-                            <input
-                              type="file"
-                              accept=".jpg, .jpeg, .png"
-                              name={field.name}
-                              onChange={handleInputChange}
-                            />
-                            <img
-                              src={
-                                userIdentifiesFields.previews[field.name] ||
-                                "/camera.png"
-                              }
-                              alt="--"
-                            />
-                            <span>{t("create_ad.uploadImage")}</span>
+                      ]
+                        .filter(
+                          (field) =>
+                            !(
+                              (jobTitle === "Marketer" ||
+                                jobTitle === "مسوق") &&
+                              (field.name === "engineer_card_front" ||
+                                field.name === "engineer_card_back")
+                            )
+                        )
+                        .map((field) => (
+                          <div
+                            className="col-xl-4 col-lg-4 col-md-6 col-12"
+                            key={field.name}
+                          >
+                            <label>{field.label}</label>
+                            <div className="photo_wrapper">
+                              <input
+                                type="file"
+                                accept=".jpg, .jpeg, .png"
+                                name={field.name}
+                                onChange={handleInputChange}
+                              />
+                              <img
+                                src={
+                                  userIdentifiesFields.previews[field.name] ||
+                                  "/camera.png"
+                                }
+                                alt="--"
+                              />
+                              <span>{t("create_ad.uploadImage")}</span>
+                            </div>
                           </div>
-                        </div>
-                      ))}
+                        ))}
                     </div>
+
                     <button type="submit" disabled={loading}>
                       {loading
                         ? t("loading")

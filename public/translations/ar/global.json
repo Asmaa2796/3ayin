@@ -304,7 +304,8 @@
     "education": "التعليم",
     "health_and_medicine": "الصحة والطب",
     "transportation": "المواصلات",
-    "unit_features": "خصائص الوحدة"
+    "unit_features": "خصائص الوحدة",
+    "propertyDetails": "تفاصيل العقار"
   },
   "servicesPage": {
     "filterServices": "تصفية الخدمات",
