@@ -37,18 +37,32 @@ const Packages = () => {
 
   const [loadingPlan, setLoadingPlan] = useState(null);
   const handleSubmit = (planId) => {
-    const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
-    if (!token) {
-      toast.warning(t("please_log_in_to_continue"));
-      return;
-    }
+  const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
+  if (!token) {
+    toast.warning(t("please_log_in_to_continue"));
+    return;
+  }
 
-    setLoadingPlan(planId);
-    dispatch(subscribePlan({ plan_id: planId }))
-      .unwrap()
-      .then(() => setLoadingPlan(null))
-      .catch(() => setLoadingPlan(null));
-  };
+  setLoadingPlan(planId);
+
+  dispatch(subscribePlan({ plan_id: planId }))
+    .unwrap()
+    .then((res) => {
+      setLoadingPlan(null);
+
+      if (res?.data?.payment_url) {
+        window.open(res.data.payment_url, "_blank");
+      } else {
+        toast.success(t("subscribed_successfully"));
+      }
+    })
+    .catch((err) => {
+      setLoadingPlan(null);
+      toast.error(t("failed_to_subscribe"));
+      console.error(err);
+    });
+};
+
 
   useEffect(() => {
     if (success) {

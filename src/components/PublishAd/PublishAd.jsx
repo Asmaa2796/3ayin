@@ -20,6 +20,8 @@ const PublishAd = () => {
   const userType = user3ayin?.user?.type;
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
+  const video = JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+    ?.subscription?.video;
   const [selectedSubCatsOfSubCategories, setSelectedSubCatsOfSubCategories] =
     useState(null);
   const [isSubSubRequired, setIsSubSubRequired] = useState(false);
@@ -61,6 +63,7 @@ const PublishAd = () => {
     location_lat: "",
     location_long: "",
     AR_VR: "",
+    video_url: "",
     phone: "",
     ad_category_id: null, // take id of category
     ad_sub_category_id: null, // take id of sub category
@@ -490,6 +493,18 @@ const PublishAd = () => {
                   value={formdata.AR_VR}
                 />
               </div>
+              {video > "0" && (
+                <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("packages.features.video")}</label>
+                <input
+                  type="text"
+                  name="video_url"
+                  placeholder={`${t("create_ad.link")}`}
+                  onChange={handleChange}
+                  value={formdata.video_url}
+                />
+              </div>
+              )}
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">
                   {t("create_ad.additional_details")}
