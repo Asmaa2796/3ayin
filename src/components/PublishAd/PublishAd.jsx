@@ -63,7 +63,7 @@ const PublishAd = () => {
     location_lat: "",
     location_long: "",
     AR_VR: "",
-    video_url: "",
+    video_link: "",
     phone: "",
     ad_category_id: null, // take id of category
     ad_sub_category_id: null, // take id of sub category
@@ -196,6 +196,36 @@ const PublishAd = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
+  const user = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const subscription = user?.user?.subscription;
+
+  
+  if (!subscription) {
+    toast.error(t("please_log_in_to_continue"));
+    return;
+  }
+
+  // 🔍 Parse numeric values safely
+  const adsLimit = parseInt(subscription.ads_limit, 10);
+  const imagesLimit = parseInt(subscription.images_limit, 10);
+  const vrTours = parseInt(subscription.vr_tours, 10);
+  const hasVideo = subscription.video; // boolean
+  const endDate = new Date(subscription.end_date);
+  const today = new Date();
+
+  if (endDate < today) {
+    toast.warning(t("planExpired"));
+    navigate("/packages");
+    return;
+  }
+
+  if (adsLimit === 0 || imagesLimit === 0 || vrTours === 0 || hasVideo === false) {
+    toast.warning(
+      t("planLimitReached")
+    );
+    navigate("/packages");
+    return;
+  }
     if (!formdata.ad_category_id) {
       toast.error(t("category"));
       return;
@@ -214,6 +244,10 @@ const PublishAd = () => {
 
     if (formdata.AR_VR && !formdata.AR_VR.startsWith("https://")) {
       toast.error(t("property.AR_VRLinkInvalid"));
+      return;
+    }
+    if (formdata.video_link && !formdata.video_link.startsWith("https://")) {
+      toast.error(t("property.videoLinkInvalid"));
       return;
     }
     const data = new FormData();
@@ -237,7 +271,6 @@ const PublishAd = () => {
 
     try {
     const res = await dispatch(storeAd(data)).unwrap(); 
-    // unwrap gives you the actual resolved payload or throws on reject
 
     toast.success(t("request_added_success"));
     dispatch(clearState());
@@ -493,15 +526,15 @@ const PublishAd = () => {
                   value={formdata.AR_VR}
                 />
               </div>
-              {video > "0" && (
+              {video === true && (
                 <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("packages.features.video")}</label>
                 <input
                   type="text"
-                  name="video_url"
+                  name="video_link"
                   placeholder={`${t("create_ad.link")}`}
                   onChange={handleChange}
-                  value={formdata.video_url}
+                  value={formdata.video_link}
                 />
               </div>
               )}

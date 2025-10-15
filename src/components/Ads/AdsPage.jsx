@@ -24,15 +24,15 @@ const AdsPage = () => {
 
   // Fetch ads (backend always returns all ads)
   // ✅ Fetch logic: search mode OR category/subcategory filtering
-useEffect(() => {
-  if (searchValue) {
-    // Search mode — use backend search
-    dispatch(searchAds({ search: searchValue, page, per_page: 9 }));
-  } else {
-    // Normal mode — fetch all ads and filter locally
-    dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
-  }
-}, [dispatch, page, i18n.language, searchValue]);
+  useEffect(() => {
+    if (searchValue) {
+      // Search mode — use backend search
+      dispatch(searchAds({ search: searchValue, page, per_page: 9 }));
+    } else {
+      // Normal mode — fetch all ads and filter locally
+      dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
+    }
+  }, [dispatch, page, i18n.language, searchValue]);
 
   // Reset page when filters or search change
   useEffect(() => {
@@ -52,7 +52,19 @@ useEffect(() => {
     return true;
   });
 
-  const paginationInfo = searchMode ? adsPagination : pagination;
+  let paginationInfo = searchMode ? adsPagination : pagination;
+
+  if (subCategoryId || subSubCategoryId) {
+    const totalFiltered = showAds.length;
+    const perPage = 9;
+    const lastPage = Math.ceil(totalFiltered / perPage) || 1;
+
+    paginationInfo = {
+      current_page: page,
+      last_page: lastPage,
+      per_page: perPage,
+    };
+  }
   const isDataLoading = isLoading || loadingFiltered;
 
   const renderAdCard = (ad, index) => (
@@ -83,11 +95,17 @@ useEffect(() => {
                 {Array.from({ length: 5 }, (_, i) => {
                   const avg = Number(ad?.average_rate) || 0;
                   if (avg >= i + 1) {
-                    return <i key={i} className="bi bi-star-fill text-warning"></i>;
+                    return (
+                      <i key={i} className="bi bi-star-fill text-warning"></i>
+                    );
                   } else if (avg > i && avg < i + 1) {
-                    return <i key={i} className="bi bi-star-half text-warning"></i>;
+                    return (
+                      <i key={i} className="bi bi-star-half text-warning"></i>
+                    );
                   } else {
-                    return <i key={i} className="bi bi-star-fill text-secondary"></i>;
+                    return (
+                      <i key={i} className="bi bi-star-fill text-secondary"></i>
+                    );
                   }
                 })}
                 <span className="mx-2 text-dark">

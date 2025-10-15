@@ -887,15 +887,7 @@ const ServiceProvider = () => {
                         }
                       </div>
                     </div>
-                    <div className="d-flex justify-content-between my-3">
-                      <span>{t("packages.features.video")}</span>
-                      <div>
-                        {
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.video
-                        }
-                      </div>
-                    </div>
+                    
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.vr_tours")}</span>
                       <div>
@@ -903,6 +895,24 @@ const ServiceProvider = () => {
                           JSON.parse(sessionStorage.getItem("user3ayin"))?.user
                             ?.subscription?.vr_tours
                         }
+                      </div>
+                    </div>
+                    <div className="d-flex justify-content-between my-3">
+                      <span>{t("packages.features.video")}</span>
+                      <div>
+                        {JSON.parse(sessionStorage.getItem("user3ayin"))?.user
+                          ?.subscription?.video === true ? (
+                          <span>
+                            <i className="bi bi-check-circle-fill text-success ms-1"></i>
+                            {t("packages.features.yes")}
+                          </span>
+                        ) : (
+                          <span>
+                            {" "}
+                            <i className="bi bi-x-circle-fill text-danger ms-1"></i>
+                            {t("packages.features.no")}
+                          </span>
+                        )}
                       </div>
                     </div>
                     <div className="d-flex justify-content-between my-3">

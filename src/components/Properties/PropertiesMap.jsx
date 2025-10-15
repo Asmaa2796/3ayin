@@ -57,11 +57,16 @@ const PropertiesMap = () => {
     try {
       const base = process.env.REACT_APP_BASE_URL || ""; // ensure env var is set
       const url = `${base}/api/properties?type=${encodeURIComponent(type)}`;
-      const res = await axios.get(url);
+      const res = await axios.get(url, {
+        headers: {
+          Lang: i18n.language,
+        },
+      });
       const list = (res.data && res.data.data) || [];
 
       // keep only items with valid coords
       const filtered = list.filter(hasValidCoords);
+      // console.log(filtered);
       setProperties(filtered);
 
       // fit to markers after a small delay (ensures mapRef exists)
@@ -96,7 +101,7 @@ const PropertiesMap = () => {
   useEffect(() => {
     fetchByType(filter);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [filter]);
+  }, [filter,i18n.language]);
 
   const center = [30.0444, 31.2357]; // fallback center (Cairo)
 
@@ -118,12 +123,14 @@ const PropertiesMap = () => {
         </div>
         <div className="map-footer my-2">
           {loading && <div className="map-status">{t("loading")}</div>}
-          {error && <div className="map-error">{error}</div>}
-          {!loading && !error && (
+          {error && (
+            <div className="map-error">{t("failed_to_load_properties")}</div>
+          )}
+          {/* {!loading && !error && (
             <div className="map-status">
               {properties.length} {t("properties_shown")}
             </div>
-          )}
+          )} */}
         </div>
         <div className="map-container">
           <MapContainer
@@ -148,8 +155,7 @@ const PropertiesMap = () => {
                 <Popup>
                   <div style={{ minWidth: 160 }}>
                     <strong>
-                      {t("property.unitName")} :{" "}
-                      {p.title}
+                      {t("property.unitName")} : {p.title}
                     </strong>
                     <br />
                     {t("property.unitCategory")} : {t(`property.${p.category}`)}

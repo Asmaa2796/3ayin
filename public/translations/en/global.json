@@ -437,6 +437,8 @@
     "updateFailed": "Update failed",
     "please_upload_required_images": "Please upload required images"
   },
+  "planExpired": "Your subscription plan has expired, please renew it.",
+  "planLimitReached": "Your subscription plan has reached its allowed limit, please renew it.",
   "addedSuccessfully": "Added successfully",
   "updatedSuccessfully": "Updated successfully",
   "failedToAdd": "Failed to add",

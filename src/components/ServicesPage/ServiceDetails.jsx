@@ -391,6 +391,24 @@ const ServiceDetails = () => {
                     </div>
 
                     <div className="vr_map">
+                      {adItem?.video_link && (
+                        <>
+                          <Link
+                            data-tooltip-id="tooltip4"
+                            data-tooltip-content={t("services.clickHere")}
+                            className="d-block"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            to={adItem?.video_link}
+                          >
+                            <img src="/youtube.png" alt="--" />
+                            <small className="fw-bold main-color d-block my-2 text-xs text-center">
+                              {t("servicesPage.video")}
+                            </small>
+                          </Link>
+                          <Tooltip id="tooltip4" />
+                        </>
+                      )}
                       {adItem?.AR_VR && (
                         <>
                           <Link
@@ -507,17 +525,22 @@ const ServiceDetails = () => {
                           </li>
                         </ul>
                         <div className="border rounded-3 p-2 shadow-sm bg-white">
-                          {adItem?.location_lat &&
-                            adItem?.location_long ? (
-                              <iframe
-                                title="property-map"
-                                width="100%"
-                                height="300"
-                                style={{ border: 0 }}
-                                src={`https://www.google.com/maps?q=${adItem.location_lat},${adItem.location_long}&hl=${i18n.language}&z=15&output=embed`}
-                                allowFullScreen
-                              ></iframe>
-                            ):(<img className="w-100" style={{height:"180px"}} src="/map-location.svg"/>)}
+                          {adItem?.location_lat && adItem?.location_long ? (
+                            <iframe
+                              title="property-map"
+                              width="100%"
+                              height="300"
+                              style={{ border: 0 }}
+                              src={`https://www.google.com/maps?q=${adItem.location_lat},${adItem.location_long}&hl=${i18n.language}&z=15&output=embed`}
+                              allowFullScreen
+                            ></iframe>
+                          ) : (
+                            <img
+                              className="w-100"
+                              style={{ height: "180px" }}
+                              src="/map-location.svg"
+                            />
+                          )}
                         </div>
                       </div>
                       <div
@@ -744,7 +767,9 @@ const ServiceDetails = () => {
                           })
                         ) : (
                           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
-                            <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
+                            <h5 className="mb-0 text-sm">
+                              {t("no_data_exists")}
+                            </h5>
                           </div>
                         )}
                       </div>

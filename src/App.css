@@ -751,5 +751,5 @@ select {
   gap: 0 !important;
   /* align-items: end !important; */
 }
-.registration_forms {height: auto !important;}
+.registration_forms {height: 700px !important;}
 }

@@ -16,7 +16,6 @@ const RecommendedServices = () => {
   const isRTL = i18n.language === "ar";
   const dispatch = useDispatch();
   const { ads, isLoading } = useSelector((state) => state.ads);
-  const cards = ads?.slice(0, 8) || [];
   useEffect(() => {
     dispatch(fetchAds());
   }, [dispatch,i18n.language]);
@@ -33,7 +32,7 @@ const RecommendedServices = () => {
         </h3>
         {isLoading ? (
           <CardsLoader />
-        ) : cards.length > 0 ? (
+        ) : ads.length > 0 ? (
           <Swiper
             modules={[Navigation, Autoplay]}
             spaceBetween={20}
@@ -61,7 +60,8 @@ const RecommendedServices = () => {
               },
             }}
           >
-            {cards.map((item, index) => (
+            {ads.map((item, index) => (
+              item.is_recommended === true &&
               <SwiperSlide key={item.id || index}>
                 <Link
                   to={`/serviceDetails/${item.id}`}
@@ -125,7 +125,7 @@ const RecommendedServices = () => {
             <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
           </div>
         )}
-        {cards.length > 0 && (
+        {ads.length > 0 && (
           <div className="text-center">
             <Link className="show_more" to="/all_ads">
               {t("recommendedServices.showMore")}{" "}

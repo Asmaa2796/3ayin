@@ -16,7 +16,6 @@ const RecommendedProperties = () => {
   const isRTL = i18n.language === "ar";
   const dispatch = useDispatch();
   const { properties, isLoading } = useSelector((state) => state.properties);
-  const cards = properties?.slice(0, 8) || [];
   useEffect(() => {
     dispatch(fetchAllProperties());
   }, [dispatch,i18n.language]);
@@ -50,7 +49,7 @@ const RecommendedProperties = () => {
         </h3>
         {isLoading ? (
           <CardsLoader />
-        ) : cards.length > 0 ? (
+        ) : properties.length > 0 ? (
           <Swiper
             modules={[Navigation, Autoplay]}
             spaceBetween={20}
@@ -78,7 +77,8 @@ const RecommendedProperties = () => {
               },
             }}
           >
-            {cards.map((item, index) => (
+            {properties.map((item, index) => (
+              item.is_recommended === true &&
               <SwiperSlide key={item.id || index}>
                 <Link
                   key={item.id || index}
@@ -150,7 +150,7 @@ const RecommendedProperties = () => {
             <h5 className="mb-0 text-sm">{t("no_data_exists")}</h5>
           </div>
         )}
-        {cards.length > 0 && (
+        {properties.length > 0 && (
           <div className="text-center">
             <Link className="show_more" to="/all_properties">
               {t("recommendedServices.showMore")}{" "}

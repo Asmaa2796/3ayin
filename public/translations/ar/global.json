@@ -437,6 +437,8 @@
     "updateFailed": "فشل التحديث",
     "please_upload_required_images": "يرجى رفع الصور المطلوبة"
   },
+  "planExpired": "الباقة المشترك بها انتهت صلاحيتها، يرجى التجديد.",
+  "planLimitReached": "الباقة المشترك بها تخطت الحد المسموح به، يرجى التجديد.",
   "addedSuccessfully": "تمت الإضافة بنجاح",
   "updatedSuccessfully": "تم التحديث بنجاح",
   "failedToAdd": "فشل في الإضافة",
