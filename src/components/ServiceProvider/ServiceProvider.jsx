@@ -187,7 +187,7 @@ const ServiceProvider = () => {
                         aria-controls="services"
                         aria-selected="false"
                       >
-                        {t("serviceProvider.services")}
+                        {t("home.ads")}
                       </button>
                     </li>
                     <li className="nav-item" role="presentation">
