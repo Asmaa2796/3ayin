@@ -17,7 +17,7 @@ const RecommendedProperties = () => {
   const dispatch = useDispatch();
   const { properties, isLoading } = useSelector((state) => state.properties);
   useEffect(() => {
-    dispatch(fetchAllProperties());
+    dispatch(fetchAllProperties({type : "all"}));
   }, [dispatch,i18n.language]);
   const categoryMap = {
     sale: t("property.sale"),

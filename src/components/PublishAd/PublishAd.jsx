@@ -286,13 +286,17 @@ const PublishAd = () => {
       toast.error(errorMessage);
       navigate("/user_profile");
     } else {
-      toast.error(typeof err === "string" ? err : err?.message || errorMessage);
+      toast.error(typeof err === "string" ? err : t("ad_limit_reached") || err?.message,{
+         onClose: () => {
+          navigate("/packages");
+        },
+      });
     }
 
     dispatch(clearState());
   }
   };
-
+  
   return (
     <div className="form_holder">
       <Breadcrumb title={t("create_ad.publishAd")} />

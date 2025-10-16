@@ -791,45 +791,43 @@ const ServiceProvider = () => {
                         </span>
                       </div>
                     </div>
-                     <div className="d-flex justify-content-between align-items-center my-3">
-                        <span>{t("home.properties")}</span>
-                        <div className="d-block text-center">
-                          {[...Array(5)].map((_, idx) => {
-                            const fullStar =
-                              idx + 1 <=
+                    <div className="d-flex justify-content-between align-items-center my-3">
+                      <span>{t("home.properties")}</span>
+                      <div className="d-block text-center">
+                        {[...Array(5)].map((_, idx) => {
+                          const fullStar =
+                            idx + 1 <=
+                            Math.floor(
+                              getProviderStatisticsRecord?.properties_average_rate
+                            );
+                          const halfStar =
+                            idx + 1 >
                               Math.floor(
                                 getProviderStatisticsRecord?.properties_average_rate
-                              );
-                            const halfStar =
-                              idx + 1 >
-                                Math.floor(
-                                  getProviderStatisticsRecord?.properties_average_rate
-                                ) &&
-                              idx + 1 <=
-                                getProviderStatisticsRecord?.properties_average_rate;
+                              ) &&
+                            idx + 1 <=
+                              getProviderStatisticsRecord?.properties_average_rate;
 
-                            return (
-                              <i
-                                key={idx}
-                                className={`bi ${
-                                  fullStar
-                                    ? "bi-star-fill text-warning"
-                                    : halfStar
-                                    ? "bi-star-half text-warning"
-                                    : "bi-star text-secondary"
-                                }`}
-                              />
-                            );
-                          })}
-                          <span className="d-block text-center">
-                            &nbsp; (
-                            {
-                              getProviderStatisticsRecord?.properties_average_rate
-                            }
-                            ) {t("serviceProvider.average_rate")}
-                          </span>
-                        </div>
+                          return (
+                            <i
+                              key={idx}
+                              className={`bi ${
+                                fullStar
+                                  ? "bi-star-fill text-warning"
+                                  : halfStar
+                                  ? "bi-star-half text-warning"
+                                  : "bi-star text-secondary"
+                              }`}
+                            />
+                          );
+                        })}
+                        <span className="d-block text-center">
+                          &nbsp; (
+                          {getProviderStatisticsRecord?.properties_average_rate}
+                          ) {t("serviceProvider.average_rate")}
+                        </span>
                       </div>
+                    </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.publishedServices")}</span>
                       <div>({getProviderStatisticsRecord?.ads_count})</div>
@@ -860,8 +858,14 @@ const ServiceProvider = () => {
                         {i18n.language === "ar"
                           ? JSON.parse(sessionStorage.getItem("user3ayin"))
                               ?.user?.subscription?.plan_name_ar
+                            ? JSON.parse(sessionStorage.getItem("user3ayin"))
+                                ?.user?.subscription?.plan_name_ar
+                            : "لا يوجد باقة مشترك بها"
                           : JSON.parse(sessionStorage.getItem("user3ayin"))
-                              ?.user?.subscription?.plan_name_en}
+                              ?.user?.subscription?.plan_name_en
+                          ? JSON.parse(sessionStorage.getItem("user3ayin"))
+                              ?.user?.subscription?.plan_name_en
+                          : "No subscription yet"}
                       </div>
                       <div className="ribbon-edge-topleft"></div>
                       <div className="ribbon-edge-topright"></div>
@@ -874,7 +878,7 @@ const ServiceProvider = () => {
                       <div>
                         {
                           JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.ads_limit
+                            ?.subscription?.ads_limit || "0"
                         }
                       </div>
                     </div>
@@ -883,17 +887,17 @@ const ServiceProvider = () => {
                       <div>
                         {
                           JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.images_limit
+                            ?.subscription?.images_limit || "0"
                         }
                       </div>
                     </div>
-                    
+
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.vr_tours")}</span>
                       <div>
                         {
                           JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.vr_tours
+                            ?.subscription?.vr_tours || "0"
                         }
                       </div>
                     </div>
@@ -985,7 +989,7 @@ const ServiceProvider = () => {
                       <div>
                         {
                           JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.end_date
+                            ?.subscription?.end_date || "--"
                         }
                       </div>
                     </div>
