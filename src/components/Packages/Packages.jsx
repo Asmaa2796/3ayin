@@ -19,7 +19,9 @@ const Packages = () => {
   const navigate = useNavigate();
   const { plans, isLoading } = useSelector((state) => state.plans);
   const { success, error } = useSelector((state) => state.subscribe);
-  const { successed, failed,customize_package } = useSelector((state) => state.customize_package);
+  const { successed, failed, customize_package } = useSelector(
+    (state) => state.customize_package
+  );
   const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
   const [customPackage, setCustomPackage] = useState({
     ads_limit: "",
@@ -36,6 +38,7 @@ const Packages = () => {
   }, [dispatch, i18n.language]);
 
   const [loadingPlan, setLoadingPlan] = useState(null);
+  const [selectedPlan, setSelectedPlan] = useState(null);
   const handleSubmit = (planId) => {
   const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
   if (!token) {
@@ -43,6 +46,7 @@ const Packages = () => {
     return;
   }
 
+  setSelectedPlan(planId);
   setLoadingPlan(planId);
 
   dispatch(subscribePlan({ plan_id: planId }))
@@ -52,39 +56,44 @@ const Packages = () => {
 
       if (res?.data?.payment_url) {
         window.open(res.data.payment_url, "_blank");
-      } else {
-        toast.success(t("subscribed_successfully"));
+        toast.info(t("please_complete_payment"));
       }
     })
     .catch((err) => {
       setLoadingPlan(null);
-      toast.error(t("failed_to_subscribe"));
       console.error(err);
     });
 };
 
 
   useEffect(() => {
-    if (success) {
-      toast.success(t("subscribed_successfully"));
-      dispatch(clearState());
-    }
-
-    if (error) {
-      let errorMessage = t("failed_to_subscribe");
-
-      if (typeof error === "string") {
-        if (error.includes("already subscribed")) {
-          errorMessage = t("already_subscribed_free_plan");
-        } else {
-          errorMessage = error;
+  if (success) {
+    if (selectedPlan === 1) {
+      toast.success(t("subscribed_successfully"),{
+        onClose: () => {
+          navigate("/packages");
         }
-      }
+      });
+    } 
+    dispatch(clearState());
+  }
 
-      toast.error(errorMessage);
-      dispatch(clearState());
+  if (error) { 
+    let errorMessage = t("failed_to_subscribe");
+
+    if (typeof error === "string") {
+      if (error.includes("already subscribed")) {
+        errorMessage = t("already_subscribed_free_plan");
+      } else {
+        errorMessage = error;
+      }
     }
-  }, [success, error, t, dispatch]);
+
+    toast.error(errorMessage);
+    dispatch(clearState());
+  }
+}, [success, error, t, dispatch, selectedPlan]);
+
 
   const mappedPlans = plans?.map((plan) => ({
     id: plan.id,
@@ -192,20 +201,20 @@ const Packages = () => {
   };
 
   const handleCustomizeChange = (e) => {
-  const { name, value } = e.target;
+    const { name, value } = e.target;
 
-  let parsedValue = value;
+    let parsedValue = value;
 
-  // Convert "true"/"false" string to boolean for `video`
-  if (name === "video") {
-    parsedValue = value === "true";
-  }
+    // Convert "true"/"false" string to boolean for `video`
+    if (name === "video") {
+      parsedValue = value === "true";
+    }
 
-  setCustomPackage((prev) => ({
-    ...prev,
-    [name]: parsedValue,
-  }));
-};
+    setCustomPackage((prev) => ({
+      ...prev,
+      [name]: parsedValue,
+    }));
+  };
   const submitCustomizePackage = (e) => {
     e.preventDefault();
     const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
@@ -214,7 +223,7 @@ const Packages = () => {
       return;
     }
     // console.log("Custom package submitted:", customPackage);
-    dispatch(customizePackage(customPackage))
+    dispatch(customizePackage(customPackage));
   };
 
   useEffect(() => {
@@ -222,7 +231,7 @@ const Packages = () => {
       toast.success(t("custom_package_submitted"));
       dispatch(clearState());
       setTimeout(() => {
-        window.location = "/packages"
+        window.location = "/packages";
       }, 1500);
     }
 

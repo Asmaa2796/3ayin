@@ -458,6 +458,7 @@
   "no_reviews_yet": "لا يوجد تقييمات حتى الآن",
   "request_added_success": "تمت الإضافة بنجاح وطلبك قيد الموافقة",
   "subscribed_successfully": "تم الاشتراك بنجاح",
+  "please_complete_payment": "يرجى استكمال الدفع",
   "already_subscribed_free_plan": "أنت مشترك في هذه الباقة بالفعل",
   "failed_to_subscribe": "لم يتم الاشتراك",
   "please_complete_identification": "يرجى استكمال بيانات توثيق الهوية",
