@@ -3,7 +3,7 @@ import { useTranslation } from "react-i18next";
 import Select from "react-select";
 import "./PublishAd.css";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
-import { storeAd,clearState } from "../../redux/Slices/PublishAdSlice";
+import { storeAd, clearState } from "../../redux/Slices/PublishAdSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchCategories } from "../../redux/Slices/CategoriesSlice";
 import { fetchSubCategories } from "../../redux/Slices/SubCategoriesSlice";
@@ -11,17 +11,21 @@ import { fetchSubCatsOfSubCategories } from "../../redux/Slices/SubCatsOfSubCate
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import MapPicker from "../Properties/MapPicker";
+import axios from "axios";
 
 const PublishAd = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
   const user3ayin = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const [subscriptionData, setSubscriptionData] = useState({});
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
   const userID = user3ayin?.user?.id;
   const userType = user3ayin?.user?.type;
+  const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const token = userData?.token;
   const [selectedCategory, setSelectedCategory] = useState(null);
   const [selectedSubCategory, setSelectedSubCategory] = useState(null);
-  const video = JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-    ?.subscription?.video;
+
   const [selectedSubCatsOfSubCategories, setSelectedSubCatsOfSubCategories] =
     useState(null);
   const [isSubSubRequired, setIsSubSubRequired] = useState(false);
@@ -193,38 +197,59 @@ const PublishAd = () => {
     dispatch(fetchSubCatsOfSubCategories());
   }, [dispatch]);
 
+  const getProfileData = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/profileData`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+          Lang: i18n.language,
+        },
+      });
+
+      setSubscriptionData(response.data.data?.user?.subscription);
+      if (!subscriptionData) return;
+    } catch (error) {
+      console.error(error);
+    }
+  };
+  useEffect(() => {
+    getProfileData();
+  }, []);
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-  const user = JSON.parse(sessionStorage.getItem("user3ayin"));
-  const subscription = user?.user?.subscription;
+    const user = JSON.parse(sessionStorage.getItem("user3ayin"));
+    const subscriptionData = user?.user?.subscription;
 
-  
-  if (!subscription) {
-    toast.error(t("please_log_in_to_continue"));
-    return;
-  }
+    if (!subscriptionData) {
+      toast.error(t("please_log_in_to_continue"));
+      return;
+    }
 
-  const adsLimit = parseInt(subscription.ads_limit, 10);
-  const imagesLimit = parseInt(subscription.images_limit, 10);
-  const vrTours = parseInt(subscription.vr_tours, 10);
-  const hasVideo = subscription.video; // boolean
-  const endDate = new Date(subscription.end_date);
-  const today = new Date();
+    const adsLimit = parseInt(subscriptionData.ads_limit, 10);
+    const imagesLimit = parseInt(subscriptionData.images_limit, 10);
+    const vrTours = parseInt(subscriptionData.vr_tours, 10);
+    const hasVideo = subscriptionData.video; // boolean
+    const endDate = new Date(subscriptionData.end_date);
+    const today = new Date();
 
-  if (endDate < today) {
-    toast.warning(t("planExpired"));
-    navigate("/packages");
-    return;
-  }
+    if (endDate < today) {
+      toast.warning(t("planExpired"));
+      navigate("/packages");
+      return;
+    }
 
-  if (adsLimit === 0 || imagesLimit === 0 || vrTours === 0 || hasVideo === false) {
-    toast.warning(
-      t("planLimitReached")
-    );
-    navigate("/packages");
-    return;
-  }
+    if (
+      adsLimit === 0 ||
+      imagesLimit === 0 ||
+      vrTours === 0 ||
+      hasVideo === false
+    ) {
+      toast.warning(t("planLimitReached"));
+      navigate("/packages");
+      return;
+    }
     if (!formdata.ad_category_id) {
       toast.error(t("category"));
       return;
@@ -270,35 +295,43 @@ const PublishAd = () => {
 
     setIsLoadingStoreAd(true);
     try {
-    const res = await dispatch(storeAd(data)).unwrap(); 
+      const res = await dispatch(storeAd(data)).unwrap();
 
-    toast.success(t("request_added_success"));
-    dispatch(clearState());
-    navigate("/all_ads");
-  } catch (err) {
-    let errorMessage = t("failedToAdd");
+      toast.success(t("request_added_success"));
+      dispatch(clearState());
+      navigate("/all_ads");
+    } catch (err) {
+      let errorMessage = t("failedToAdd");
 
-    if (
-      typeof err === "object" &&
-      err?.message?.includes("complete your identification information")
-    ) {
-      errorMessage = t("please_complete_identification");
-      toast.error(errorMessage);
-      navigate("/user_profile");
-    } else {
-      toast.error(typeof err === "string" ? err : t("ad_limit_reached") || err?.message,{
-         onClose: () => {
-          navigate("/packages");
-        },
-      });
+      if (err?.data?.message) {
+        errorMessage = err.data.message;
+      } else if (err?.response?.data?.message) {
+        errorMessage = err.response.data.message;
+      } else if (typeof err === "string") {
+        errorMessage = err;
+      } else if (err?.message) {
+        errorMessage = err.message;
+      }
+
+      if (errorMessage.includes("complete your identification information")) {
+        toast.error(t("please_complete_identification"));
+        navigate("/user_profile");
+      } else if (
+        errorMessage.includes("plan limit") ||
+        errorMessage.includes("limit reached")
+      ) {
+        toast.error(t("planLimitReached"));
+        navigate("/packages");
+      } else {
+        toast.error(t("failedToAdd") || errorMessage);
+      }
+
+      dispatch(clearState());
+    } finally {
+      setIsLoadingStoreAd(false);
     }
-
-    dispatch(clearState());
-  }finally {
-    setIsLoadingStoreAd(false);
-  }
   };
-  
+
   return (
     <div className="form_holder">
       <Breadcrumb title={t("create_ad.publishAd")} />
@@ -433,7 +466,7 @@ const PublishAd = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.phone")}</label>
                 <input
-                  type="text"
+                  type="number"
                   name="phone"
                   min="0"
                   onInput={(e) => {
@@ -532,7 +565,7 @@ const PublishAd = () => {
                   value={formdata.AR_VR}
                 />
               </div>
-              {video === true && (
+              {subscriptionData?.video === true && (
                 <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                   <label className="fw-bold">
                     {t("packages.features.video")}
@@ -581,7 +614,9 @@ const PublishAd = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <div className="form_btn">
                   <button type="submit" disabled={isLoadingStoreAd}>
-                      {isLoadingStoreAd ? t("loading") : t("create_ad.publishNow")}
+                    {isLoadingStoreAd
+                      ? t("loading")
+                      : t("create_ad.publishNow")}
                   </button>
                 </div>
               </div>

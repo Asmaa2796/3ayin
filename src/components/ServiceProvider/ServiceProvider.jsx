@@ -12,6 +12,7 @@ import { fetchSettings } from "../../redux/Slices/SettingsSlice";
 import { useDispatch, useSelector } from "react-redux";
 import ContentLoader from "../../pages/ContentLoader";
 import { getProviderPropertiesReviews } from "../../redux/Slices/ProviderPropertiesReviewsSlice";
+import axios from "axios";
 const ServiceProvider = () => {
   const { id } = useParams();
   const { t, i18n } = useTranslation("global");
@@ -20,7 +21,10 @@ const ServiceProvider = () => {
   const user = JSON.parse(sessionStorage.getItem("user3ayin"));
   const [tab, setTab] = useState("pending");
   const [status, setStatus] = useState("pending");
-
+  const [subscriptionData, setSubscriptionData] = useState({});
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const token = userData?.token;
   const userPhone = user?.user?.phone;
   const { isLoading, record: providerDataRecord } = useSelector(
     (state) => state.providerData
@@ -103,6 +107,25 @@ const ServiceProvider = () => {
     land: t("property.land"),
     chalet: t("property.chalet"),
   };
+   const getProfileData = async () => {
+     try {
+       const response = await axios.get(`${BASE_URL}/api/profileData`, {
+         headers: {
+           Authorization: `Bearer ${token}`,
+           "Content-Type": "multipart/form-data",
+           Lang: i18n.language,
+         },
+       });
+
+       setSubscriptionData(response.data.data?.user?.subscription);
+       if (!subscriptionData) return;
+     } catch (error) {
+       console.error(error);
+     }
+   };
+   useEffect(() => {
+     getProfileData();
+   }, []);
   return (
     <>
       <div className="service_provider position-relative">
@@ -110,7 +133,11 @@ const ServiceProvider = () => {
           <div className="container">
             <div className="img">
               <img
-                src={providerDataRecord?.image || "/user.webp"}
+                src={providerDataRecord?.image || "./camera.png"}
+                // onError={(e) => {
+                //   e.target.onerror = null;
+                //   e.target.src = "./camera.png";
+                // }}
                 style={{ height: "60px", width: "60px", objectFit: "cover" }}
                 alt="--"
               />
@@ -856,15 +883,11 @@ const ServiceProvider = () => {
                       <div className="glow">&nbsp;</div>
                       <div className="ribbon-front fw-bold">
                         {i18n.language === "ar"
-                          ? JSON.parse(sessionStorage.getItem("user3ayin"))
-                              ?.user?.subscription?.plan_name_ar
-                            ? JSON.parse(sessionStorage.getItem("user3ayin"))
-                                ?.user?.subscription?.plan_name_ar
+                          ? subscriptionData?.plan_name_ar
+                            ? subscriptionData?.plan_name_ar
                             : "لا يوجد باقة مشترك بها"
-                          : JSON.parse(sessionStorage.getItem("user3ayin"))
-                              ?.user?.subscription?.plan_name_en
-                          ? JSON.parse(sessionStorage.getItem("user3ayin"))
-                              ?.user?.subscription?.plan_name_en
+                          : subscriptionData?.plan_name_en
+                          ? subscriptionData?.plan_name_en
                           : "No subscription yet"}
                       </div>
                       <div className="ribbon-edge-topleft"></div>
@@ -875,37 +898,21 @@ const ServiceProvider = () => {
 
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.adsCount")}</span>
-                      <div>
-                        {
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.ads_limit || "0"
-                        }
-                      </div>
+                      <div>{subscriptionData?.ads_limit || "0"}</div>
                     </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.images_limit")}</span>
-                      <div>
-                        {
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.images_limit || "0"
-                        }
-                      </div>
+                      <div>{subscriptionData?.images_limit || "0"}</div>
                     </div>
 
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.vr_tours")}</span>
-                      <div>
-                        {
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.vr_tours || "0"
-                        }
-                      </div>
+                      <div>{subscriptionData?.vr_tours || "0"}</div>
                     </div>
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.video")}</span>
                       <div>
-                        {JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                          ?.subscription?.video === true ? (
+                        {subscriptionData?.video === true ? (
                           <span>
                             <i className="bi bi-check-circle-fill text-success ms-1"></i>
                             {t("packages.features.yes")}
@@ -922,8 +929,7 @@ const ServiceProvider = () => {
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("packages.features.teamManagement")}</span>
                       <div>
-                        {JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                          ?.subscription?.team_members === "1" ? (
+                        {subscriptionData?.team_members === "1" ? (
                           <span>
                             <i className="bi bi-check-circle-fill text-success ms-1"></i>
                             {t("packages.features.yes")}
@@ -941,9 +947,7 @@ const ServiceProvider = () => {
                       <span>{t("packages.features.reports")}</span>
                       <div>
                         {(() => {
-                          const reports = JSON.parse(
-                            sessionStorage.getItem("user3ayin")
-                          )?.user?.subscription?.reports;
+                          const reports = subscriptionData?.reports;
                           if (!reports) return t("none"); // fallback
 
                           // Translate based on value
@@ -965,9 +969,7 @@ const ServiceProvider = () => {
                       <span>{t("packages.features.searchAppearance")}</span>
                       <div>
                         {(() => {
-                          const search = JSON.parse(
-                            sessionStorage.getItem("user3ayin")
-                          )?.user?.subscription?.search_priority;
+                          const search = subscriptionData?.search_priority;
                           if (!search) return t("normal"); // fallback
 
                           switch (search) {
@@ -986,12 +988,7 @@ const ServiceProvider = () => {
 
                     <div className="d-flex justify-content-between my-3">
                       <span>{t("serviceProvider.end_date")}</span>
-                      <div>
-                        {
-                          JSON.parse(sessionStorage.getItem("user3ayin"))?.user
-                            ?.subscription?.end_date || "--"
-                        }
-                      </div>
+                      <div>{subscriptionData?.end_date || "--"}</div>
                     </div>
                   </div>
                   <div className="text-center my-3">

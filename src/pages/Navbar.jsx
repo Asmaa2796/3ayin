@@ -89,7 +89,6 @@ const Navbar = () => {
       },
     });
 
-    console.log(response.data.data);
     const user = response.data.data?.user;
     if (!user) return;
 
