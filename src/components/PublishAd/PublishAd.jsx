@@ -25,6 +25,7 @@ const PublishAd = () => {
   const [selectedSubCatsOfSubCategories, setSelectedSubCatsOfSubCategories] =
     useState(null);
   const [isSubSubRequired, setIsSubSubRequired] = useState(false);
+  const [isLoadingStoreAd, setIsLoadingStoreAd] = useState(false);
   const { categories } = useSelector((state) => state.categories);
   const { subcategories } = useSelector((state) => state.subcategories);
   const [showMap, setShowMap] = useState(false);
@@ -169,7 +170,6 @@ const PublishAd = () => {
       return { ...prev, [key]: newFiles };
     });
 
-    // update preview for images and user_works
     if (key === "images" || key === "user_works") {
       setPreviews((prev) => {
         const newPreviews = { ...prev };
@@ -179,12 +179,12 @@ const PublishAd = () => {
     } else if (key === "files") {
       setPreviews((prev) => {
         const newPreviews = { ...prev };
-        newPreviews[key][index] = file.name; // show file name instead of image
+        newPreviews[key][index] = file.name;
         return newPreviews;
       });
     }
 
-    e.target.value = null; // allow reselecting same file
+    e.target.value = null;
   };
 
   useEffect(() => {
@@ -205,7 +205,6 @@ const PublishAd = () => {
     return;
   }
 
-  // 🔍 Parse numeric values safely
   const adsLimit = parseInt(subscription.ads_limit, 10);
   const imagesLimit = parseInt(subscription.images_limit, 10);
   const vrTours = parseInt(subscription.vr_tours, 10);
@@ -269,6 +268,7 @@ const PublishAd = () => {
     //   console.log(key, value instanceof File ? value.name : value);
     // }
 
+    setIsLoadingStoreAd(true);
     try {
     const res = await dispatch(storeAd(data)).unwrap(); 
 
@@ -294,6 +294,8 @@ const PublishAd = () => {
     }
 
     dispatch(clearState());
+  }finally {
+    setIsLoadingStoreAd(false);
   }
   };
   
@@ -420,7 +422,7 @@ const PublishAd = () => {
                 <input
                   type="number"
                   name="price"
-                   min="0"
+                  min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
@@ -532,15 +534,17 @@ const PublishAd = () => {
               </div>
               {video === true && (
                 <div className="col-xl-12 col-lg-12 col-md-12 col-12">
-                <label className="fw-bold">{t("packages.features.video")}</label>
-                <input
-                  type="text"
-                  name="video_link"
-                  placeholder={`${t("create_ad.link")}`}
-                  onChange={handleChange}
-                  value={formdata.video_link}
-                />
-              </div>
+                  <label className="fw-bold">
+                    {t("packages.features.video")}
+                  </label>
+                  <input
+                    type="text"
+                    name="video_link"
+                    placeholder={`${t("create_ad.link")}`}
+                    onChange={handleChange}
+                    value={formdata.video_link}
+                  />
+                </div>
               )}
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">
@@ -576,8 +580,8 @@ const PublishAd = () => {
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <div className="form_btn">
-                  <button type="submit" disabled={isLoading}>
-                    {isLoading ? t("loading") : t("create_ad.publishNow")}
+                  <button type="submit" disabled={isLoadingStoreAd}>
+                      {isLoadingStoreAd ? t("loading") : t("create_ad.publishNow")}
                   </button>
                 </div>
               </div>
