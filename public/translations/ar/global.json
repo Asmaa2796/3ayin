@@ -91,6 +91,7 @@
     "emailVerified": "تم التحقق من بريدك الإلكتروني",
     "failedVerified": "فشل التحقق من بريدك الإلكتروني",
     "emailInvalid": "البريد الإلكتروني غير صالح",
+    "emailOrPasswordInvalid": "البريد الإلكتروني أو كلمة المرور غير صالحين",
     "your_email_not_activated": "بريدك الإلكتروني غير مفعل, قم بإعادة تعيين كلمة المرور"
   },
   "services": {
@@ -458,7 +459,7 @@
   "no_reviews_yet": "لا يوجد تقييمات حتى الآن",
   "request_added_success": "تمت الإضافة بنجاح وطلبك قيد الموافقة",
   "subscribed_successfully": "تم الاشتراك بنجاح",
-  "please_complete_payment": "يرجى استكمال الدفع",
+  "please_complete_payment": "تم توجيهك إلى صفحة الدفع",
   "already_subscribed_free_plan": "أنت مشترك في هذه الباقة بالفعل",
   "failed_to_subscribe": "لم يتم الاشتراك",
   "please_complete_identification": "يرجى استكمال بيانات توثيق الهوية",

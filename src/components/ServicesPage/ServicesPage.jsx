@@ -20,8 +20,7 @@ import CardsLoader from "../../pages/CardsLoader";
 
 const ServicesPage = () => {
   const { t, i18n } = useTranslation("global");
-  const [minPrice, setMinPrice] = useState(0);
-  const [maxPrice, setMaxPrice] = useState(100000000);
+
   const [selectedRate, setSelectedRate] = useState(null);
   const dispatch = useDispatch();
 
@@ -30,6 +29,31 @@ const ServicesPage = () => {
     (state) => state.ads
   );
 
+  const [minPrice, setMinPrice] = useState("");
+  const [maxPrice, setMaxPrice] = useState("");
+
+  const handleMinPriceChange = (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value.length > 9) value = value.slice(0, 9);
+
+    // convert safely
+    const numericValue = value === "" ? "" : Math.max(0, Number(value));
+    setMinPrice(numericValue);
+  };
+
+  const handleMaxPriceChange = (e) => {
+    let value = e.target.value.replace(/[^0-9]/g, "");
+    if (value.length > 9) value = value.slice(0, 9);
+
+    const numericValue = value === "" ? "" : Math.min(Number(value), 100000000);
+    setMaxPrice(numericValue);
+  };
+
+  const handleBlur = (field) => {
+    if (field === "min" && minPrice === "") setMinPrice(0);
+    if (field === "max" && maxPrice === "") setMaxPrice(100000000);
+  };
+
   const resetAllFilters = () => {
     setMinPrice(0);
     setMaxPrice(100000000);
@@ -37,7 +61,7 @@ const ServicesPage = () => {
   };
   const handleFilterClick = (subSubId) => {
     if (!subSubId) {
-      dispatch(fetchAds()); // Show all ads
+      dispatch(fetchAds());
       return;
     }
     resetAllFilters();
@@ -219,17 +243,13 @@ const ServicesPage = () => {
                         {t("servicesPage.min")}
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         style={{ fontSize: "13px" }}
-                        onInput={(e) => {
-                          e.target.value = e.target.value.replace(
-                            /[^0-9]/g,
-                            ""
-                          ); // only digits
-                        }}
                         className="form-control"
                         value={minPrice}
-                        onChange={(e) => setMinPrice(Number(e.target.value))}
+                        onChange={handleMinPriceChange}
+                        onBlur={() => handleBlur("min")}
+                        placeholder={t("servicesPage.min")}
                       />
                     </div>
 
@@ -238,17 +258,13 @@ const ServicesPage = () => {
                         {t("servicesPage.max")}
                       </label>
                       <input
-                        type="number"
+                        type="text"
                         style={{ fontSize: "13px" }}
-                        onInput={(e) => {
-                          e.target.value = e.target.value.replace(
-                            /[^0-9]/g,
-                            ""
-                          ); // only digits
-                        }}
                         className="form-control"
                         value={maxPrice}
-                        onChange={(e) => setMaxPrice(Number(e.target.value))}
+                        onChange={handleMaxPriceChange}
+                        onBlur={() => handleBlur("max")}
+                        placeholder={t("servicesPage.max")}
                       />
                     </div>
 
@@ -258,7 +274,7 @@ const ServicesPage = () => {
                           {t("servicesPage.min")}
                         </div>
                         <small className="fw-bold">
-                          <span>{minPrice}</span>{" "}
+                          <span>{minPrice === "" ? 0 : minPrice}</span>{" "}
                           {t("recommendedServices.currency")}
                         </small>
                       </div>
@@ -267,11 +283,12 @@ const ServicesPage = () => {
                           {t("servicesPage.max")}
                         </div>
                         <small className="text-danger fw-bold">
-                          <span>{maxPrice}</span>{" "}
+                          <span>{maxPrice === "" ? 100000000 : maxPrice}</span>{" "}
                           {t("recommendedServices.currency")}
                         </small>
                       </div>
                     </div>
+
                     <button
                       className="btn btn-sm btn-primary w-100 mt-2"
                       onClick={handlePriceFilter}
@@ -321,77 +338,75 @@ const ServicesPage = () => {
                     <CardsLoader />
                   ) : ads && ads.length >= 1 ? (
                     <>
-                        {ads.map((ad, index) => (
-                          <div
-                            className="col-xl-4 col-lg-4 col-md-6 col-12"
-                            key={ad.id || index}
+                      {ads.map((ad, index) => (
+                        <div
+                          className="col-xl-4 col-lg-4 col-md-6 col-12"
+                          key={ad.id || index}
+                        >
+                          <Link
+                            to={`/serviceDetails/${ad.id}`}
+                            className="recommended_card border rounded-4 mb-3 overflow-hidden d-block"
                           >
-                            <Link
-                              to={`/serviceDetails/${ad.id}`}
-                              className="recommended_card border rounded-4 mb-3 overflow-hidden d-block"
-                            >
-                              <img
-                                src={
-                                  ad.images?.[0]?.image || "/placeholder.jpg"
-                                }
-                                onError={(e) => {
-                                  e.target.onerror = null;
-                                  e.target.src = "/placeholder.jpg";
-                                }}
-                                alt="service"
-                                className="img-fluid mb-3 rounded-4"
-                              />
-                              <div className="p-3">
-                                <p className="line-height mb-1 text-dark">
-                                  {ad?.ad_name}
-                                </p>
-                                <small className="mb-2 d-block text-dark">
-                                  {ad?.category_name} / {ad?.sub_category_name}{" "}
-                                  {ad?.sub_sub_category_name &&
-                                    `/ ${ad?.sub_sub_category_name}`}
-                                </small>
-                                <hr />
+                            <img
+                              src={ad.images?.[0]?.image || "/placeholder.jpg"}
+                              onError={(e) => {
+                                e.target.onerror = null;
+                                e.target.src = "/placeholder.jpg";
+                              }}
+                              alt="service"
+                              className="img-fluid mb-3 rounded-4"
+                            />
+                            <div className="p-3">
+                              <p className="line-height mb-1 text-dark">
+                                {ad?.ad_name}
+                              </p>
+                              <small className="mb-2 d-block text-dark">
+                                {ad?.category_name} / {ad?.sub_category_name}{" "}
+                                {ad?.sub_sub_category_name &&
+                                  `/ ${ad?.sub_sub_category_name}`}
+                              </small>
+                              <hr />
 
-                                <div className="d-inline-block mb-2 rates">
-                                  {Array.from({ length: 5 }, (_, i) => (
-                                    <i
-                                      key={i}
-                                      className={`bi bi-star-fill ${
-                                        i < Number(ad?.average_rate || 0)
-                                          ? "text-warning"
-                                          : "text-secondary"
-                                      }`}
-                                    ></i>
-                                  ))}
-                                  <span className="mx-2 text-dark">
-                                    ({ad?.reviews_count || 0})
+                              <div className="d-inline-block mb-2 rates">
+                                {Array.from({ length: 5 }, (_, i) => (
+                                  <i
+                                    key={i}
+                                    className={`bi bi-star-fill ${
+                                      i < Number(ad?.average_rate || 0)
+                                        ? "text-warning"
+                                        : "text-secondary"
+                                    }`}
+                                  ></i>
+                                ))}
+                                <span className="mx-2 text-dark">
+                                  ({ad?.reviews_count || 0})
+                                </span>
+                              </div>
+
+                              <div className="text-sm d-flex justify-content-between align-items-center">
+                                <div className="text-dark">
+                                  {t("recommendedServices.startingFrom")}{" "}
+                                  <span className="fw-bold">
+                                    {ad?.price}{" "}
+                                    {t("recommendedServices.currency")}
                                   </span>
                                 </div>
-
-                                <div className="text-sm d-flex justify-content-between align-items-center">
-                                  <div className="text-dark">
-                                    {t("recommendedServices.startingFrom")}{" "}
-                                    <span className="fw-bold">
-                                      {ad?.price}{" "}
-                                      {t("recommendedServices.currency")}
-                                    </span>
-                                  </div>
-                                  <div>
-                                    <span className="view_details">
-                                      <i
-                                        className={`text-sm bi ${
-                                          i18n.language === "ar"
-                                            ? "bi-arrow-left"
-                                            : "bi-arrow-right"
-                                        }`}
-                                      ></i>
-                                    </span>
-                                  </div>
+                                <div>
+                                  <span className="view_details">
+                                    <i
+                                      className={`text-sm bi ${
+                                        i18n.language === "ar"
+                                          ? "bi-arrow-left"
+                                          : "bi-arrow-right"
+                                      }`}
+                                    ></i>
+                                  </span>
                                 </div>
                               </div>
-                            </Link>
-                          </div>
-                        ))}
+                            </div>
+                          </Link>
+                        </div>
+                      ))}
                       <div className="text-center">
                         {pagination && pagination.last_page > 1 && (
                           <div className="text-center">

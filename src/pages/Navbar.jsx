@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { logout } from "../redux/Slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategoriesTree } from "../redux/Slices/FilterServicesSlice";
+import axios from "axios";
 const Navbar = () => {
   const { t, i18n } = useTranslation("global");
   const [isMobileScrolled, setIsMobileScrolled] = useState(false);
@@ -20,7 +21,12 @@ const Navbar = () => {
   const [searchValue, setSearchValue] = useState("");
   const [isMegaMenuOpen, setIsMegaMenuOpen] = useState(false); // desktop mega
   const [isSideMenuOpen, setIsSideMenuOpen] = useState(false); // mobile side menu
+  const [profileCompanyName, setProfileCompanyName] = useState(false);
+  const [profileName, setProfileName] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
+  const BASE_URL = process.env.REACT_APP_BASE_URL;
+  const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
+  const token = userData?.token;
   const [user, setUser] = useState(() =>
     JSON.parse(sessionStorage.getItem("user3ayin"))
   );
@@ -73,6 +79,30 @@ const Navbar = () => {
     };
   }, []);
 
+  const getProfileData = async () => {
+  try {
+    const response = await axios.get(`${BASE_URL}/api/profileData`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "multipart/form-data",
+        Lang: i18n.language,
+      },
+    });
+
+    console.log(response.data.data);
+    const user = response.data.data?.user;
+    if (!user) return;
+
+    setProfileCompanyName(user?.profile?.username);
+    setProfileName(user?.profile?.name);
+  } catch (error) {
+    console.error(error);
+  }
+};
+
+  useEffect(() => {
+    getProfileData();
+  }, []);
   useEffect(() => {
     document.documentElement.lang = i18n.language;
     document.documentElement.dir = i18n.language === "ar" ? "rtl" : "ltr";
@@ -867,8 +897,8 @@ useEffect(() => {
                   aria-label="Language"
                 >
                   {user?.user.type === "company"
-                    ? user?.user.profile?.username
-                    : user?.user.profile?.name}
+                    ? profileCompanyName
+                    : profileName}
                   <FiChevronDown />
                 </button>
                 <ul

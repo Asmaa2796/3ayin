@@ -37,6 +37,11 @@ const Login = () => {
     dispatch(clearState());
     return;
   }
+  if (error === "Invalid email or password") {
+    toast.error(t("validation.emailOrPasswordInvalid"));
+    dispatch(clearState());
+    return;
+  }
 
   if (error) {
     toast.error(t("sign.loginFail"));
@@ -65,7 +70,7 @@ const Login = () => {
         <div className='text-sm text-center'>
           <span className='text-dark'>{t("sign.noAccount")}</span>
           <span className='fw-bold mx-1'>
-            <Link className='main-color' to="/register">{t("sign.createAccount")}</Link>
+            <a className='main-color' href="/register">{t("sign.createAccount")}</a>
           </span>
         </div>
 

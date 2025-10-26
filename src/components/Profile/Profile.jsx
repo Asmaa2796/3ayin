@@ -17,7 +17,8 @@ const Profile = () => {
   const { t, i18n } = useTranslation("global");
   const user = JSON.parse(sessionStorage.getItem("user3ayin"));
   const userID = user?.user?.id;
-  const [previewImage, setPreviewImage] = useState("/user.webp");
+  const [previewImage, setPreviewImage] = useState("./camera.png");
+  const [isLoadingUpdate, setIsLoadingUpdate] = useState(false);
   const dispatch = useDispatch();
 
   const {
@@ -68,28 +69,9 @@ const Profile = () => {
     company_name: "",
     company_type_id: null,
   });
+  const [profileResponse, setProfileResponse] = useState(null);
 
-  // fill update form from sessionStorage
-  useEffect(() => {
-    if (userData?.user) {
-      setProfileData((prev) => ({
-        ...prev,
-        name: userData.user.profile?.name || "",
-        age: userData.user.profile?.age || "",
-        phone: userData.user.phone || "",
-        bio: userData.user.bio || "",
-        email: userData.user.email || "",
-        image: userData.user.profile.image || null,
-        username: userData.user.profile?.username || "",
-        company_name: userData.user.profile?.company_name || "",
-      }));
 
-      // set image preview
-      if (userData.user?.profile?.image) {
-        setPreviewImage(userData.user?.profile?.image);
-      }
-    }
-  }, [i18n.language]);
   // handle notify email
   const notifyEmail = async (e) => {
     e.preventDefault();
@@ -451,84 +433,6 @@ const Profile = () => {
         );
       });
   }, [i18n.language]);
-  useEffect(() => {
-    if (companyTypes.length && userData?.user?.profile?.company_type_id) {
-      const match = companyTypes.find(
-        (c) => c.value === userData.user.profile.company_type_id
-      );
-      if (match) {
-        setProfileData((prev) => ({ ...prev, company_type_id: match }));
-      }
-    }
-  }, [companyTypes, i18n.language]);
-
-  useEffect(() => {
-    if (jobTitles.length && userData?.user?.profile?.job_title_id) {
-      const match = jobTitles.find(
-        (j) => j.value === userData.user.profile.job_title_id
-      );
-      if (match) {
-        setProfileData((prev) => ({ ...prev, job_title_id: match }));
-      }
-    }
-  }, [jobTitles, i18n.language]);
-
-  useEffect(() => {
-    // Run this whenever language, jobTitles or companyTypes change
-    if (!jobTitles.length || !companyTypes.length) return;
-
-    const existing = JSON.parse(sessionStorage.getItem("user3ayin")) || {};
-    if (!existing.user || !existing.user.profile) return;
-
-    let updated = false;
-
-    // Update job_title label in sessionStorage according to current language
-    if (existing.user.profile.job_title_id) {
-      const matchedJobTitle = jobTitles.find(
-        (jt) => jt.value === existing.user.profile.job_title_id
-      );
-      if (
-        matchedJobTitle &&
-        existing.user.profile.job_title !== matchedJobTitle.label
-      ) {
-        existing.user.profile.job_title = matchedJobTitle.label;
-        updated = true;
-      }
-    }
-
-    // Update company_type label in sessionStorage according to current language
-    if (existing.user.profile.company_type_id) {
-      const matchedCompanyType = companyTypes.find(
-        (ct) => ct.value === existing.user.profile.company_type_id
-      );
-      if (
-        matchedCompanyType &&
-        existing.user.profile.company_type !== matchedCompanyType.label
-      ) {
-        existing.user.profile.company_type = matchedCompanyType.label;
-        updated = true;
-      }
-    }
-
-    if (updated) {
-      sessionStorage.setItem("user3ayin", JSON.stringify(existing));
-    }
-
-    // Optionally, also update your profileData state with these labels so the UI updates immediately
-    if (updated) {
-      setProfileData((prev) => ({
-        ...prev,
-        job_title_id:
-          jobTitles.find(
-            (jt) => jt.value === existing.user.profile.job_title_id
-          ) || prev.job_title_id,
-        company_type_id:
-          companyTypes.find(
-            (ct) => ct.value === existing.user.profile.company_type_id
-          ) || prev.company_type_id,
-      }));
-    }
-  }, [i18n.language, jobTitles, companyTypes]);
 
   // handle profile change
   const handleProfileChange = (e) => {
@@ -538,42 +442,141 @@ const Profile = () => {
       [name]: value,
     }));
   };
+  const getProfileData = async () => {
+    try {
+      const response = await axios.get(`${BASE_URL}/api/profileData`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+          Lang: i18n.language,
+        },
+      });
 
+      const user = response.data.data?.user;
+      if (!user) return;
+
+      const profile = user.profile || {};
+
+      setProfileResponse(profile);
+
+      setProfileData((prev) => ({
+        ...prev,
+        name: user?.profile?.name || "",
+        age: user?.profile.age || "",
+        phone: user?.phone || "",
+        bio: user?.bio || "",
+        email: user?.email || "",
+        image: user?.image || null,
+        username: user?.profile?.username || "",
+        company_name: user?.profile?.company_name || "",
+      }));
+
+      if (user.image) setPreviewImage(user.image);
+
+      if (companyTypes.length) {
+        let matchCompany = null;
+
+        if (user?.profile.company_type_id) {
+          matchCompany = companyTypes.find(
+            (c) => String(c.value) === String(user?.profile.company_type_id)
+          );
+        } else if (user?.profile.company_type) {
+          matchCompany = companyTypes.find(
+            (c) => c.label === user?.profile.company_type
+          );
+        }
+
+        if (matchCompany) {
+          setProfileData((prev) => ({
+            ...prev,
+            company_type_id: matchCompany,
+          }));
+        }
+      }
+
+      if (jobTitles.length) {
+        let matchJob = null;
+
+        if (user?.profile.job_title_id) {
+          matchJob = jobTitles.find(
+            (j) => String(j.value) === String(user?.profile.job_title_id)
+          );
+        } else if (user?.profile.job_title) {
+          matchJob = jobTitles.find(
+            (j) => j.label === user?.profile.job_title
+          );
+        }
+
+        if (matchJob) {
+          setProfileData((prev) => ({
+            ...prev,
+            job_title_id: matchJob,
+          }));
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
+  useEffect(() => {
+    getProfileData();
+  }, []);
+ 
+  useEffect(() => {
+  if (!profileResponse) return;
+
+  if (companyTypes.length && profileResponse.company_type_id) {
+    const matchCompany = companyTypes.find(
+      (c) => String(c.value) === String(profileResponse.company_type_id)
+    );
+    if (matchCompany) {
+      setProfileData((prev) => ({ ...prev, company_type_id: matchCompany }));
+    }
+  }
+
+  if (jobTitles.length && profileResponse.job_title_id) {
+    const matchJob = jobTitles.find(
+      (j) => String(j.value) === String(profileResponse.job_title_id)
+    );
+    if (matchJob) {
+      setProfileData((prev) => ({ ...prev, job_title_id: matchJob }));
+    }
+  }
+}, [jobTitles, companyTypes, profileResponse]);
   // submit update profile
   const handleSubmit = (e) => {
     e.preventDefault();
-    const formData = new FormData();
-
+    
+  if (!profileData.phone || profileData.phone.length < 11 || profileData.phone.length > 11) {
+    toast.error(t("validation.the_phone_field_must_be_at_least_11_characters"));
+    return;
+  }
+  const formData = new FormData();
     formData.append("phone", profileData.phone);
     formData.append("email", profileData.email);
     formData.append("bio", profileData.bio);
 
-    if (profileData.image) {
+    if (profileData.image && profileData.image instanceof File) {
       formData.append("image", profileData.image);
     }
 
     if (userType === "company") {
       formData.append("company_name", profileData.company_name);
-
       formData.append(
         "company_type_id",
-        profileData.company_type_id?.value ??
-          userData.user.profile?.company_type_id
+        profileData.company_type_id?.value ?? ""
       );
-
       formData.append("username", profileData.username);
     }
 
     if (userType === "individual") {
       formData.append("name", profileData.name);
       formData.append("age", profileData.age);
-
-      formData.append(
-        "job_title_id",
-        profileData.job_title_id?.value ?? userData.user.profile?.job_title_id
-      );
+      formData.append("job_title_id", profileData.job_title_id?.value ?? "");
     }
 
+    setIsLoadingUpdate(true);
     axios
       .post(`${BASE_URL}/api/profile/update`, formData, {
         headers: {
@@ -583,46 +586,17 @@ const Profile = () => {
         },
       })
       .then((res) => {
-        // build updatedUser either from server response or from profileData
-        const existing = JSON.parse(sessionStorage.getItem("user3ayin")) || {};
-        const updatedUser = {
-          ...existing,
-          user: {
-            ...existing.user,
-            phone: profileData.phone,
-            bio: profileData.bio,
-            profile: {
-              ...existing.user?.profile,
-              name: profileData.name,
-              username: profileData.username,
-              age: profileData.age,
-              company_name: profileData.company_name,
-              image: profileData.image,
-              company_type: profileData.company_type_id?.label,
-              job_title_id: profileData.job_title_id?.label,
-              company_type_id:
-                profileData.company_type_id?.value ??
-                existing.user.profile?.company_type_id,
-              job_title_id:
-                profileData.job_title_id?.value ??
-                existing.user.profile?.job_title_id,
-            },
-          },
-        };
-        sessionStorage.setItem("user3ayin", JSON.stringify(updatedUser));
-
-        window.dispatchEvent(
-          new CustomEvent("userUpdated", { detail: updatedUser })
-        );
-
         toast.success(t("profile.updatedSuccessfully"));
         setTimeout(() => {
           window.location.reload();
         }, 2000);
       })
-
       .catch(() => {
+        setIsLoadingUpdate(false);
         toast.error(t("profile.updateFailed"));
+      })
+      .finally(() => {
+        setIsLoadingUpdate(false);
       });
   };
 
@@ -784,7 +758,11 @@ const Profile = () => {
                   <div className="col-xl-6 col-lg-6 col-md-12 col-12">
                     <label>{t("profile.phone")}</label>
                     <input
-                      type="text"
+                      type="number"
+                      min="0"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                      }}
                       name="phone"
                       required
                       onChange={handleProfileChange}
@@ -849,7 +827,16 @@ const Profile = () => {
 
                   {/* Submit */}
                   <div className="col-md-12">
-                    <button type="submit">{t("profile.save")}</button>
+                    <button
+                      type="submit"
+                      disabled={isLoadingUpdate}
+                    >
+                      {isLoadingUpdate ? (
+                        t("loading")
+                      ) : (
+                        t("profile.save")
+                      )}
+                    </button>
                   </div>
                 </div>
               </form>

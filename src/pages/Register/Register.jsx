@@ -32,39 +32,38 @@ const Register = () => {
   });
 
   useEffect(() => {
-  const lang = i18n.language;
+    const lang = i18n.language;
 
-  fetch("https://3ayin.resporthub.com/api/job-titles", {
-    headers: {
-      Lang: lang,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      setJobTitles(
-        data.data.map((item) => ({
-          value: item.id,
-          label: item.name,
-        }))
-      );
-    });
+    fetch("https://3ayin.resporthub.com/api/job-titles", {
+      headers: {
+        Lang: lang,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setJobTitles(
+          data.data.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }))
+        );
+      });
 
-  fetch("https://3ayin.resporthub.com/api/company-types", {
-    headers: {
-      Lang: lang,
-    },
-  })
-    .then((res) => res.json())
-    .then((data) => {
-      setCompanyTypes(
-        data.data.map((item) => ({
-          value: item.id,
-          label: item.name,
-        }))
-      );
-    });
-}, [i18n.language]);
-
+    fetch("https://3ayin.resporthub.com/api/company-types", {
+      headers: {
+        Lang: lang,
+      },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        setCompanyTypes(
+          data.data.map((item) => ({
+            value: item.id,
+            label: item.name,
+          }))
+        );
+      });
+  }, [i18n.language]);
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -76,6 +75,10 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(formData.password.length !== formData.password_confirmation.length) {
+      toast.error(t("validation.the_password_field_confirmation_does_not_match"))
+      return;
+    }
 
     const payload = {
       type: tab,
@@ -117,12 +120,27 @@ const Register = () => {
       age: "validation.the_age_field_must_be_at_least_16",
       phone: "validation.the_phone_has_already_been_taken",
       name: "validation.the_name_field_is_required",
-      national_id: "validation.the_national_id_has_already_been_taken",
       bio: "validation.the_bio_field_must_be_at_least_10_characters",
       password: "validation.the_password_field_must_be_at_least_6_characters",
       password_confirmation:
         "validation.the_password_field_confirmation_does_not_match",
     };
+
+    // handle national_id separately
+    if (validationErrors.national_id) {
+      validationErrors.national_id.forEach((msg) => {
+        if (msg.toLowerCase().includes("already been taken")) {
+          toast.error(t("validation.the_national_id_has_already_been_taken"));
+        } else if (msg.toLowerCase().includes("must be at least")) {
+          toast.error(
+            t("validation.the_national_id_field_must_be_at_least_14_characters")
+          );
+        } else {
+          // fallback if backend sends another message
+          toast.error(msg);
+        }
+      });
+    }
 
     Object.entries(errorMap).forEach(([field, translationKey]) => {
       if (validationErrors[field]) {
@@ -186,8 +204,12 @@ const Register = () => {
                   <div className="col-md-6">
                     <label className="text-dark">{t("profile.age")}</label>
                     <input
-                      type="text"
+                      type="number"
                       name="age"
+                      min="0"
+                      onInput={(e) => {
+                        e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                      }}
                       value={formData.age}
                       onChange={handleChange}
                       required
@@ -287,7 +309,11 @@ const Register = () => {
               <div className="col-md-6">
                 <label className="text-dark">{t("profile.nationalId")}</label>
                 <input
-                  type="text"
+                  type="number"
+                  min="0"
+                  onInput={(e) => {
+                    e.target.value = e.target.value.replace(/[^0-9]/g, "");
+                  }}
                   name="national_id"
                   value={formData.national_id}
                   onChange={handleChange}
@@ -346,9 +372,9 @@ const Register = () => {
             <div className="text-sm text-center my-3">
               <span className="text-dark">{t("sign.haveAccount")}</span>
               <span className="fw-bold mx-1">
-                <Link className="main-color" to="/login">
+                <a className="main-color" href="/login">
                   {t("sign.login")}
-                </Link>
+                </a>
               </span>
             </div>
           </form>
