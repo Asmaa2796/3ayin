@@ -78,11 +78,6 @@ const AdsSlice = createSlice({
       state.error = null;
       state.success = null;
     },
-    appendAds: (state, action) => {
-      // For "Show More" functionality
-      state.ads = [...state.ads, ...action.payload.data];
-      state.pagination = action.payload.pagination;
-    },
   },
   extraReducers: (builder) => {
     addCrudExtraReducers(builder, { fetchAll, key: "ads" });
@@ -118,6 +113,6 @@ const AdsSlice = createSlice({
   },
 });
 
-export const { clearState, appendAds } = AdsSlice.actions;
+export const { clearState } = AdsSlice.actions;
 export { fetchAll as fetchAds };
 export default AdsSlice.reducer;

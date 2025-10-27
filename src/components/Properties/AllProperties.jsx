@@ -113,7 +113,7 @@ const PropertiesPage = () => {
                       />
                       <div className="p-3">
                         <p className="line-height mb-1 text-dark">
-                          {item?.title.slice(0, 60)} ...
+                          {item?.title && `${item.title.slice(0, 60)} ...`}
                         </p>
                         <hr className="my-1" />
                         <ul className="p-0 mb-0 list-unstyled">

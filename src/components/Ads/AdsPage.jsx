@@ -22,14 +22,13 @@ const AdsPage = () => {
   const subSubCategoryId = searchParams.get("sub_sub_category_id");
   const [page, setPage] = useState(1);
 
-  // Fetch ads (backend always returns all ads)
-  // ✅ Fetch logic: search mode OR category/subcategory filtering
+  
   useEffect(() => {
     if (searchValue) {
-      // Search mode — use backend search
+      // Search mode
       dispatch(searchAds({ search: searchValue, page, per_page: 9 }));
     } else {
-      // Normal mode — fetch all ads and filter locally
+      // Normal mode
       dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
     }
   }, [dispatch, page, i18n.language, searchValue]);
@@ -42,7 +41,6 @@ const AdsPage = () => {
   const searchMode = Boolean(searchValue);
   const baseAds = searchMode ? adsList : ads;
 
-  // ✅ Client-side filtering
   const showAds = baseAds?.filter((ad) => {
     if (subSubCategoryId) {
       return String(ad.sub_sub_category_id) === String(subSubCategoryId);

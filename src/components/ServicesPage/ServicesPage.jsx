@@ -22,12 +22,13 @@ const ServicesPage = () => {
   const { t, i18n } = useTranslation("global");
 
   const [selectedRate, setSelectedRate] = useState(null);
+  const [filterParams, setFilterParams] = useState(null);
+
+  const [page, setPage] = useState(1);
   const dispatch = useDispatch();
 
   const { filterByCats } = useSelector((state) => state.filterServices);
-  const { ads, loading, pagination, appendAds } = useSelector(
-    (state) => state.ads
-  );
+  const { ads, loading, pagination } = useSelector((state) => state.ads);
 
   const [minPrice, setMinPrice] = useState("");
   const [maxPrice, setMaxPrice] = useState("");
@@ -59,67 +60,73 @@ const ServicesPage = () => {
     setMaxPrice(100000000);
     setSelectedRate(null);
   };
-  const handleFilterClick = (subSubId) => {
-    if (!subSubId) {
-      dispatch(fetchAds());
-      return;
-    }
-    resetAllFilters();
-    dispatch(filterAds({ ad_sub_category_id: subSubId }));
-  };
 
   const handlePriceFilter = () => {
     if (minPrice >= maxPrice) {
       toast.error(t("min_max_price"));
       return;
     }
-    resetAllFilters();
-    dispatch(filterAds({ min_price: minPrice, max_price: maxPrice }));
+    const params = { min_price: minPrice, max_price: maxPrice };
+    setFilterParams(params);
+    setSelectedRate(null);
+    setPage(1);
+    dispatch(filterAds(params));
   };
+
   const handleRateFilter = (rate) => {
     const newRate = selectedRate === rate ? null : rate;
     setSelectedRate(newRate);
-
+    const params = newRate ? { rate: newRate } : {};
     setMinPrice(0);
     setMaxPrice(100000000);
-
-    dispatch(filterAds(newRate ? { rate: newRate } : {}));
+    setFilterParams(params);
+    setPage(1);
+    dispatch(filterAds(params));
   };
 
   const handleCategoryFilter = (catId) => {
+    setSelectedRate(null);
     resetAllFilters();
-    dispatch(filterAds({ ad_category_id: catId }));
+    const params = { ad_category_id: catId };
+    setFilterParams(params);
+    setPage(1);
+    dispatch(filterAds(params));
   };
   const handleSubCategoryFilter = (subId) => {
+    setSelectedRate(null);
     resetAllFilters();
-    dispatch(filterAds({ ad_sub_category_id: subId }));
+    const params = { ad_sub_category_id: subId };
+    setFilterParams(params);
+    setPage(1);
+    dispatch(filterAds(params));
   };
   const handleSubSubCategoryFilter = (subSubId) => {
+    setSelectedRate(null);
     resetAllFilters();
-    dispatch(filterAds({ ad_sub_sub_category_id: subSubId }));
+    const params = { ad_sub_sub_category_id: subSubId };
+    setFilterParams(params);
+    setPage(1);
+    dispatch(filterAds(params));
   };
   const handleShowAll = () => {
-    handleFilterClick(null);
+    setFilterParams(null);
+    resetAllFilters();
+    setPage(1);
+    dispatch(fetchAdsWithPagination({ page: 1, per_page: 9 }));
   };
 
-  const handleShowMore = () => {
-    if (pagination && pagination.current_page < pagination.last_page) {
-      dispatch(
-        fetchAdsWithPagination({
-          page: pagination.current_page + 1,
-          per_page: pagination.per_page || 9,
-        })
-      ).then((res) => {
-        if (res.meta.requestStatus === "fulfilled") {
-          dispatch(appendAds(res.payload));
-        }
-      });
-    }
-  };
   useEffect(() => {
-    dispatch(fetchAllCategoriesTree());
-    dispatch(fetchAds());
-  }, [dispatch, i18n.language]);
+  dispatch(fetchAllCategoriesTree());
+
+  if (filterParams) {
+    // If filters are applied (category, price, etc.)
+    dispatch(filterAds({ ...filterParams, page, per_page: 9 }));
+  } else {
+    // If no filters → show all ads paginated
+    dispatch(fetchAdsWithPagination({ page, per_page: 9 }));
+  }
+}, [dispatch, i18n.language, page, filterParams]);
+
 
   return (
     <>
@@ -409,21 +416,62 @@ const ServicesPage = () => {
                       ))}
                       <div className="text-center">
                         {pagination && pagination.last_page > 1 && (
-                          <div className="text-center">
-                            <button
-                              className="show_more btn btn-link"
-                              onClick={handleShowMore}
-                            >
-                              {t("recommendedServices.showMore")}{" "}
-                              <i
-                                className={`bi ${
-                                  i18n.language === "ar"
-                                    ? "bi-arrow-left"
-                                    : "bi-arrow-right"
+                          <nav aria-label="Service pagination" className="my-3">
+                            <ul className="pagination justify-content-center">
+                              <li
+                                className={`page-item mx-1 ${
+                                  page === 1 ? "disabled" : ""
                                 }`}
-                              ></i>
-                            </button>
-                          </div>
+                              >
+                                <button
+                                  className="page-link rounded-1"
+                                  onClick={() =>
+                                    setPage((prev) => Math.max(prev - 1, 1))
+                                  }
+                                >
+                                  {t("labels.previous")}
+                                </button>
+                              </li>
+
+                              {Array.from(
+                                { length: pagination.last_page },
+                                (_, i) => (
+                                  <li
+                                    key={i + 1}
+                                    className={`page-item mx-1 ${
+                                      page === i + 1 ? "active" : ""
+                                    }`}
+                                  >
+                                    <button
+                                      className="page-link rounded-1"
+                                      onClick={() => setPage(i + 1)}
+                                    >
+                                      {i + 1}
+                                    </button>
+                                  </li>
+                                )
+                              )}
+
+                              <li
+                                className={`page-item mx-1 ${
+                                  page === pagination.last_page
+                                    ? "disabled"
+                                    : ""
+                                }`}
+                              >
+                                <button
+                                  className="page-link rounded-1"
+                                  onClick={() =>
+                                    setPage((prev) =>
+                                      Math.min(prev + 1, pagination.last_page)
+                                    )
+                                  }
+                                >
+                                  {t("labels.next")}
+                                </button>
+                              </li>
+                            </ul>
+                          </nav>
                         )}
                       </div>
                     </>
