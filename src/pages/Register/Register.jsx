@@ -34,7 +34,7 @@ const Register = () => {
   useEffect(() => {
     const lang = i18n.language;
 
-    fetch("https://3ayin.resporthub.com/api/job-titles", {
+    fetch("https://app.xn--mgb9a0bp.com/api/job-titles", {
       headers: {
         Lang: lang,
       },
@@ -49,7 +49,7 @@ const Register = () => {
         );
       });
 
-    fetch("https://3ayin.resporthub.com/api/company-types", {
+    fetch("https://app.xn--mgb9a0bp.com/api/company-types", {
       headers: {
         Lang: lang,
       },

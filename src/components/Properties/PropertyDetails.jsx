@@ -156,7 +156,7 @@ const PropertyDetails = () => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const res = await axios.post(
-        "https://3ayin.resporthub.com/api/rate_property",
+        "https://app.xn--mgb9a0bp.com/api/rate_property",
         formData,
         {
           headers: {
@@ -204,7 +204,7 @@ const PropertyDetails = () => {
     try {
       // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const { data } = await axios.get(
-        `https://3ayin.resporthub.com/api/property/${id}/reviews`,
+        `https://app.xn--mgb9a0bp.com/api/property/${id}/reviews`,
         {
           headers: {
             "Content-Type": "application/json",

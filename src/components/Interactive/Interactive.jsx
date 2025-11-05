@@ -56,7 +56,7 @@ const Interactive = () => {
     const fetchSubCategories = async () => {
       try {
         const res = await axios.get(
-          `https://3ayin.resporthub.com/api/categories/sub-categories`,
+          `https://app.xn--mgb9a0bp.com/api/categories/sub-categories`,
           {
             headers: {
               Lang: i18n.language,

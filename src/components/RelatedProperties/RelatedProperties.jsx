@@ -42,7 +42,7 @@ const RelatedProperties = ({ propertyID }) => {
     const fetchRelated = async () => {
       try {
         const response = await axios.get(
-          `https://3ayin.resporthub.com/api/properties/${propertyID}/related`,
+          `https://app.xn--mgb9a0bp.com/api/properties/${propertyID}/related`,
           {
             headers: {
               Lang: i18n.language,

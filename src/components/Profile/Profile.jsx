@@ -316,7 +316,7 @@ const Profile = () => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const { data } = await axios.get(
-        `https://3ayin.resporthub.com/api/profile/identifies`,
+        `https://app.xn--mgb9a0bp.com/api/profile/identifies`,
         {
           headers: {
             "Content-Type": "application/json",
@@ -403,7 +403,7 @@ const Profile = () => {
 
   // fetch job titles & company types
   useEffect(() => {
-    fetch("https://3ayin.resporthub.com/api/job-titles", {
+    fetch("https://app.xn--mgb9a0bp.com/api/job-titles", {
       headers: {
         Lang: i18n.language,
       },
@@ -418,7 +418,7 @@ const Profile = () => {
         );
       });
 
-    fetch("https://3ayin.resporthub.com/api/company-types", {
+    fetch("https://app.xn--mgb9a0bp.com/api/company-types", {
       headers: {
         Lang: i18n.language,
       },

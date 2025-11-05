@@ -117,7 +117,7 @@ const ServiceDetails = () => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const res = await axios.post(
-        "https://3ayin.resporthub.com/api/ad/review",
+        "https://app.xn--mgb9a0bp.com/api/ad/review",
         formData,
         {
           headers: {
@@ -154,7 +154,7 @@ const ServiceDetails = () => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const { data } = await axios.get(
-        `https://3ayin.resporthub.com/api/ad/${id}/reviews`,
+        `https://app.xn--mgb9a0bp.com/api/ad/${id}/reviews`,
         {
           headers: {
             "Content-Type": "application/json",

@@ -15,7 +15,7 @@ export const fetchPropertyById = createAsyncThunk(
   "properties/fetchPropertyById",
   async (id, { rejectWithValue }) => {
     try {
-      const res = await axios.get(`https://3ayin.resporthub.com/api/properties/${id}`,{
+      const res = await axios.get(`https://app.xn--mgb9a0bp.com/api/properties/${id}`,{
         headers: {
             "Content-Type": "application/json",
             Lang: i18n.language,

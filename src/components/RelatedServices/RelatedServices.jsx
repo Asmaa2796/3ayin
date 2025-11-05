@@ -20,7 +20,7 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
     const fetchRelated = async () => {
       try {
         const response = await axios.get(
-          `https://3ayin.resporthub.com/api/ads/by-category/${adCategory}`,
+          `https://app.xn--mgb9a0bp.com/api/ads/by-category/${adCategory}`,
           {
             headers: {
               Lang: i18n.language,
