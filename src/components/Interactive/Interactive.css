@@ -6,6 +6,9 @@
     height: 500px;
     display: block;
     margin: auto;
+    background: var(--basic-color);
+    border: 1px solid #ddd;
+    border-radius: 5px;
 }
 .interactive .after_img {
     position: absolute;

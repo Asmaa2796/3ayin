@@ -28,6 +28,7 @@ import SubscribePlanSlice from "./Slices/SubscribePlanSlice";
 import SearchSlice from "./Slices/SearchSlice"; 
 import FacilitiesSlice from "./Slices/FacilitiesSlice"; 
 import CustomizePackageSlice from "./Slices/CustomizePackageSlice"; 
+import ServicesSlice from "./Slices/ServicesSlice"; 
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -60,6 +61,7 @@ const store = configureStore({
     search: SearchSlice,
     facilities: FacilitiesSlice,
     customize_package: CustomizePackageSlice,
+    services: ServicesSlice,
   },
 });
 

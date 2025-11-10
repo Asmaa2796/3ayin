@@ -6,13 +6,20 @@ import { Tooltip } from "react-tooltip";
 import { useTranslation } from "react-i18next";
 import { Link } from "react-router-dom";
 import axios from "axios";
+import { fetchSettings } from "../../redux/Slices/SettingsSlice";
+import { useDispatch, useSelector } from "react-redux";
 
 const Interactive = () => {
   const { t, i18n } = useTranslation("global");
+  const dispatch = useDispatch();
   const [subCategories, setSubCategories] = useState([]);
   const [theme, setTheme] = useState(
     () => sessionStorage.getItem("theme") || "light"
   );
+  const {settings} = useSelector((state) => state.settings);
+useEffect(() => {
+  dispatch(fetchSettings());
+}, [dispatch,i18n,t]);
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
     sessionStorage.setItem("theme", theme);
@@ -79,7 +86,15 @@ const Interactive = () => {
     <div className="interactive py-5 mt-4">
       <div className="container">
         <div className="text-center interactive_btns">
-          <img className="main_img" src="/mask.png" alt="--" />
+          <img
+            className="main_img"
+            src={settings?.site_banner ? settings?.site_banner : "/mask.png"}
+            onError={(e) => {
+              e.currentTarget.onerror = null;
+              e.currentTarget.src = "/mask.png";
+            }}
+            alt="--"
+          />
           <img
             className="after_img"
             src={`${
@@ -116,10 +131,14 @@ const Interactive = () => {
                     )}
                   </ul> */}
                   <li>
-                    <Link className="d-block" to="/publish_ad">{t("create_ad.publishAd")}</Link>
+                    <Link className="d-block" to="/publish_ad">
+                      {t("create_ad.publishAd")}
+                    </Link>
                   </li>
                   <li>
-                    <Link className="d-block" to="/all_ads">{t("labels.all_ads")}</Link>
+                    <Link className="d-block" to="/all_ads">
+                      {t("labels.all_ads")}
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -143,10 +162,14 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link className="d-block" to="/properties_AR_VR">{t("services.3ayinVrAr")}</Link>
+                    <Link className="d-block" to="/properties_AR_VR">
+                      {t("services.3ayinVrAr")}
+                    </Link>
                   </li>
                   <li>
-                    <Link className="d-block" to="/properties_map">{t("services.3ayinMap")}</Link>
+                    <Link className="d-block" to="/properties_map">
+                      {t("services.3ayinMap")}
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -168,12 +191,16 @@ const Interactive = () => {
             <Tooltip id="tooltip3" />
             {openDropdown === 3 && (
               <div className="dropdown" data-aos="fade-up">
-                <ul>                  
+                <ul>
                   <li>
-                    <Link className="d-block" to="/add_property">{t("navbar.add_property")}</Link>
+                    <Link className="d-block" to="/add_property">
+                      {t("navbar.add_property")}
+                    </Link>
                   </li>
                   <li>
-                    <Link className="d-block" to="/all_properties">{t("property.all")}</Link>
+                    <Link className="d-block" to="/all_properties">
+                      {t("property.all")}
+                    </Link>
                   </li>
                 </ul>
               </div>
@@ -197,10 +224,14 @@ const Interactive = () => {
               <div className="dropdown" data-aos="fade-up">
                 <ul>
                   <li>
-                    <Link className="d-block" to="/packages">{t("packages.title")}</Link>
+                    <Link className="d-block" to="/packages">
+                      {t("packages.title")}
+                    </Link>
                   </li>
                   <li>
-                    <Link to="/faq" className="d-block">{t("footer.faq")}</Link>
+                    <Link to="/faq" className="d-block">
+                      {t("footer.faq")}
+                    </Link>
                   </li>
                 </ul>
               </div>

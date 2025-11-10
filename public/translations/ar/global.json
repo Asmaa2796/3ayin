@@ -469,11 +469,15 @@
   "cancel": "إلغاء",
   "submit": "إرسال",
   "normal": "عادي",
+  "request_service": "طلب خدمة",
+  "service": "خدمة",
   "highlighted": "مميز",
   "top": "الأعلى",
   "none": "بدون",
   "basic": "أساسي",
   "advanced": "متقدم",
+  "request_sent_successfully": "تم إرسال الطلب بنجاح",
+  "error_sending_request": "فشل إرسال الطلب",
   "custom_package_submitted": "تم إرسال الباقة المخصصة بنجاح وستتواصل الإدارة معك!",
   "pending": "قيد المراجعة",
   "approved": "مقبول",
@@ -483,6 +487,10 @@
     "page": "صفحة",
     "of": "من",
     "next": "التالي"
+  },
+  "messages": {
+    "request_sent_successfully": "تم إرسال طلب الخدمة بنجاح، وسيتواصل معك فريق الإدارة قريبًا.",
+    "error_sending_request": "حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى لاحقًا."
   },
   "loading": "جار التحميل...",
   "exist": "يوجد",

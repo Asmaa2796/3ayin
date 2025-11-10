@@ -83,7 +83,7 @@ const ServiceProvider = () => {
   useEffect(() => {
     if (id) {
       dispatch(
-        getProviderProperties({ status: status, page: currentPropsPage })
+        getProviderProperties({ status: status, page: currentPropsPage,id })
       );
     }
   }, [id, status, currentPropsPage, dispatch, i18n.language]);

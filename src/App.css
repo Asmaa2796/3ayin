@@ -747,6 +747,7 @@ select {
     overflow-x: hidden;
 }
 .navbar .navbar-nav {gap: 0 !important;align-items: start !important;}
+
 [dir='ltr'] .navbar .navbar-nav {
   gap: 0 !important;
   /* align-items: end !important; */

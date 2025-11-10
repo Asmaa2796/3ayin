@@ -80,24 +80,24 @@ const Navbar = () => {
   }, []);
 
   const getProfileData = async () => {
-  try {
-    const response = await axios.get(`${BASE_URL}/api/profileData`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data",
-        Lang: i18n.language,
-      },
-    });
+    try {
+      const response = await axios.get(`${BASE_URL}/api/profileData`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "multipart/form-data",
+          Lang: i18n.language,
+        },
+      });
 
-    const user = response.data.data?.user;
-    if (!user) return;
+      const user = response.data.data?.user;
+      if (!user) return;
 
-    setProfileCompanyName(user?.profile?.username);
-    setProfileName(user?.profile?.name);
-  } catch (error) {
-    console.error(error);
-  }
-};
+      setProfileCompanyName(user?.profile?.username);
+      setProfileName(user?.profile?.name);
+    } catch (error) {
+      console.error(error);
+    }
+  };
 
   useEffect(() => {
     getProfileData();
@@ -126,24 +126,24 @@ const Navbar = () => {
     };
   }, []);
 
-const isLoggedIn = !!user;
+  const isLoggedIn = !!user;
 
-useEffect(() => {
-  if (
-    !isLoggedIn &&
-    ["/publish_ad", "/add_property", "/user_profile"].includes(
-      location.pathname
-    )
-  ) {
-    toast.warning(t("please_log_in_to_continue"));
-    navigate("/login");
-  }
+  useEffect(() => {
+    if (
+      !isLoggedIn &&
+      ["/publish_ad", "/add_property", "/user_profile"].includes(
+        location.pathname
+      )
+    ) {
+      toast.warning(t("please_log_in_to_continue"));
+      navigate("/login");
+    }
 
-  if (!isLoggedIn && location.pathname.startsWith("/provider_profile")) {
-    toast.warning(t("please_log_in_to_continue"));
-    navigate("/login");
-  }
-}, [isLoggedIn, location, navigate]);
+    if (!isLoggedIn && location.pathname.startsWith("/provider_profile")) {
+      toast.warning(t("please_log_in_to_continue"));
+      navigate("/login");
+    }
+  }, [isLoggedIn, location, navigate]);
 
   useEffect(() => {
     document.documentElement.setAttribute("data-theme", theme);
@@ -623,58 +623,58 @@ useEffect(() => {
         </div>
 
         <div className="d-flex align-items-center gap-3">
-        
-        <div className="dropdown">
-          <button
-            className="nav-link dropdown-toggle add btn p-0 border-0 bg-transparent d-flex align-items-center"
-            data-bs-toggle="dropdown"
-            aria-expanded="false"
-            style={{ fontSize: "small" }}
-          >
-            {t("navbar.add")}
-            <i className="bi bi-chevron-down text-xs fw-bold mt-1 mx-1"></i>{" "}
-          </button>
+       
+          <div className="dropdown">
+            <button
+              className="nav-link dropdown-toggle add btn p-0 border-0 bg-transparent d-flex align-items-center"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+              style={{ fontSize: "small" }}
+            >
+              {t("navbar.add")}
+              <i className="bi bi-chevron-down text-xs fw-bold mt-1 mx-1"></i>{" "}
+            </button>
 
-          <ul
-            className="dropdown-menu dropdown-menu-end overflow-hidden"
-            style={{
-              backgroundColor: `${
-                theme === "dark" ? "var(--dark-color)" : "var(--basic-color)"
-              }`,
-            }}
-          >
-            <li className="dropdown-item text-sm">
-              <button
-                className="d-block bg-transparent border-0"
-                style={{ color: theme === "dark" ? "#fff" : "#222" }}
-                onClick={() => {
-                  if (user) {
-                    navigate("/publish_ad");
-                  } else {
-                    toast.warning(t("please_log_in_to_continue"));
-                  }
-                }}
-              >
-                {t("navbar.add_service")}
-              </button>
-            </li>
-            <li className="dropdown-item text-sm">
-              <button
-                className="d-block bg-transparent border-0"
-                style={{ color: theme === "dark" ? "#fff" : "#222" }}
-                onClick={() => {
-                  if (user) {
-                    navigate("/add_property");
-                  } else {
-                    toast.warning(t("please_log_in_to_continue"));
-                  }
-                }}
-              >
-                {t("navbar.add_property")}
-              </button>
-            </li>
-          </ul>
-        </div>
+            <ul
+              className="dropdown-menu dropdown-menu-end overflow-hidden"
+              style={{
+                backgroundColor: `${
+                  theme === "dark" ? "var(--dark-color)" : "var(--basic-color)"
+                }`,
+              }}
+            >
+              <li className="dropdown-item text-sm">
+                <button
+                  className="d-block bg-transparent border-0"
+                  style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                  onClick={() => {
+                    if (user) {
+                      navigate("/publish_ad");
+                    } else {
+                      toast.warning(t("please_log_in_to_continue"));
+                    }
+                  }}
+                >
+                  {t("navbar.add_service")}
+                </button>
+              </li>
+              <li className="dropdown-item text-sm">
+                <button
+                  className="d-block bg-transparent border-0"
+                  style={{ color: theme === "dark" ? "#fff" : "#222" }}
+                  onClick={() => {
+                    if (user) {
+                      navigate("/add_property");
+                    } else {
+                      toast.warning(t("please_log_in_to_continue"));
+                    }
+                  }}
+                >
+                  {t("navbar.add_property")}
+                </button>
+              </li>
+            </ul>
+          </div>
           <button
             className="btn bg-transparent border-0 p-0"
             onClick={() => setIsSearchOpen(true)}
@@ -787,6 +787,7 @@ useEffect(() => {
           </div>
 
           <ul className="actions list-unstyled p-0 d-flex align-items-center gap-3 m-0">
+           
             <li className="nav-item dropdown">
               <button
                 className="nav-link dropdown-toggle add btn p-0 border-0 bg-transparent d-flex align-items-center"
@@ -796,7 +797,6 @@ useEffect(() => {
                 <i className="bi bi-chevron-down text-xs fw-bold mt-1 mx-1"></i>{" "}
                 {t("navbar.add")}
               </button>
-
               <ul
                 className="dropdown-menu dropdown-menu-end overflow-hidden"
                 style={{
@@ -872,7 +872,7 @@ useEffect(() => {
                 <li>
                   <button
                     onClick={() => changeLanguage("en")}
-                    className="dropdown-item text-sm"
+                    className={`dropdown-item text-sm ${i18n.language === "ar" && "custom-font"}`}
                   >
                     {i18n.language === "en" ? "English" : "الإنجليزية"}
                   </button>
@@ -970,7 +970,7 @@ useEffect(() => {
           </ul>
         </div>
       </div>
-     
+
       <div
         className={`side_menu_overlay ${isSideMenuOpen ? "show" : ""}`}
         onClick={() => setIsSideMenuOpen(false)}

@@ -31,7 +31,8 @@ useEffect(() => {
         <div className="row">
           <div className="col-xl-3 col-lg-3 col-md-6">
             <div className="logo">
-              <Link to="/"><img className="mb-2" src={theme === "light" ? settings?.logo_dark : settings?.logo_white} alt="--" /></Link>
+              <Link to="/">
+              <img className="mb-2" src={theme === "light" ? settings?.logo_dark : settings?.logo_white} alt="--" /></Link>
             </div>
             <p className="line-height">{settings?.site_desc}</p>
             <div className="flex_contact d-flex my-2">
@@ -40,7 +41,7 @@ useEffect(() => {
               </div>
               <div className="mx-2 d-block">
                 <span className="d-block">{t("footer.support")}</span>
-                <b className="d-block text-sm">{settings?.email_support}</b>
+                <b className="d-block text-sm">{settings?.site_email}</b>
               </div>
             </div>
             <div className="flex_contact d-flex my-2">

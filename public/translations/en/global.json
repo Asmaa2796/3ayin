@@ -468,6 +468,8 @@
   "customize_package": "Customize Package",
   "cancel": "Cancel",
   "submit": "Submit",
+  "request_service": "Request a service",
+  "service": "Service",
   "normal": "Normal",
   "highlighted": "Highlighted",
   "top": "Top",
@@ -475,6 +477,8 @@
   "basic": "Basic",
   "custom_package_submitted": "Your customized package has been sent successfully and the management will contact you!",
   "advanced": "Advanced",
+  "request_sent_successfully": "Request sent successfully",
+  "error_sending_request": "Error sending request",
   "pending": "Pending",
   "approved": "Approved",
   "labels": {
@@ -483,6 +487,10 @@
     "page": "Page",
     "of": "Of",
     "next": "Next"
+  },
+  "messages": {
+    "request_sent_successfully": "Your service request has been submitted successfully, and our administration team will contact you soon.",
+    "error_sending_request": "There was an error sending your request. Please try again later."
   },
   "loading": "Loading...",
   "exist": "Exist",

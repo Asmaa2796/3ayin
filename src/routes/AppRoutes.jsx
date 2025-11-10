@@ -32,6 +32,7 @@ import AllProperties from "../components/Properties/AllProperties";
 import PropertiesARVR from "../components/Properties/PropertiesARVR";
 import PropertiesMap from "../components/Properties/PropertiesMap";
 import Packages from "../components/Packages/Packages";
+import RequestService from "../components/RequestService/RequestService";
 import NotFound from "../pages/NotFound";
 import PropertyDetails from "../components/Properties/PropertyDetails";
 
@@ -86,6 +87,7 @@ export default function Applayout() {
         <Route path="help_center" element={<HelpCenter />} />
         <Route path="user_profile" element={<Profile />} />
         <Route path="packages" element={<Packages />} />
+        <Route path="request_service" element={<RequestService />} />
 
         <Route path="privacy_policy" element={<PrivacyPolicy />} />
         <Route path="terms_and_conditions" element={<TermsAndConditions />} />

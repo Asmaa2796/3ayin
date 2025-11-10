@@ -7,11 +7,11 @@ const baseURL = process.env.REACT_APP_BASE_URL;
 // Async thunk: fetch provider properties with status
 export const getProviderProperties = createAsyncThunk(
   "providerProperties/getProviderProperties",
-  async ({ status,page = 1 }, { rejectWithValue }) => {
+  async ({ status,page = 1,id }, { rejectWithValue }) => {
     try {
       const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
       const response = await axios.get(
-        `${baseURL}/api/provider/properties?status=${status}&page=${page}`,
+        `${baseURL}/api/user/${id}/properties?status=${status}&page=${page}`,
         {
           headers: {
             Authorization: `Bearer ${token}`,

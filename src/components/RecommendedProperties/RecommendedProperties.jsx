@@ -77,73 +77,72 @@ const RecommendedProperties = () => {
               },
             }}
           >
-            {properties.map((item, index) => (
+            {properties.map((item, index) =>
               item.is_recommended === true &&
-              <SwiperSlide key={item.id || index}>
-                <Link
-                  key={item.id || index}
-                  to={`/propertyDetails/${item.id}`}
-                  className="d-block recommended_card border rounded-4 my-2 overflow-hidden position-relative"
-                >
-                  <div className="finishing_status">
-                    {finishingMap[item?.finishing_status] ||
-                      item?.finishing_status}
-                  </div>
-                  <img
-                    src={item.images?.[0]?.url || "/placeholder.jpg"}
-                    onError={(e) => {
-                      e.target.onerror = null;
-                      e.target.src = "/placeholder.jpg";
-                    }}
-                    alt={item.title}
-                    className="img-fluid mb-3 rounded-4"
-                  />
-                  <div className="p-3">
-                    <p className="line-height mb-1 text-dark">
-                      {item.title?.slice(0, 60)}...
-                    </p>
-                    <hr className="my-1" />
-                    <ul className="p-0 mb-0 list-unstyled">
-                      <li className="text-sm bg-blue text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
-                        <small>{t("property.unitCategory")}</small> :{" "}
-                        <small>
-                          {categoryMap[item?.category] || item?.category}
-                        </small>
-                      </li>
-                      <li className="text-sm bg-success text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
-                        <small>{t("property.unitType")}</small> :{" "}
-                        <small>
-                          {unitTypeMap[item?.unit_type] || item?.unit_type}
-                        </small>
-                      </li>
-                    </ul>
-                    <hr className="my-1" />
+                <SwiperSlide key={item.id || index}>
+                  <Link
+                    key={item.id || index}
+                    to={`/propertyDetails/${item.id}`}
+                    className="d-block recommended_card border rounded-4 my-2 overflow-hidden position-relative"
+                  >
+                    <div className="finishing_status">
+                      {finishingMap[item?.finishing_status] ||
+                        item?.finishing_status}
+                    </div>
+                    <img
+                      src={item.images?.[0]?.url || "/placeholder.jpg"}
+                      onError={(e) => {
+                        e.target.onerror = null;
+                        e.target.src = "/placeholder.jpg";
+                      }}
+                      alt={item.title}
+                      className="img-fluid mb-3 rounded-4"
+                    />
+                    <div className="p-3">
+                      <p className="line-height mb-1 text-dark">
+                        {item.title?.slice(0, 60)}...
+                      </p>
+                      <hr className="my-1" />
+                      <ul className="p-0 mb-0 list-unstyled">
+                        <li className="text-sm bg-blue text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
+                          <small>{t("property.unitCategory")}</small> :{" "}
+                          <small>
+                            {categoryMap[item?.category] || item?.category}
+                          </small>
+                        </li>
+                        <li className="text-sm bg-success text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
+                          <small>{t("property.unitType")}</small> :{" "}
+                          <small>
+                            {unitTypeMap[item?.unit_type] || item?.unit_type}
+                          </small>
+                        </li>
+                      </ul>
+                      <hr className="my-1" />
 
-                    <div className="text-sm d-flex justify-content-between align-items-center">
-                      <div className="text-dark">
-                        {t("recommendedServices.startingFrom")}{" "}
-                        <span className="fw-bold">
-                          {item.price} {t("recommendedServices.currency")}
-                        </span>
-                      </div>
-                      <div>
-                        <span
-                          className="view_details"
-                        >
-                          <i
-                            className={`text-sm bi ${
-                              i18n.language === "ar"
-                                ? "bi-arrow-left"
-                                : "bi-arrow-right"
-                            }`}
-                          ></i>
-                        </span>
+                      <div className="text-sm d-flex justify-content-between align-items-center">
+                        <div className="text-dark">
+                          {t("recommendedServices.startingFrom")}{" "}
+                          <span className="fw-bold">
+                            {item.price} {t("recommendedServices.currency")}
+                          </span>
+                        </div>
+                        <div>
+                          <span className="view_details">
+                            <i
+                              className={`text-sm bi ${
+                                i18n.language === "ar"
+                                  ? "bi-arrow-left"
+                                  : "bi-arrow-right"
+                              }`}
+                            ></i>
+                          </span>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                </Link>
-              </SwiperSlide>
-            ))}
+                  </Link>
+                </SwiperSlide>
+              
+            )}
           </Swiper>
         ) : (
           <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">

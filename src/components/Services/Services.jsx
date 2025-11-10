@@ -3,6 +3,7 @@ import axios from 'axios';
 import Tilt from 'react-parallax-tilt';
 import { useTranslation } from 'react-i18next';
 import './Services.css';
+import { Link } from 'react-router-dom';
 
 const Services = () => {
   const { t, i18n } = useTranslation('global');
@@ -51,6 +52,16 @@ const Services = () => {
             </Tilt>
           ))}
         </ul>
+         <div className='text-center'>
+          <Link
+              to="request_service"
+              className="rounded-5 shadow-sm bg-dark text-white text-sm px-3 request_service_btn"
+              style={{ paddingBlock: "6px" }}
+            >
+              <i className="bi bi-pen text-xs fw-bold mt-1 mx-1"></i>{" "}
+              <span>{t("request_service")}</span>
+            </Link>
+         </div>
       </div>
     </div>
   );
