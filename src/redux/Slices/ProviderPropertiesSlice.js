@@ -4,7 +4,6 @@ import axios from "axios";
 import i18n from "../../i18n/i18n";
 
 const baseURL = process.env.REACT_APP_BASE_URL;
-// Async thunk: fetch provider properties with status
 export const getProviderProperties = createAsyncThunk(
   "providerProperties/getProviderProperties",
   async ({ status,page = 1,id }, { rejectWithValue }) => {
