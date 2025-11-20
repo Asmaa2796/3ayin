@@ -117,7 +117,7 @@
     "vrCourses": "كورسات VR / AR",
     "educationCenter": "سنتر تعليمي",
     "about3ayinProperty": "حول عاين عقار",
-    "3ayinMap": "عاين ماب",
+    "3ayinMap": "عاين خريطة",
     "3ayinVrAr": "عاين VR / AR",
     "pdfMaps": "خرائط Pdf",
     "vrLocations": "اماكن VR",
@@ -493,6 +493,8 @@
     "error_sending_request": "حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى لاحقًا."
   },
   "loading": "جار التحميل...",
+  "loading_map": "تحميل الخريطة",
+  "search_place": "بحث عن المكان",
   "exist": "يوجد",
   "not_exist": "لا يوجد",
   "properties_shown": "عقارات معروضة",

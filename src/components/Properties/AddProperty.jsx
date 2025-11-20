@@ -7,8 +7,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
 import { addProperty } from "../../redux/Slices/AddPropertySlice";
-import MapPicker from "./MapPicker";
+
 import { fetchFacilities } from "../../redux/Slices/FacilitiesSlice";
+import GoogleMapPicker from "../PublishAd/GoogleMapPicker";
 
 const AddProperty = () => {
   const { t, i18n } = useTranslation("global");
@@ -459,8 +460,8 @@ const AddProperty = () => {
 
                 {showMap && (
                   <div className="mt-3">
-                    <MapPicker
-                      lang={i18n.language}
+
+                    <GoogleMapPicker
                       onSelect={({ latitude, longitude, location }) => {
                         setFormata((prev) => ({
                           ...prev,

@@ -10,8 +10,9 @@ import { fetchSubCategories } from "../../redux/Slices/SubCategoriesSlice";
 import { fetchSubCatsOfSubCategories } from "../../redux/Slices/SubCatsOfSubCategoriesSlice";
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import MapPicker from "../Properties/MapPicker";
+
 import axios from "axios";
+import GoogleMapPicker from "./GoogleMapPicker";
 
 const PublishAd = () => {
   const { t, i18n } = useTranslation("global");
@@ -195,7 +196,7 @@ const PublishAd = () => {
     dispatch(fetchCategories());
     dispatch(fetchSubCategories());
     dispatch(fetchSubCatsOfSubCategories());
-  }, [dispatch]);
+  }, [dispatch,i18n.language]);
 
   const getProfileData = async () => {
     try {
@@ -230,7 +231,7 @@ const PublishAd = () => {
     const adsLimit = parseInt(subscriptionData.ads_limit, 10);
     const imagesLimit = parseInt(subscriptionData.images_limit, 10);
     const vrTours = parseInt(subscriptionData.vr_tours, 10);
-    const hasVideo = subscriptionData.video; // boolean
+    // const hasVideo = subscriptionData.video; // boolean
     const endDate = new Date(subscriptionData.end_date);
     const today = new Date();
 
@@ -243,8 +244,7 @@ const PublishAd = () => {
     if (
       adsLimit === 0 ||
       imagesLimit === 0 ||
-      vrTours === 0 ||
-      hasVideo === false
+      vrTours === 0
     ) {
       toast.warning(t("planLimitReached"));
       navigate("/packages");
@@ -540,8 +540,7 @@ const PublishAd = () => {
 
                 {showMap && (
                   <div className="mt-3">
-                    <MapPicker
-                      lang={i18n.language}
+                    <GoogleMapPicker
                       onSelect={({ latitude, longitude, location }) => {
                         setFormata((prev) => ({
                           ...prev,
@@ -552,6 +551,7 @@ const PublishAd = () => {
                         setShowMap(false);
                       }}
                     />
+
                   </div>
                 )}
               </div>

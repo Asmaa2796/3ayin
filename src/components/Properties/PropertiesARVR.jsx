@@ -34,7 +34,7 @@ const PropertiesARVRPage = () => {
   const searchMode = Boolean(searchValue);
   const listToRender = searchMode ? propertiesList : properties;
   const paginationInfo = searchMode ? propertiesPagination : pagination;
-  
+
   const categoryMap = {
     sale: t("property.sale"),
     rent: t("property.rent"),
@@ -57,6 +57,16 @@ const PropertiesARVRPage = () => {
     superLux: t("property.finishingSuperLux"),
     company: t("property.finishingCompany"),
   };
+  // Filter AR/VR items
+  const arVrList = (listToRender || []).filter(item => item?.AR_VR);
+
+  // Compute total pages based on filtered data
+  const perPage = 9;
+  const totalPages = Math.ceil(arVrList.length / perPage);
+
+  // Slice current page
+  const startIndex = (page - 1) * perPage;
+  const currentItems = arVrList.slice(startIndex, startIndex + perPage);
   return (
     <>
       <Breadcrumb title={t("property.all")} />
@@ -88,75 +98,74 @@ const PropertiesARVRPage = () => {
         <div className="container">
           {isLoading || loadingFiltered ? (
             <CardsLoader />
-          ) : listToRender?.length > 0 ? (
+          ) : currentItems?.length > 0 ? (
             <>
               <div className="row">
-                {listToRender.map((item, index) => (
+                {currentItems.map((item, index) => (
                   item?.AR_VR && (
                     <div
-                    className="col-xl-3 col-lg-3 col-md-6 col-12"
-                    key={item.id || index}
-                  >
-                    <Link to={`/propertyDetails/${item.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
-                      <div className="finishing_status">
-                        {finishingMap[item?.finishing_status] ||
-                          item?.finishing_status}
-                      </div>
-                      <img
-                        src={item.images?.[0]?.url || "/placeholder.jpg"}
-                        onError={(e) => {
-                          e.target.onerror = null;
-                          e.target.src = "/placeholder.jpg";
-                        }}
-                        alt={item.id}
-                        className="img-fluid mb-3 rounded-4"
-                      />
-                      <div className="p-3">
-                        <p className="line-height mb-1 text-dark">
-                          {item?.title.slice(0, 60)} ...
-                        </p>
-                        <hr className="my-1" />
-                        <ul className="p-0 mb-0 list-unstyled">
-                          <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
-                            <small>{t("property.unitCategory")}</small> :{" "}
-                            <small>
-                              {categoryMap[item?.category] || item?.category}
-                            </small>
-                          </li>
-                          <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
-                            <small>{t("property.unitType")}</small> :{" "}
-                            <small>
-                              {unitTypeMap[item?.unit_type] || item?.unit_type}
-                            </small>
-                          </li>
-                        </ul>
-                        <hr className="my-1" />
+                      className="col-xl-3 col-lg-3 col-md-6 col-12"
+                      key={item.id || index}
+                    >
+                      <Link to={`/propertyDetails/${item.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
+                        <div className="finishing_status">
+                          {finishingMap[item?.finishing_status] ||
+                            item?.finishing_status}
+                        </div>
+                        <img
+                          src={item.images?.[0]?.url || "/placeholder.jpg"}
+                          onError={(e) => {
+                            e.target.onerror = null;
+                            e.target.src = "/placeholder.jpg";
+                          }}
+                          alt={item.id}
+                          className="img-fluid mb-3 rounded-4"
+                        />
+                        <div className="p-3">
+                          <p className="line-height mb-1 text-dark">
+                            {item?.title.slice(0, 60)} ...
+                          </p>
+                          <hr className="my-1" />
+                          <ul className="p-0 mb-0 list-unstyled">
+                            <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
+                              <small>{t("property.unitCategory")}</small> :{" "}
+                              <small>
+                                {categoryMap[item?.category] || item?.category}
+                              </small>
+                            </li>
+                            <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
+                              <small>{t("property.unitType")}</small> :{" "}
+                              <small>
+                                {unitTypeMap[item?.unit_type] || item?.unit_type}
+                              </small>
+                            </li>
+                          </ul>
+                          <hr className="my-1" />
 
-                        <div className="text-sm d-flex justify-content-between align-items-center">
-                          <div className="text-dark">
-                            {t("recommendedServices.startingFrom")}{" "}
-                            <span className="fw-bold">
-                              {item.price} {t("recommendedServices.currency")}
-                            </span>
-                          </div>
-                          <div>
-                            <span
-                              className="view_details"
-                            >
-                              <i
-                                className={`text-sm bi ${
-                                  i18n.language === "ar"
-                                    ? "bi-arrow-left"
-                                    : "bi-arrow-right"
-                                }`}
-                              ></i>
-                            </span>
+                          <div className="text-sm d-flex justify-content-between align-items-center">
+                            <div className="text-dark">
+                              {t("recommendedServices.startingFrom")}{" "}
+                              <span className="fw-bold">
+                                {item.price} {t("recommendedServices.currency")}
+                              </span>
+                            </div>
+                            <div>
+                              <span
+                                className="view_details"
+                              >
+                                <i
+                                  className={`text-sm bi ${i18n.language === "ar"
+                                      ? "bi-arrow-left"
+                                      : "bi-arrow-right"
+                                    }`}
+                                ></i>
+                              </span>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </Link>
-                  </div>
-                  ) 
+                      </Link>
+                    </div>
+                  )
                 ))}
               </div>
 
@@ -165,24 +174,24 @@ const PropertiesARVRPage = () => {
                   <button
                     className="btn btn-outline-primary mx-1"
                     disabled={page === 1}
-                    onClick={() => setPage((prev) => prev - 1)}
+                    onClick={() => setPage(prev => prev - 1)}
                   >
                     {t("labels.previous")}
                   </button>
 
                   <span className="mx-2">
-                    {t("labels.page")} {paginationInfo.current_page}{" "}
-                    {t("labels.of")} {paginationInfo.last_page}
+                    {t("labels.page")} {page} {t("labels.of")} {totalPages}
                   </span>
 
                   <button
                     className="btn btn-outline-primary mx-1"
-                    disabled={page === paginationInfo.last_page}
-                    onClick={() => setPage((prev) => prev + 1)}
+                    disabled={page === totalPages}
+                    onClick={() => setPage(prev => prev + 1)}
                   >
                     {t("labels.next")}
                   </button>
                 </div>
+
               )}
             </>
           ) : (

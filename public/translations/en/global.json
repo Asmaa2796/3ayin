@@ -493,6 +493,8 @@
     "error_sending_request": "There was an error sending your request. Please try again later."
   },
   "loading": "Loading...",
+  "loading_map": "Loading map",
+  "search_place": "Search place...",
   "exist": "Exist",
   "not_exist": "Not exist",
   "properties_shown": "Properties shown",
