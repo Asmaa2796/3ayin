@@ -71,33 +71,6 @@ const Profile = () => {
   });
   const [profileResponse, setProfileResponse] = useState(null);
 
-
-  // handle notify email
-  const notifyEmail = async (e) => {
-    e.preventDefault();
-    if (!emailNotify) {
-      toast.error(t("profile.please_enter_valid_email"));
-      return;
-    }
-
-    try {
-      const response = await axios.post(
-        `${BASE_URL}/api/profile/email/notify`,
-        { email: emailNotify },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      );
-
-      toast.success(t("profile.emailUpdated"));
-      setEmailNotify("");
-    } catch (error) {
-      toast.error(t("profile.emailUpdateFailed"));
-    }
-  };
   const [userIdentifiesFields, setUserIdentifiesFields] = useState({
     national_id_number: "",
     personal_photo: "",
@@ -624,20 +597,7 @@ const Profile = () => {
                 {t("profile.title")}
               </button>
             </li>
-            <li className="nav-item" role="presentation">
-              <button
-                className="nav-link"
-                id="notifications-tab"
-                data-bs-toggle="tab"
-                data-bs-target="#notifications"
-                type="button"
-                role="tab"
-                aria-controls="notifications"
-                aria-selected="false"
-              >
-                {t("profile.notifications")}
-              </button>
-            </li>
+            
             <li className="nav-item" role="presentation">
               <button
                 className="nav-link"
@@ -841,31 +801,7 @@ const Profile = () => {
                 </div>
               </form>
             </div>
-            <div
-              className="tab-pane fade p-3"
-              id="notifications"
-              role="tabpanel"
-              aria-labelledby="notifications-tab"
-            >
-              <form className="form-style" onSubmit={notifyEmail}>
-                <label>{t("profile.emailNotifications")}</label>
-                <input
-                  type="text"
-                  placeholder="example@gmail.com"
-                  name="email"
-                  value={emailNotify}
-                  onChange={(e) => setEmailNotify(e.target.value)}
-                />
-                {/* <label
-                  htmlFor="sendSpecialOffers"
-                  className="sendSpecialOffers"
-                >
-                  <input id="sendSpecialOffers" type="checkbox" />
-                  <span className="mx-2">{t("profile.sendSpecialOffers")}</span>
-                </label> */}
-                <button type="submit">{t("profile.save")}</button>
-              </form>
-            </div>
+            
             <div
               className="tab-pane fade p-3"
               id="identityVerification"

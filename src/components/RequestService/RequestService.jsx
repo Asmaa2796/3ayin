@@ -58,6 +58,16 @@ const ServicesList = () => {
     <div className="request_service">
       <Breadcrumb title={t("request_service")} />
       <div className="container">
+        <div className="row">
+          {services && services.length > 0 && services.map((service) => (
+            <div className="col-xl-3 col-lg-3 col-md-4 col-12" key={service.id}>
+            <div className="card mt-3 p-4 shadow-sm">
+              <h5 className="fw-bold text-md"><i className={`bi bi-caret-${i18n.language === "ar"?"left":"right"}-fill main-color text-sm`}></i> {service.name}</h5>
+              <p className="line-height text-secondary text-sm">{service.desc}</p>
+            </div>
+          </div>
+          ))}
+        </div>
         <form
           className="form-style border rounded-2 my-3 p-4"
           onSubmit={requestService}

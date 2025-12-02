@@ -92,7 +92,9 @@
     "failedVerified": "Failed to verify your email",
     "emailInvalid": "The selected email is invalid.",
     "emailOrPasswordInvalid": "Email Or Password Invalid",
-    "your_email_not_activated": "Your email not activated, Reset password"
+    "your_email_not_activated": "Your email not activated, Reset password",
+    "user_account_not_active": "Your account has been deactivated from the dashboard",
+    "something_went_wrong": "Something went wrong"
   },
   "services": {
     "title": "Our Services",

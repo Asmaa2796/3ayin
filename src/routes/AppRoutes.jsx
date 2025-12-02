@@ -1,5 +1,5 @@
 import { Navigate, Route, Routes, useLocation } from "react-router-dom";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 
 import Home from "../pages/Home/Home";
@@ -39,6 +39,33 @@ import PropertyDetails from "../components/Properties/PropertyDetails";
 export default function Applayout() {
   const location = useLocation();
   const { i18n } = useTranslation();
+  const [userStatus, setUserStatus] = useState({
+    isLoading: true,
+    isActive: false,
+    isGuest: true,
+  });
+  const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
+
+  useEffect(() => {
+    fetch("https://app.xn--mgb9a0bp.com/api/check-status", {
+    headers: {
+      Lang: i18n.language,
+      Authorization: `Bearer ${userData?.token}`,
+      Accept: "application/json",
+    },
+  })
+    .then(res => res.json())
+    .then(data => {
+      if (data?.code === 200 && data?.data?.is_active) {
+        setUserStatus({ isLoading: false, isActive: true, isGuest: false });
+      } else {
+        setUserStatus({ isLoading: false, isActive: false, isGuest: false });
+      }
+    })
+    .catch(() => {
+      setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+    });
+  }, []);
 
   // Handle direction change based on language
   useEffect(() => {
@@ -66,7 +93,7 @@ export default function Applayout() {
   return (
     <>
       {!shouldHideNavbarFooter && (
-        <PageScrollProgressBar/>
+        <PageScrollProgressBar />
       )}
       {!shouldHideNavbarFooter && <Navbar />}
       <Routes>

@@ -22,14 +22,21 @@ const Login = () => {
   };
 
   useEffect(() => {
-  if (errorCode === 415) {
-    toast.warn(t("validation.your_email_not_activated"));
+    if (errorCode === 415) {
+      const msg = error?.message || error || "";
 
-    if (location.pathname !== "/login") {
-      navigate("/login", { replace: true });
-    }
+      if (msg === "User account not active") {
+        toast.warn(t("validation.user_account_not_active"));
+      } else if (msg.toLowerCase().includes("not verified")) {
+        toast.warn(t("validation.your_email_not_activated"));
+      }
+      dispatch(clearState());
 
-    return;
+      if (location.pathname !== "/login") {
+        navigate("/login", { replace: true });
+      }
+
+      return;
   }
 
   if (error === "The selected email is invalid.") {
@@ -53,6 +60,7 @@ const Login = () => {
     toast.success(t("sign.loginSuccess"));
     navigate("/", { replace: true });
   }
+  
 }, [error, user, errorCode, dispatch, t, navigate, location.pathname]);
 
   return (

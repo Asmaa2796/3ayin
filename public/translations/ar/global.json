@@ -92,7 +92,9 @@
     "failedVerified": "فشل التحقق من بريدك الإلكتروني",
     "emailInvalid": "البريد الإلكتروني غير صالح",
     "emailOrPasswordInvalid": "البريد الإلكتروني أو كلمة المرور غير صالحين",
-    "your_email_not_activated": "بريدك الإلكتروني غير مفعل, قم بإعادة تعيين كلمة المرور"
+    "your_email_not_activated": "بريدك الإلكتروني غير مفعل, قم بإعادة تعيين كلمة المرور",
+    "user_account_not_active": "تم إيقاف تفعيل حسابك من لوحة التحكم",
+    "something_went_wrong": "حدث خطأ ما"
   },
   "services": {
     "title": "خدماتنا",
