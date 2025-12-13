@@ -21,7 +21,14 @@ const ResendOtp = () => {
 
   useEffect(() => {
     if (error) {
-      toast.error(t("sign.failed_to_resend"));
+      const msg = error?.message || error || "";
+
+      if (msg === "The selected email is invalid.") {
+        toast.error(t("validation.emailInvalid"));
+      } else {
+        toast.error(t("sign.failed_to_resend"));
+      }
+
       dispatch(clearState());
     }
 

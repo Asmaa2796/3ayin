@@ -67,6 +67,7 @@
     "company_name": "اسم الشركة",
     "account_username": "اسم مستخدم الحساب",
     "company_type": "نوع الشركة",
+    "for_account_user": "لمستخدم الحساب",
     "verified_successfully": "تم التحقق من البريد الإلكتروني بنجاح!",
     "failed_to_verify": "فشل في التحقق من البريد الإلكتروني. حاول مرة أخرى.",
     "OTP_resent": "تمت إعادة إرسال رمز التحقق",
@@ -81,6 +82,7 @@
     "the_national_id_has_already_been_taken": "الرقم القومي مستخدم بالفعل.",
     "the_bio_field_must_be_at_least_10_characters": "يجب أن تكون السيرة الذاتية على الأقل 10 أحرف.",
     "the_national_id_field_must_be_at_least_14_characters": "يجب أن يكون الرقم القومي على الأقل 14 رقم وغير موجود من قبل.",
+    "the_national_id_field_must_not_be_greater_than_14_characters": "يجب أن لا يكون الرقم القومي أكبر من 14 رقم.",
     "the_password_field_must_be_at_least_6_characters": "يجب أن تكون كلمة المرور على الأقل 6 أحرف.",
     "the_national_id_field_is_required": "حقل الرقم القومي مطلوب.",
     "the_password_field_confirmation_does_not_match": "تأكيد كلمة المرور غير متطابق.",
@@ -92,9 +94,12 @@
     "failedVerified": "فشل التحقق من بريدك الإلكتروني",
     "emailInvalid": "البريد الإلكتروني غير صالح",
     "emailOrPasswordInvalid": "البريد الإلكتروني أو كلمة المرور غير صالحين",
-    "your_email_not_activated": "بريدك الإلكتروني غير مفعل, قم بإعادة تعيين كلمة المرور",
+    "your_email_not_activated": "بريدك الإلكتروني غير مفعل.",
     "user_account_not_active": "تم إيقاف تفعيل حسابك من لوحة التحكم",
-    "something_went_wrong": "حدث خطأ ما"
+    "something_went_wrong": "حدث خطأ ما",
+    "mustBeArabic": "يجب أن يكون النص باللغة العربية فقط",
+    "mustBeEnglish": "Text must be in English only",
+    "You_can_upload_max_4_files": "يمكنك إضافة 4 ملفات كحد أقصى"
   },
   "services": {
     "title": "خدماتنا",
@@ -187,6 +192,8 @@
   "create_ad": {
     "publishAd": "انشر إعلانك",
     "selectCategory": "اختر الفئة",
+    "title": "العنوان",
+    "description": "الوصف",
     "type": "النوع",
     "lands": "أراضي",
     "buildings": "مباني",
@@ -211,13 +218,14 @@
     "uploadImages": "تحميل الصور",
     "uploadFile": "رفع ملفات",
     "uploadImage": "رفع صورة",
-    "useCurrentLocation": "استخدام الموقع الحالي",
+    "useCurrentLocation": "الموقع",
     "arVr": "AR - VR",
     "additionalDetails": "تفاصيل إضافية",
     "link": "رابط",
     "publishNow": "انشر الآن",
     "service_category": "صنف الخدمة",
     "ad_details": "تفاصيل الإعلان",
+    "service_details": "تفاصيل الخدمة",
     "ad_name_ar": "اسم الإعلان (عربي)",
     "ad_name_en": "اسم الإعلان (إنجليزي)",
     "starting_price": "سعر يبدأ من",
@@ -231,7 +239,8 @@
     "select_section": "اختر القسم",
     "select_type": "اختر النوع",
     "select_service_category": "اختر صنف الخدمة",
-    "phone": "رقم الهاتف"
+    "phone": "رقم الهاتف",
+    "uploadedFile": "ملف مرفوع"
   },
   "property": {
     "all": "جميع العقارات",
@@ -240,6 +249,14 @@
     "title": "عقارات نرشحها لك",
     "add_property": "إضافة عقار",
     "unitCategory": "فئة الوحدة",
+    "purpose": "الغرض",
+    "category": "التصنيف",
+    "type": "النوع",
+    "level": "المستوى",
+    "description": "الوصف",
+    "main_categories": "القسم الرئيسي",
+    "sub_categories": "القسم الفرعي",
+    "sub_sub_categories": "القسم الفرعي من الفرعي",
     "sale": "بيع",
     "rent": "إيجار",
     "share": "مشاركة",
@@ -375,7 +392,7 @@
     "average_rate": "متوسط التقييم"
   },
   "pages": {
-    "about": "حول عقارات عاين",
+    "about": "حول عقار عاين",
     "howItWorks": "كيف يعمل الموقع",
     "faq": "الأسئلة الشائعة",
     "helpCenter": {
@@ -466,6 +483,7 @@
   "failed_to_subscribe": "لم يتم الاشتراك",
   "please_complete_identification": "يرجى استكمال بيانات توثيق الهوية",
   "failed_to_load_properties": "خطأ أثناء تحميل العقارات",
+  "failed_to_load_services": "خطأ أثناء تحميل الخدمات",
   "min_max_price": "الحد الأدنى يجب أن يكون أقل من الحد الأعلى",
   "customize_package": "تخصيص باقة",
   "cancel": "إلغاء",
@@ -483,19 +501,25 @@
   "custom_package_submitted": "تم إرسال الباقة المخصصة بنجاح وستتواصل الإدارة معك!",
   "pending": "قيد المراجعة",
   "approved": "مقبول",
+  "properties_map": "خريطة العقارات",
+  "services_map": "خريطة الخدمات",
   "labels": {
     "all_ads": "جميع الإعلانات",
     "previous": "السابق",
     "page": "صفحة",
     "of": "من",
-    "next": "التالي"
+    "next": "التالي",
+    "undefined": "غير محدد"
   },
+  "is_required":"مطلوب",
+  "field":"حقل",
   "messages": {
     "request_sent_successfully": "تم إرسال طلب الخدمة بنجاح، وسيتواصل معك فريق الإدارة قريبًا.",
     "error_sending_request": "حدث خطأ أثناء إرسال الطلب. يرجى المحاولة مرة أخرى لاحقًا."
   },
   "loading": "جار التحميل...",
   "loading_map": "تحميل الخريطة",
+  "your_location": "موقعك الحالي",
   "search_place": "بحث عن المكان",
   "exist": "يوجد",
   "not_exist": "لا يوجد",

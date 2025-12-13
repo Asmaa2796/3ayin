@@ -91,22 +91,7 @@ const ServiceProvider = () => {
   useEffect(() => {
     dispatch(getProviderAdsReviews({ page: currentReviewPage }));
   }, [dispatch, currentReviewPage, i18n.language]);
-  const categoryMap = {
-    sale: t("property.sale"),
-    rent: t("property.rent"),
-    share: t("property.share"),
-  };
-  const unitTypeMap = {
-    apartment: t("property.apartment"),
-    building: t("property.building"),
-    villa: t("property.villa"),
-    duplex: t("property.duplex"),
-    office: t("property.office"),
-    shop: t("property.shop"),
-    warehouse: t("property.warehouse"),
-    land: t("property.land"),
-    chalet: t("property.chalet"),
-  };
+ 
    const getProfileData = async () => {
      try {
        const response = await axios.get(`${BASE_URL}/api/profileData`, {
@@ -144,7 +129,7 @@ const ServiceProvider = () => {
             </div>
 
             <div className="info">
-              <h3 className="fw-bold">{providerDataRecord?.name}</h3>
+              <h3 className="fw-bold mb-3">{providerDataRecord?.name}</h3>
               <div className="text-sm d-none">
                 {[...Array(5)].map((_, idx) => {
                   const fullStar =
@@ -173,6 +158,14 @@ const ServiceProvider = () => {
                   {t("serviceProvider.reviews")}
                 </span>
               </div>
+              <Link
+                to="/request_service"
+                className="rounded-5 shadow-sm bg-dark text-white text-sm px-3 request_service_btn"
+                style={{ paddingBlock: "6px" }}
+              >
+                <i className="bi bi-pen text-xs fw-bold mt-1 mx-1"></i>{" "}
+                <span className="text-white">{t("request_service")}</span>
+              </Link>
             </div>
           </div>
         </div>
@@ -345,8 +338,7 @@ const ServiceProvider = () => {
                                     <div className="text-dark">
                                       {t("recommendedServices.startingFrom")}
                                       <span className="fw-bold">
-                                        {ad?.price}{" "}
-                                        {t("recommendedServices.currency")}
+                                        {ad?.price ? `${ad?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                                       </span>
                                     </div>
                                     <div>
@@ -483,15 +475,13 @@ const ServiceProvider = () => {
                                       </small>{" "}
                                       :{" "}
                                       <small>
-                                        {categoryMap[item?.category] ||
-                                          item?.category}
+                                        {item?.purpose?.name ? item?.purpose?.name : t("labels.undefined")}
                                       </small>
                                     </li>
                                     <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                                       <small>{t("property.unitType")}</small> :{" "}
                                       <small>
-                                        {unitTypeMap[item?.unit_type] ||
-                                          item?.unit_type}
+                                        {item?.property_type ? item?.property_type : t("labels.undefined")}
                                       </small>
                                     </li>
                                   </ul>
@@ -501,8 +491,7 @@ const ServiceProvider = () => {
                                     <div className="text-dark">
                                       {t("recommendedServices.startingFrom")}{" "}
                                       <span className="fw-bold">
-                                        {item.price}{" "}
-                                        {t("recommendedServices.currency")}
+                                        {item?.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                                       </span>
                                     </div>
                                     <div>

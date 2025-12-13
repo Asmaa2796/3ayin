@@ -130,13 +130,13 @@ const PropertiesARVRPage = () => {
                             <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                               <small>{t("property.unitCategory")}</small> :{" "}
                               <small>
-                                {categoryMap[item?.category] || item?.category}
+                                {item?.purpose ? item?.purpose : t("labels.undefined")}
                               </small>
                             </li>
                             <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                               <small>{t("property.unitType")}</small> :{" "}
                               <small>
-                                {unitTypeMap[item?.unit_type] || item?.unit_type}
+                                {item?.property_type ? item?.property_type : t("labels.undefined")}
                               </small>
                             </li>
                           </ul>
@@ -146,7 +146,7 @@ const PropertiesARVRPage = () => {
                             <div className="text-dark">
                               {t("recommendedServices.startingFrom")}{" "}
                               <span className="fw-bold">
-                                {item.price} {t("recommendedServices.currency")}
+                                {item?.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                               </span>
                             </div>
                             <div>

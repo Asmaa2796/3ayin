@@ -113,13 +113,13 @@ const RelatedProperties = ({ propertyID }) => {
                       <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                         <small>{t("property.unitCategory")}</small> :{" "}
                         <small>
-                          {categoryMap[property?.category] || property?.category}
+                          {property?.purpose?.name ? property?.purpose?.name : t("labels.undefined")}
                         </small>
                       </li>
                       <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                         <small>{t("property.unitType")}</small> :{" "}
                         <small>
-                          {unitTypeMap[property?.unit_type] || property?.unit_type}
+                          {property?.property_type ? property?.property_type : t("labels.undefined")}
                         </small>
                       </li>
                     </ul>
@@ -142,7 +142,7 @@ const RelatedProperties = ({ propertyID }) => {
                       <div className="text-dark">
                         {t("recommendedServices.startingFrom")}{" "}
                         <span className="fw-bold">
-                          {property.price} {t("recommendedServices.currency")}
+                          {property?.price ? `${property?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                         </span>
                       </div>
                       <div>

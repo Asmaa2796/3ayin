@@ -62,9 +62,9 @@ const PublishAd = () => {
     desc_ar: "", // required
     desc_en: "", // required
     price: "",
-    user_works: [], // array of images
-    images: [], // array of images
-    files: [], // array of files
+    user_works: [null, null, null, null],
+    images: [null, null, null, null],
+    files: [null, null, null, null],
     location: "",
     location_lat: "",
     location_long: "",
@@ -78,8 +78,27 @@ const PublishAd = () => {
 
   const handleChange = (e) => {
     const { name, value } = e.target;
+
+    const arabicFields = ["ad_name_ar", "small_desc_ar", "desc_ar"];
+    const englishFields = ["ad_name_en", "small_desc_en", "desc_en"];
+
+    if (arabicFields.includes(name)) {
+      const result = validateLanguage(value, true);
+      if (!result.valid) {
+        toast.warning(result.message, { toastId: `${name}-lang` });
+      }
+    }
+
+    if (englishFields.includes(name)) {
+      const result = validateLanguage(value, false);
+      if (!result.valid) {
+        toast.warning(result.message, { toastId: `${name}-lang` });
+      }
+    }
+
     setFormata((prev) => ({ ...prev, [name]: value }));
   };
+
   const handleCategoryChange = (selectedOption) => {
     setSelectedCategory(selectedOption);
     setSelectedSubCategory(null); // reset sub
@@ -144,59 +163,81 @@ const PublishAd = () => {
       label: subSubCat.name,
     }));
 
-  const handleFileInput = (e, key, index) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleFileInput = (e, key) => {
+    const files = Array.from(e.target.files);
+    console.log("Uploading to:", key, files);
+    if (!files.length) return;
+
+    // Check if total files exceed 4
+    const currentFilesCount = formdata[key].filter((f) => f !== null).length;
+    if (currentFilesCount + files.length > 4) {
+      toast.error(t("validation.You_can_upload_max_4_files"));
+      return;
+    }
 
     const imageTypes = ["image/jpeg", "image/png", "image/jpg"];
     const fileTypes = [
       "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel", // .xls
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", // .xlsx
     ];
 
     let allowedTypes;
     if (key === "images" || key === "user_works") allowedTypes = imageTypes;
     if (key === "files") allowedTypes = fileTypes;
 
-    if (!allowedTypes.includes(file.type)) {
+    const validFiles = files.filter((file) => allowedTypes.includes(file.type));
+    if (validFiles.length !== files.length) {
       toast.error(
-        `${t("only_allowed")} ${
-          key === "files" ? "PDF, Word" : "JPG, JPEG, PNG"
+        `${t("only_allowed")} ${key === "files" ? "PDF, Word, Excel" : "JPG, JPEG, PNG"
         }`
       );
       return;
     }
 
-    // update formdata with actual file
     setFormata((prev) => {
-      const newFiles = [...prev[key]];
-      newFiles[index] = file;
-      return { ...prev, [key]: newFiles };
+      const updated = [...prev[key]];
+      validFiles.forEach((file) => {
+        const emptyIndex = updated.findIndex((f) => f === null);
+        if (emptyIndex !== -1) updated[emptyIndex] = file;
+      });
+      return { ...prev, [key]: updated };
     });
 
-    if (key === "images" || key === "user_works") {
-      setPreviews((prev) => {
-        const newPreviews = { ...prev };
-        newPreviews[key][index] = URL.createObjectURL(file);
-        return newPreviews;
+    setPreviews((prev) => {
+      const updated = [...prev[key]];
+      validFiles.forEach((file) => {
+        const emptyIndex = updated.findIndex((f) => f === null);
+        if (emptyIndex !== -1)
+          updated[emptyIndex] = key === "files" ? file.name : URL.createObjectURL(file);
       });
-    } else if (key === "files") {
-      setPreviews((prev) => {
-        const newPreviews = { ...prev };
-        newPreviews[key][index] = file.name;
-        return newPreviews;
-      });
-    }
+      return { ...prev, [key]: updated };
+    });
 
-    e.target.value = null;
+    e.target.value = null; // reset input
+  };
+
+  const removeFile = (key, index) => {
+    setFormata((prev) => {
+      const updated = [...prev[key]];
+      updated[index] = null;
+      return { ...prev, [key]: updated };
+    });
+
+    setPreviews((prev) => {
+      const updated = [...prev[key]];
+      updated[index] = null;
+      return { ...prev, [key]: updated };
+    });
   };
 
   useEffect(() => {
     dispatch(fetchCategories());
     dispatch(fetchSubCategories());
     dispatch(fetchSubCatsOfSubCategories());
-  }, [dispatch,i18n.language]);
+  }, [dispatch, i18n.language]);
 
   const getProfileData = async () => {
     try {
@@ -217,6 +258,18 @@ const PublishAd = () => {
   useEffect(() => {
     getProfileData();
   }, []);
+
+  const validateLanguage = (text, shouldBeArabic) => {
+    const hasArabic = /[\u0600-\u06FF]/.test(text);
+    const hasEnglish = /[A-Za-z]/.test(text);
+
+    if (!text.trim()) return true; // ignore empty
+    if (shouldBeArabic && hasEnglish)
+      return { valid: false, message: t("validation.mustBeArabic") };
+    if (!shouldBeArabic && hasArabic)
+      return { valid: false, message: t("validation.mustBeEnglish") };
+    return { valid: true };
+  };
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -274,6 +327,23 @@ const PublishAd = () => {
       toast.error(t("property.videoLinkInvalid"));
       return;
     }
+    // Language validation
+    const checks = [
+      { text: formdata.ad_name_ar, arabic: true, label: t("create_ad.ad_name_ar") },
+      { text: formdata.ad_name_en, arabic: false, label: t("create_ad.ad_name_en") },
+      { text: formdata.small_desc_ar, arabic: true, label: t("create_ad.main_description_ar") },
+      { text: formdata.small_desc_en, arabic: false, label: t("create_ad.main_description_en") },
+      { text: formdata.desc_ar, arabic: true, label: t("create_ad.detailed_description_ar") },
+      { text: formdata.desc_en, arabic: false, label: t("create_ad.detailed_description_en") },
+    ];
+
+    for (const check of checks) {
+      const result = validateLanguage(check.text, check.arabic);
+      if (!result.valid) {
+        toast.error(`${check.label}: ${result.message}`);
+        return;
+      }
+    }
     const data = new FormData();
 
     data.append("user_id", userID);
@@ -283,16 +353,24 @@ const PublishAd = () => {
         data.append(key, value);
       }
     });
+    formdata.images
+      .filter((file) => file instanceof File)
+      .forEach((file) => data.append("images[]", file));
 
-    formdata.images.forEach((file) => data.append("images[]", file));
-    formdata.user_works.forEach((file) => data.append("user_works[]", file));
-    formdata.files.forEach((file) => data.append("files[]", file));
+    formdata.user_works
+      .filter((file) => file instanceof File)
+      .forEach((file) => data.append("user_works[]", file));
+
+    formdata.files
+      .filter((file) => file instanceof File)
+      .forEach((file) => data.append("files[]", file));
+
 
     // console.log("FormData contents:");
     // for (let [key, value] of data.entries()) {
     //   console.log(key, value instanceof File ? value.name : value);
     // }
-
+    // console.log("formdata before append:", formdata);
     setIsLoadingStoreAd(true);
     try {
       const res = await dispatch(storeAd(data)).unwrap();
@@ -316,13 +394,20 @@ const PublishAd = () => {
       if (errorMessage.includes("complete your identification information")) {
         toast.error(t("please_complete_identification"));
         navigate("/user_profile");
-      } else if (
+      }
+      else if (
         errorMessage.includes("plan limit") ||
         errorMessage.includes("limit reached")
       ) {
         toast.error(t("planLimitReached"));
         navigate("/packages");
-      } else {
+      }
+      else if (
+        errorMessage.includes("You have reached your ad limit. Please subscribe to a new plan")
+      ) {
+        toast.error(t("ad_limit_reached"));
+      }
+      else {
         toast.error(t("failedToAdd") || errorMessage);
       }
 
@@ -455,6 +540,7 @@ const PublishAd = () => {
                 <input
                   type="number"
                   name="price"
+                  inputMode="numeric"
                   min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
@@ -468,6 +554,7 @@ const PublishAd = () => {
                 <input
                   type="number"
                   name="phone"
+                  inputMode="numeric"
                   min="0"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
@@ -479,46 +566,73 @@ const PublishAd = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.uploadImages")}</label>
                 <div className="row">
-                  {previews.images.map((preview, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-6"
-                      key={index}
-                    >
+                  {previews.images.map((fileName, index) => (
+                    <div className="col-xl-3 col-lg-3 col-md-6 col-6" key={index}>
                       <div className="photo_wrapper">
                         <input
                           type="file"
+                          multiple
                           accept=".png,.jpg,.jpeg"
-                          onChange={(e) => handleFileInput(e, "images", index)}
+                          onChange={(e) => handleFileInput(e, "images")}
                         />
-                        <img src={preview || "/camera.png"} alt="preview" />
-                        <span>{t("create_ad.uploadImage")}</span>
+                        {fileName ? (
+                          <>
+                            <img src={fileName} alt="image" />
+                            <span
+                              className="remove-file"
+                              onClick={() => removeFile("images", index)}
+                            >
+                              ×
+                            </span>
+                            <span>{t("create_ad.uploadedFile")}</span>
+                          </>
+                        ) : (
+                          <>
+                            <img src="/camera.png" alt="upload" />
+                            <span>{t("create_ad.uploadImage")}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
+
                 </div>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.portfolio")}</label>
                 <div className="row">
-                  {previews.user_works.map((preview, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-6"
-                      key={index}
-                    >
+                  {previews.user_works.map((fileName, index) => (
+                    <div className="col-xl-3 col-lg-3 col-md-6 col-6" key={index}>
                       <div className="photo_wrapper">
                         <input
                           type="file"
+                          multiple
                           accept=".png,.jpg,.jpeg"
-                          onChange={(e) =>
-                            handleFileInput(e, "user_works", index)
-                          }
+                          onChange={(e) => handleFileInput(e, "user_works")}
                         />
-                        <img src={preview || "/camera.png"} alt="preview" />
-                        <span>{t("create_ad.uploadImage")}</span>
+                        {fileName ? (
+                          <>
+                            <img src={fileName} alt="work" />
+                            <span
+                              className="remove-file"
+                              onClick={() => removeFile("user_works", index)}
+                            >
+                              ×
+                            </span>
+                            <span>{t("create_ad.uploadedFile")}</span>
+                          </>
+                        ) : (
+                          <>
+                            <img src="/camera.png" alt="upload" />
+                            <span>{t("create_ad.uploadImage")}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
+
                 </div>
+
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.location")}</label>
@@ -585,20 +699,25 @@ const PublishAd = () => {
                 </label>
                 <div className="row">
                   {previews.files.map((fileName, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-6"
-                      key={index}
-                    >
+                    <div className="col-xl-3 col-lg-3 col-md-6 col-6" key={index}>
                       <div className="photo_wrapper">
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={(e) => handleFileInput(e, "files", index)}
+                          multiple
+                          accept=".pdf,.doc,.docx,.xls,.xlsx"
+                          onChange={(e) => handleFileInput(e, "files")}
                         />
                         {fileName ? (
                           <>
                             <img src="/file.png" alt="file" />
                             <span>{fileName}</span>
+                            <span
+                              className="remove-file"
+                              onClick={() => removeFile("files", index)}
+                            >
+                              ×
+                            </span>
+                            <span>{t("create_ad.uploadedFile")}</span>
                           </>
                         ) : (
                           <>
@@ -609,6 +728,7 @@ const PublishAd = () => {
                       </div>
                     </div>
                   ))}
+
                 </div>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">

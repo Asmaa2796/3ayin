@@ -49,6 +49,7 @@ const Navbar = () => {
       setUser(e?.detail ?? readUser());
     };
 
+    
     window.addEventListener("storage", handleStorage);
     window.addEventListener("userUpdated", handleUserUpdated);
 
@@ -636,7 +637,7 @@ const Navbar = () => {
             </button>
 
             <ul
-              className="dropdown-menu dropdown-menu-end overflow-hidden"
+              className={`dropdown-menu dropdown-menu-${i18n.language === "en"?"end":""} overflow-hidden`}
               style={{
                 backgroundColor: `${
                   theme === "dark" ? "var(--dark-color)" : "var(--basic-color)"
@@ -785,7 +786,11 @@ const Navbar = () => {
           <div className="collapse navbar-collapse" id="navbarSupportedContent">
             <NavLinks />
           </div>
-
+          {/* maps */}
+          <div className="map_icons">
+            <Link to="/properties_map"><img src="propMap.png" className="d-block" alt="--"/><div>{t("properties_map")}</div></Link>
+            <Link to="/services_map"><img src="adsMap.png" className="d-block" alt="--"/><div>{t("services_map")}</div></Link>
+          </div>
           <ul className="actions list-unstyled p-0 d-flex align-items-center gap-3 m-0">
            
             <li className="nav-item dropdown">
@@ -798,7 +803,7 @@ const Navbar = () => {
                 {t("navbar.add")}
               </button>
               <ul
-                className="dropdown-menu dropdown-menu-end overflow-hidden"
+                className={`dropdown-menu dropdown-menu-${i18n.language === "en"?"end":""} overflow-hidden`}
                 style={{
                   backgroundColor: `${
                     theme === "dark"
@@ -860,7 +865,7 @@ const Navbar = () => {
                 <FiChevronDown />
               </button>
               <ul
-                className="dropdown-menu dropdown-menu-end"
+                className={`dropdown-menu dropdown-menu-${i18n.language === "en"?"end":""}`}
                 style={{
                   backgroundColor: `${
                     theme === "dark"
@@ -901,7 +906,7 @@ const Navbar = () => {
                   <FiChevronDown />
                 </button>
                 <ul
-                  className="dropdown-menu dropdown-menu-end overflow-hidden"
+                  className={`dropdown-menu dropdown-menu-${i18n.language === "en"?"end":""} overflow-hidden`}
                   style={{
                     backgroundColor: `${
                       theme === "dark"
@@ -1004,7 +1009,14 @@ const Navbar = () => {
 
           <hr className="mb-2 mt-0" />
           <NavLinks isMobile onCloseMenu={() => setIsSideMenuOpen(false)} />
+          <hr className="mb-2 mt-0" />
+          {/* maps */}
+          <div className="map_icons my-3">
+            <Link to="/properties_map" onClick={() => setIsSideMenuOpen(false)}><img src="propMap.png" className="d-block" alt="--"/><div>{t("properties_map")}</div></Link>
+            <Link to="/services_map" onClick={() => setIsSideMenuOpen(false)}><img src="adsMap.png" className="d-block" alt="--"/><div>{t("services_map")}</div></Link>
+          </div>
         </div>
+        
       </div>
 
       {isSearchOpen && (

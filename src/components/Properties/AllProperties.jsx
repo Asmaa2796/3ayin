@@ -6,11 +6,17 @@ import { useDispatch, useSelector } from "react-redux";
 import Breadcrumb from "../Breadcrumb/Breadcrumb";
 import { fetchAllProperties } from "../../redux/Slices/AllPropertiesSlice";
 import { searchProperty } from "../../redux/Slices/SearchSlice";
+import { fetchPurposes, fetchTypes, fetchPropertCategories } from "../../redux/Slices/PropertyApisSlice";
 
 const PropertiesPage = () => {
   const { t, i18n } = useTranslation("global");
   const dispatch = useDispatch();
   const [activeType, setActiveType] = useState("all");
+  const [filters, setFilters] = useState({
+    purpose_id: null,
+    category_id: null,
+    property_type_id: null,
+  });
   const [page, setPage] = useState(1);
 
   const [searchParams, setSearchParams] = useSearchParams();
@@ -18,6 +24,9 @@ const PropertiesPage = () => {
 
   const { properties, isLoading, pagination } = useSelector(
     (state) => state.properties
+  );
+  const { purposes, types, property_categories } = useSelector(
+    (state) => state.properties_api
   );
   const { propertiesList, loadingFiltered, propertiesPagination } = useSelector(
     (state) => state.search
@@ -29,30 +38,20 @@ const PropertiesPage = () => {
     if (searchValue) {
       dispatch(searchProperty({ search: searchValue, page, per_page: 9 }));
     } else {
-      dispatch(fetchAllProperties({ type: activeType, page, per_page: 9 }));
+      dispatch(fetchAllProperties({ filters, page, per_page: 9 }));
     }
-  }, [dispatch, i18n.language, page, searchValue, activeType]);
+  }, [dispatch, i18n.language, page, searchValue, filters]);
 
+
+  useEffect(() => {
+    dispatch(fetchPurposes());
+    dispatch(fetchTypes());
+    dispatch(fetchPropertCategories());
+  }, [dispatch, i18n.language]);
   const searchMode = Boolean(searchValue);
   const listToRender = searchMode ? propertiesList : properties;
   const paginationInfo = searchMode ? propertiesPagination : pagination;
 
-  const categoryMap = {
-    sale: t("property.sale"),
-    rent: t("property.rent"),
-    share: t("property.share"),
-  };
-  const unitTypeMap = {
-    apartment: t("property.apartment"),
-    building: t("property.building"),
-    villa: t("property.villa"),
-    duplex: t("property.duplex"),
-    office: t("property.office"),
-    shop: t("property.shop"),
-    warehouse: t("property.warehouse"),
-    land: t("property.land"),
-    chalet: t("property.chalet"),
-  };
   const finishingMap = {
     semi: t("property.finishingSemi"),
     full: t("property.finishingFull"),
@@ -64,23 +63,79 @@ const PropertiesPage = () => {
       <Breadcrumb title={t("property.all")} />
       <div className="container">
         <div className="tab_status">
-          {["all", "sale", "rent", "share"].map((type) => (
+          <button
+            className={activeType === "all" ? "active" : ""}
+            onClick={() => {
+              setActiveType("all");
+              setFilters({ purpose_id: null, category_id: null, property_type_id: null });
+              setPage(1);
+              if (searchValue) {
+                window.history.replaceState({}, "", window.location.pathname);
+                setSearchParams({});
+              }
+            }}
+          >
+            {t("property.all")}
+          </button>
+
+          {purposes.map((purpose) => (
             <button
-              key={type}
-              className={activeType === type ? "active" : ""}
+              key={purpose?.id}
+              className={activeType === purpose?.name ? "active" : ""}
               onClick={() => {
-                setActiveType(type);
+                setActiveType(purpose?.name);
+                setFilters((prev) => ({ ...prev, purpose_id: purpose?.id }));
                 setPage(1);
                 if (searchValue) {
                   window.history.replaceState({}, "", window.location.pathname);
                   setSearchParams({});
                 }
               }}
+
             >
-              {t(`property.${type}`)}
+              {purpose?.name}
             </button>
           ))}
         </div>
+        <div className="filters row mt-3 form-style">
+          <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+            <label className="my-2 d-block">{t("property.category")}</label>
+            <select
+              value={filters.category_id || ""}
+              onChange={(e) =>
+                setFilters((prev) => ({ ...prev, category_id: e.target.value || null }))
+              }
+            >
+              <option value="" className="text-sm" >{t("property.all")}</option>
+              {property_categories.map((cat) => (
+                <option className="text-sm" key={cat.id} value={cat.id}>
+                  {cat.name}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+            <label className="my-2 d-block">{t("property.type")}</label>
+            <select
+              value={filters.property_type_id || ""}
+              onChange={(e) =>
+                setFilters((prev) => ({
+                  ...prev,
+                  property_type_id: e.target.value || null,
+                }))
+              }
+            >
+              <option value="" className="text-sm" >{t("property.all")}</option>
+              {types.map((type) => (
+                <option className="text-sm" key={type.id} value={type.id}>
+                  {type.name}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
+
       </div>
       <div className="recommended_services py-5">
         <div className="container">
@@ -99,8 +154,7 @@ const PropertiesPage = () => {
                       className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block"
                     >
                       <div className="finishing_status">
-                        {finishingMap[item?.finishing_status] ||
-                          item?.finishing_status}
+                        {finishingMap[item?.finishing_status] || t("labels.undefined")}
                       </div>
                       <img
                         src={item.images?.[0]?.url || "/placeholder.jpg"}
@@ -120,13 +174,13 @@ const PropertiesPage = () => {
                           <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
                             <small>{t("property.unitCategory")}</small> :{" "}
                             <small>
-                              {categoryMap[item?.category] || item?.category}
+                              {item?.purpose?.name ? item?.purpose?.name : t("labels.undefined")}
                             </small>
                           </li>
                           <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
-                            <small>{t("property.unitType")}</small> :{" "}
+                            <small>{t("property.type")}</small> :{" "}
                             <small>
-                              {unitTypeMap[item?.unit_type] || item?.unit_type}
+                              {item?.property_type ? item?.property_type : t("labels.undefined")}
                             </small>
                           </li>
                         </ul>
@@ -136,17 +190,16 @@ const PropertiesPage = () => {
                           <div className="text-dark">
                             {t("recommendedServices.startingFrom")}{" "}
                             <span className="fw-bold">
-                              {item.price} {t("recommendedServices.currency")}
+                              {item.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                             </span>
                           </div>
                           <div>
                             <span className="view_details">
                               <i
-                                className={`text-sm bi ${
-                                  i18n.language === "ar"
-                                    ? "bi-arrow-left"
-                                    : "bi-arrow-right"
-                                }`}
+                                className={`text-sm bi ${i18n.language === "ar"
+                                  ? "bi-arrow-left"
+                                  : "bi-arrow-right"
+                                  }`}
                               ></i>
                             </span>
                           </div>

@@ -22,27 +22,32 @@ const Login = () => {
   };
 
   useEffect(() => {
-    if (errorCode === 415) {
+    if ([415,410].includes(errorCode)) {
       const msg = error?.message || error || "";
 
       if (msg === "User account not active") {
         toast.warn(t("validation.user_account_not_active"));
       } else if (msg.toLowerCase().includes("not verified")) {
-        toast.warn(t("validation.your_email_not_activated"));
+        toast.warn(t("validation.your_email_not_activated"), {
+        onClose: () => {
+          sessionStorage.setItem("new_user_3ayin", JSON.stringify({ email }));
+          navigate("/resend_otp");
+        },
+      });
       }
       dispatch(clearState());
 
       if (location.pathname !== "/login") {
-        navigate("/login", { replace: true });
+        window.location.replace("/login");
       }
 
       return;
-  }
+    }
 
-  if (error === "The selected email is invalid.") {
-    toast.error(t("validation.emailInvalid"));
-    dispatch(clearState());
-    return;
+    if (error === "The selected email is invalid.") {
+      toast.error(t("validation.emailInvalid"));
+      dispatch(clearState());
+      return;
   }
   if (error === "Invalid email or password") {
     toast.error(t("validation.emailOrPasswordInvalid"));

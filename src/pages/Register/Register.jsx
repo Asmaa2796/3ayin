@@ -75,6 +75,10 @@ const Register = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(formData.phone.length < 11) {
+      toast.error(t("validation.the_phone_field_must_be_at_least_11_characters"))
+      return;
+    }
     if(formData.password.length !== formData.password_confirmation.length) {
       toast.error(t("validation.the_password_field_confirmation_does_not_match"))
       return;
@@ -131,11 +135,18 @@ const Register = () => {
       validationErrors.national_id.forEach((msg) => {
         if (msg.toLowerCase().includes("already been taken")) {
           toast.error(t("validation.the_national_id_has_already_been_taken"));
-        } else if (msg.toLowerCase().includes("must be at least")) {
+        } 
+        else if (msg.toLowerCase().includes("must be at least")) {
           toast.error(
             t("validation.the_national_id_field_must_be_at_least_14_characters")
           );
-        } else {
+        } 
+        else if (msg.toLowerCase().includes("must not be greater than 14 characters")) {
+          toast.error(
+            t("validation.the_national_id_field_must_not_be_greater_than_14_characters")
+          );
+        } 
+        else {
           // fallback if backend sends another message
           toast.error(msg);
         }
@@ -265,8 +276,9 @@ const Register = () => {
               <div className="col-md-6">
                 <label className="text-dark">{t("profile.phone")}</label>
                 <input
-                  type="text"
+                  type="number"
                   name="phone"
+                  inputMode="numeric"
                   value={formData.phone}
                   onChange={handleChange}
                   required

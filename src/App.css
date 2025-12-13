@@ -505,6 +505,11 @@ select {
 .mega-menu li a:hover {
   text-decoration: underline;
 }
+.map_icons {display: flex;align-items: center;justify-content: center;margin-left: 12px;margin-right: 0;text-align: center;}
+[dir='ltr'] .map_icons {margin-right: 12px;margin-left: 0;}
+.map_icons div {font-size: x-small;color: var(--dark-color) !important;font-weight: bold;}
+.map_icons a {margin-inline: 5px;color: var(--dark-color);}
+.map_icons img {width: auto;max-height: 30px;margin: auto;}
 /* Overlay */
 .side_menu_overlay {
   width: 100%;

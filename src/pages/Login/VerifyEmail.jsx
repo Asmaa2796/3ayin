@@ -45,7 +45,7 @@ const VerifyEmail = () => {
       toast.success(t("sign.verified_successfully"), {
         onClose: () => {
           sessionStorage.removeItem("emailNotVerified");
-          navigate("/login", { replace: true });
+          window.location.replace("/login");
         },
       });
     }

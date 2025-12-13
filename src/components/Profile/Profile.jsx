@@ -693,7 +693,7 @@ const Profile = () => {
                           onChange={handleProfileChange}
                           value={profileData.company_name}
                           required
-                          placeholder={t("profile.company_name")}
+                          placeholder={t("sign.company_name")}
                         />
                       </div>
                     </>
@@ -820,6 +820,7 @@ const Profile = () => {
                     <input
                       type="text"
                       name="national_id_number"
+                      inputMode="numeric"
                       required
                       placeholder={t("profile.nationalId")}
                       onChange={handleInputChange}
@@ -902,6 +903,7 @@ const Profile = () => {
                       type="text"
                       required
                       name="tax_number"
+                      inputMode="numeric"
                       value={userIdentifiesFields.tax_number}
                       placeholder={t("profile.taxNumber")}
                       onChange={handleInputChange}

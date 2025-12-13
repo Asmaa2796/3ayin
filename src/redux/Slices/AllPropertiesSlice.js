@@ -7,24 +7,32 @@ const BASE_URL = process.env.REACT_APP_BASE_URL;
 
 // Async thunk for submitting the contact form
 export const fetchAllProperties = createAsyncThunk(
-  "properties/submit",
-  async ({type = "all",page = 1}, { rejectWithValue }) => {
+  "properties/fetchAll",
+  async ({ filters = {}, page = 1, per_page = 9 }, { rejectWithValue }) => {
     try {
-      // const token = JSON.parse(sessionStorage.getItem("user3ayin"))?.token;
-      const response = await axios.get(`${BASE_URL}/api/properties?type=${type}&page=${page}`, {
+      let url = `${BASE_URL}/api/properties?page=${page}&per_page=${per_page}`;
+
+      // Dynamically append filters
+      Object.entries(filters).forEach(([key, value]) => {
+        if (value !== null && value !== undefined && value !== "") {
+          url += `&${key}=${value}`;
+        }
+      });
+
+      const response = await axios.get(url, {
         headers: {
-          // Authorization: `Bearer ${token}`,
           "Content-Type": "application/json",
           Lang: i18n.language,
         },
       });
+
       return {
         data: response.data.data,
         pagination: response.data.pagination,
       };
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to submit contact form"
+        err.response?.data?.message || "Failed to fetch properties"
       );
     }
   }

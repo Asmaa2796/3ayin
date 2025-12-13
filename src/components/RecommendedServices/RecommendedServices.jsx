@@ -102,7 +102,7 @@ const RecommendedServices = () => {
                       <div className="text-dark">
                         {t("recommendedServices.startingFrom")}{" "}
                         <span className="fw-bold">
-                          {item.price} {t("recommendedServices.currency")}
+                          {item?.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                         </span>
                       </div>
                       <div>

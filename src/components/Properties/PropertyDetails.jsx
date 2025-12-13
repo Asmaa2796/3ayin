@@ -24,7 +24,7 @@ import {
 } from "react-share";
 import { PiBathtubFill } from "react-icons/pi";
 import { GiHomeGarage } from "react-icons/gi";
-import { FaSchool,FaMapPin } from "react-icons/fa";
+import { FaSchool, FaMapPin } from "react-icons/fa";
 import { FaXTwitter } from "react-icons/fa6";
 import { RiRoadMapFill } from "react-icons/ri";
 import { FaHospitalAlt } from "react-icons/fa";
@@ -53,22 +53,6 @@ const PropertyDetails = () => {
     furnished: t("property.furnitureFurnished"),
     semi: t("property.furnitureSemi"),
     none: t("property.furnitureNone"),
-  };
-  const categoryMap = {
-    sale: t("property.sale"),
-    rent: t("property.rent"),
-    share: t("property.share"),
-  };
-  const unitTypeMap = {
-    apartment: t("property.apartment"),
-    building: t("property.building"),
-    villa: t("property.villa"),
-    duplex: t("property.duplex"),
-    office: t("property.office"),
-    shop: t("property.shop"),
-    warehouse: t("property.warehouse"),
-    land: t("property.land"),
-    chalet: t("property.chalet"),
   };
   const paymentMethodMap = {
     cash: t("property.paymentCash"),
@@ -258,9 +242,8 @@ const PropertyDetails = () => {
                           propertyItem.images.map((img, i) => (
                             <div
                               key={i}
-                              className={`carousel-item ${
-                                i === 0 ? "active" : ""
-                              }`}
+                              className={`carousel-item ${i === 0 ? "active" : ""
+                                }`}
                             >
                               <img
                                 src={
@@ -358,34 +341,29 @@ const PropertyDetails = () => {
                         <span className="mx-2 fw-bold">
                           {propertyItem?.user?.name} {""}
                           <i
-                            className={`bi text-sm ${
-                              i18n.language === "ar"
+                            className={`bi text-sm ${i18n.language === "ar"
                                 ? "bi-arrow-left"
                                 : "bi-arrow-right"
-                            }`}
+                              }`}
                           ></i>
                         </span>
                       </Link>
                     </div>
-                    {(propertyItem?.availability === "متوفر" ||
+                    {/* {(propertyItem?.availability === "متوفر" ||
                       propertyItem?.availability === "available") && (
                       <small className="available d-inline-block mb-3">
                         {propertyItem?.availability}
                       </small>
-                    )}
-                    <h4 className="fw-bold">
-                      {propertyItem?.price} {t("servicesPage.egp")}
+                    )} */}
+                    <h4 className="fw-bold my-4">
+                      <b>{t("create_ad.price")}</b> : {propertyItem?.price ? `${propertyItem?.price} ${t("servicesPage.egp")}` : t("labels.undefined")}
                     </h4>
-                    <p className="line-height text-md my-4">
-                      {propertyItem?.small_desc}
-                    </p>
                     <Link
                       className="contact_with_provider"
-                      to={`tel:${
-                        propertyItem?.phone
+                      to={`tel:${propertyItem?.phone
                           ? propertyItem?.phone
                           : propertyItem?.user?.phone
-                      }`}
+                        }`}
                     >
                       <MdWifiCalling3 />{" "}
                       {t("servicesPage.contactServiceProvider")}
@@ -397,7 +375,7 @@ const PropertyDetails = () => {
                       <div className="d-flex mx-2 gap-2">
                         <FacebookShareButton
                           url={window.location.href}
-                          quote={propertyItem?.small_desc}
+                          quote={propertyItem?.description}
                           hashtag="#3ayin"
                         >
                           <FacebookIcon size={22} round />
@@ -405,15 +383,15 @@ const PropertyDetails = () => {
 
                         <TwitterShareButton
                           url={window.location.href}
-                          title={propertyItem?.ad_name}
+                          title={propertyItem?.title}
                         >
                           <FaXTwitter size={22} className="text-dark" />
                         </TwitterShareButton>
 
                         <LinkedinShareButton
                           url={window.location.href}
-                          title={propertyItem?.ad_name}
-                          summary={propertyItem?.small_desc}
+                          title={propertyItem?.title}
+                          summary={propertyItem?.description}
                           source="3ayin"
                         >
                           <LinkedinIcon size={22} round />
@@ -421,7 +399,7 @@ const PropertyDetails = () => {
 
                         <WhatsappShareButton
                           url={window.location.href}
-                          title={propertyItem?.ad_name}
+                          title={propertyItem?.title}
                           separator=" - "
                         >
                           <WhatsappIcon size={22} round />
@@ -431,8 +409,8 @@ const PropertyDetails = () => {
                             className="btn btn-sm btn-outline-dark fw-bold d-flex align-items-center share_now"
                             onClick={() =>
                               navigator.share({
-                                title: propertyItem?.ad_name,
-                                text: propertyItem?.small_desc,
+                                title: propertyItem?.title,
+                                text: propertyItem?.description,
                                 url: window.location.href,
                               })
                             }
@@ -482,7 +460,13 @@ const PropertyDetails = () => {
                         </>
                       )}
                       {propertyItem?.location && (
-                        <img src="/map.png" alt="--" />
+                        <a
+                          href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(propertyItem.location)}`}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                        >
+                          <img src="/map.png" alt="--" />
+                        </a>
                       )}
                     </div>
                   </div>
@@ -492,9 +476,8 @@ const PropertyDetails = () => {
                   <div className="service_info position-relative my-4">
                     <h4 className="d-block main-color fw-bold">
                       <i
-                        className={`bi bi-blockquote-${
-                          i18n.language === "ar" ? "left" : "right"
-                        }`}
+                        className={`bi bi-blockquote-${i18n.language === "ar" ? "left" : "right"
+                          }`}
                       ></i>{" "}
                       {t("property.propertyDetails")}
                     </h4>
@@ -504,124 +487,137 @@ const PropertyDetails = () => {
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
-                              {t("property.unitCategory")} :{" "}
+                              {t("property.purpose")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {categoryMap[propertyItem.category] ||
-                                propertyItem.category}
+                              {propertyItem.purpose?.name ? propertyItem.purpose?.name : t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.unitType")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {unitTypeMap[propertyItem.unit_type] ||
-                                propertyItem.unit_type}
+                              {propertyItem.property_type ? propertyItem.property_type : t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
+                              ></i>{" "}
+                              {t("property.category")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.category?.name ? propertyItem?.category?.name : t("labels.undefined")}
+                            </span>
+                          </li>
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <i
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
+                              ></i>{" "}
+                              {t("property.level")} :{" "}
+                            </span>
+                            <span className="text-success border bg-white rounded-5 px-3 py-1">
+                              {propertyItem.property_level ? propertyItem?.property_level : t("labels.undefined")}
+                            </span>
+                          </li>
+                          <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
+                            <span className="fw-bold">
+                              <i
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.finishingStatus")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
                               {finishingMap[propertyItem.finishing_status] ||
-                                propertyItem.finishing_status}
+                                propertyItem.finishing_status || t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.furnitureStatus")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
                               {furnitureMap[propertyItem.furniture_status] ||
-                                propertyItem.furniture_status}
+                                propertyItem.furniture_status || t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.paymentMethod")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
                               {paymentMethodMap[propertyItem.payment_method] ||
-                                propertyItem.payment_method}
+                                propertyItem.payment_method || t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.deposit")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.deposit_amount || "--"}
+                              {propertyItem.deposit_amount || t("labels.undefined")}
                             </span>
                           </li>
 
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.area")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.area_sqm}
+                              {propertyItem.area_sqm || t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.rooms")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.rooms || "--"}
+                              {propertyItem.rooms || t("labels.undefined")}
                             </span>
                           </li>
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("property.floor")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.floor || "--"}
+                              {propertyItem.floor || t("labels.undefined")}
                             </span>
                           </li>
                         </ul>
@@ -636,7 +632,7 @@ const PropertyDetails = () => {
                               {t("property.count_of_bathrooms")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.bathrooms || "--"}
+                              {propertyItem.bathrooms || t("labels.undefined")}
                             </span>
                           </div>
                           <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
@@ -645,7 +641,7 @@ const PropertyDetails = () => {
                               {t("property.number_of_parking_spaces")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.garages || "--"}
+                              {propertyItem.garages || t("labels.undefined")}
                             </span>
                           </div>
                           <div className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
@@ -687,7 +683,7 @@ const PropertyDetails = () => {
                               {t("property.distinctive_signs")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1">
-                              {propertyItem.feature_mark || "--"}
+                              {propertyItem.feature_mark || t("labels.undefined")}
                             </span>
                           </div>
                           <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -696,7 +692,7 @@ const PropertyDetails = () => {
                             <b>{t("property.unit_features")}</b>
                           </div>
                           {propertyItem?.facilities &&
-                          propertyItem?.facilities.length > 0 ? (
+                            propertyItem?.facilities.length > 0 ? (
                             propertyItem?.facilities?.map((f, index) => (
                               <div
                                 className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12"
@@ -721,27 +717,25 @@ const PropertyDetails = () => {
                         <hr />
                         <b className="d-block text-sm">
                           <i
-                            className={`bi bi-caret-${
-                              i18n.language === "ar" ? "left" : "right"
-                            }-fill`}
+                            className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                              }-fill`}
                           ></i>{" "}
                           {t("property.detailedAddress")}
                         </b>
                         <p className="line-height text-sm my-2">
-                          {propertyItem.address_details}
+                          {propertyItem.address_details || t("labels.undefined")}
                         </p>
                         <ul className="p-0 list-unstyled mb-0">
                           <li className="my-3 text-sm col-xl-4 col-lg-4 col-md-6 col-12">
                             <span className="fw-bold">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("create_ad.location")} :{" "}
                             </span>
                             <span className="text-success border bg-white rounded-5 px-3 py-1 d-block my-2">
-                              {propertyItem.location || "--"}
+                              {propertyItem.location || t("labels.undefined")}
                             </span>
                           </li>
                         </ul>
@@ -764,13 +758,13 @@ const PropertyDetails = () => {
                           )}
                         </div>
                         <hr />
-                        {propertyItem?.category === "rent" && (
+                        {/* here reviews */}
+                        {propertyItem?.purpose === "rent" && (
                           <div>
                             <b className="d-block text-sm">
                               <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
+                                className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                                  }-fill`}
                               ></i>{" "}
                               {t("servicesPage.ratings")}
                             </b>
@@ -804,11 +798,10 @@ const PropertyDetails = () => {
                                       <b>{review.user?.name}</b>
                                       <p>{review.created_at}</p>
                                       <p
-                                        className={`line-height ${
-                                          i18n.language === "en"
+                                        className={`line-height ${i18n.language === "en"
                                             ? "custom-font"
                                             : ""
-                                        }`}
+                                          }`}
                                       >
                                         {review.comment}
                                       </p>
@@ -820,11 +813,10 @@ const PropertyDetails = () => {
                                         {[1, 2, 3, 4, 5].map((star) => (
                                           <i
                                             key={star}
-                                            className={`bi ${
-                                              star <= parseInt(review.rate)
+                                            className={`bi ${star <= parseInt(review.rate)
                                                 ? "bi-star-fill text-warning"
                                                 : "bi-star text-secondary"
-                                            }`}
+                                              }`}
                                           ></i>
                                         ))}
                                       </div>
@@ -852,11 +844,10 @@ const PropertyDetails = () => {
                                 <Link className="show_more">
                                   {t("recommendedServices.showMore")}{" "}
                                   <i
-                                    className={`bi ${
-                                      i18n.language === "ar"
+                                    className={`bi ${i18n.language === "ar"
                                         ? "bi-arrow-left"
                                         : "bi-arrow-right"
-                                    }`}
+                                      }`}
                                   ></i>
                                 </Link>
                               </div>
@@ -873,11 +864,10 @@ const PropertyDetails = () => {
                                   {[1, 2, 3, 4, 5].map((star) => (
                                     <i
                                       key={star}
-                                      className={`bi ${
-                                        star <= (hovered || rating)
+                                      className={`bi ${star <= (hovered || rating)
                                           ? "bi-star-fill"
                                           : "bi-star"
-                                      } text-warning fs-4 me-1 cursor-pointer`}
+                                        } text-warning fs-4 me-1 cursor-pointer`}
                                       onMouseEnter={() => setHovered(star)}
                                       onMouseLeave={() => setHovered(0)}
                                       onClick={() => setRating(star)}
@@ -909,28 +899,26 @@ const PropertyDetails = () => {
                               >
                                 {t("servicesPage.submit")}{" "}
                                 <i
-                                  className={`text-sm bi ${
-                                    i18n.language === "ar"
+                                  className={`text-sm bi ${i18n.language === "ar"
                                       ? "bi-arrow-left"
                                       : "bi-arrow-right"
-                                  }`}
+                                    }`}
                                 ></i>
                               </button>
                             </form>
                             <hr />
                           </div>
                         )}
-                        
+
                         <b className="d-block text-sm">
-                              <i
-                                className={`bi bi-caret-${
-                                  i18n.language === "ar" ? "left" : "right"
-                                }-fill`}
-                              ></i>{" "}
-                              {t("servicesPage.extraFiles")}
-                            </b>
+                          <i
+                            className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
+                              }-fill`}
+                          ></i>{" "}
+                          {t("servicesPage.extraFiles")}
+                        </b>
                         {propertyItem?.files &&
-                        propertyItem.files.length > 0 ? (
+                          propertyItem.files.length > 0 ? (
                           propertyItem.files.map((file, index) => {
                             const isPdf = file.file
                               ?.toLowerCase()
@@ -965,11 +953,10 @@ const PropertyDetails = () => {
 
                                     <p>{t("fileUploadDateNotAvailable")}</p>
                                     <span className="d-block text-success fw-bold">
-                                      {`${(file.size / 1024).toFixed(1)} ${
-                                        i18n.language === "en"
+                                      {`${(file.size / 1024).toFixed(1)} ${i18n.language === "en"
                                           ? "MB"
                                           : "ميجا بايت"
-                                      }`}
+                                        }`}
                                     </span>
                                   </div>
                                 </div>

@@ -321,8 +321,8 @@ const ServiceDetails = () => {
                         {adItem?.availability}
                       </small>
                     )}
-                    <h4 className="fw-bold">
-                      {adItem?.price} {t("servicesPage.egp")}
+                    <h4 className="fw-bold my-4">
+                      <b>{t("create_ad.price")}</b> : {adItem?.price ? `${adItem?.price} ${t("servicesPage.egp")}` : t("labels.undefined")}
                     </h4>
                     <p className="line-height text-md my-4">
                       {adItem?.small_desc}
@@ -427,7 +427,15 @@ const ServiceDetails = () => {
                           <Tooltip id="tooltip1" />
                         </>
                       )}
-                      {adItem?.location && <img src="/map.png" alt="--" />}
+                      {adItem?.location && (
+                          <a
+                            href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(adItem.location)}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            <img src="/map.png" alt="--" />
+                          </a>
+                        )}
                     </div>
                   </div>
                 </div>

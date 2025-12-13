@@ -51,7 +51,7 @@ export const updateUserIdentifies = createAsyncThunk(
       return response.data;
     } catch (err) {
       return rejectWithValue(
-        err.response?.data?.message || "Failed to submit contact form"
+        err.response?.data?.message || "Failed to load"
       );
     }
   }

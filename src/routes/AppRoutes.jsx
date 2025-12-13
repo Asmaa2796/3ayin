@@ -9,6 +9,7 @@ import PublishAd from "../components/PublishAd/PublishAd";
 import ServicesPage from "../components/ServicesPage/ServicesPage";
 import AdsPage from "../components/Ads/AdsPage";
 import ServiceDetails from "../components/ServicesPage/ServiceDetails";
+import ServicesMap from "../components/ServicesPage/ServicesMap";
 import ServiceProvider from "../components/ServiceProvider/ServiceProvider";
 import About from "../components/About/About";
 import HowItWorks from "../components/HowItWorks/HowItWorks";
@@ -35,10 +36,12 @@ import Packages from "../components/Packages/Packages";
 import RequestService from "../components/RequestService/RequestService";
 import NotFound from "../pages/NotFound";
 import PropertyDetails from "../components/Properties/PropertyDetails";
+import PageTop from "../components/PageTop/PageTop";
+import { toast } from "react-toastify";
 
 export default function Applayout() {
   const location = useLocation();
-  const { i18n } = useTranslation();
+  const { i18n, t } = useTranslation();
   const [userStatus, setUserStatus] = useState({
     isLoading: true,
     isActive: false,
@@ -47,31 +50,74 @@ export default function Applayout() {
   const userData = JSON.parse(sessionStorage.getItem("user3ayin"));
 
   useEffect(() => {
-    fetch("https://app.xn--mgb9a0bp.com/api/check-status", {
-    headers: {
-      Lang: i18n.language,
-      Authorization: `Bearer ${userData?.token}`,
-      Accept: "application/json",
-    },
-  })
-    .then(res => res.json())
-    .then(data => {
-      if (data?.code === 200 && data?.data?.is_active) {
-        setUserStatus({ isLoading: false, isActive: true, isGuest: false });
-      } else {
-        setUserStatus({ isLoading: false, isActive: false, isGuest: false });
-      }
-    })
-    .catch(() => {
+    if (!userData?.token) {
       setUserStatus({ isLoading: false, isActive: false, isGuest: true });
-    });
-  }, []);
+      return;
+    }
+    fetch("https://app.xn--mgb9a0bp.com/api/check-status", {
+      headers: {
+        Lang: i18n.language,
+        Authorization: `Bearer ${userData.token}`,
+        Accept: "application/json",
+      },
+    })
+      .then(res => res.json())
+      .then(data => {
+        if (data?.code === 200 && data?.data?.is_active) {
+          // user is active
+          setUserStatus({ isLoading: false, isActive: true, isGuest: false });
+        } else {
+          sessionStorage.removeItem("user3ayin");
+          window.dispatchEvent(new Event("userUpdated"));
+          setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+        }
+      })
+      .catch(() => {
+        setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+      });
+  }, [i18n.language]);
+
+  // Auto logout if admin deactivates user
+  useEffect(() => {
+    if (!userData?.token) {
+      setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+      return;
+    }
+
+    const interval = setInterval(() => {
+      fetch("https://app.xn--mgb9a0bp.com/api/check-status", {
+        headers: {
+          Lang: i18n.language,
+          Authorization: `Bearer ${userData.token}`,
+          Accept: "application/json",
+        },
+      })
+        .then(res => res.json())
+        .then(data => {
+          if (!data?.data?.is_active) {
+            sessionStorage.removeItem("user3ayin"); // remove session
+            window.dispatchEvent(new Event("userUpdated"));
+            setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+
+            toast.error(t("validation.user_account_not_active"));
+            window.location.href = "/login";
+          }
+
+        })
+        .catch(() => {
+          setUserStatus({ isLoading: false, isActive: false, isGuest: true });
+        });
+    }, 30000);
+
+    return () => clearInterval(interval); // cleanup on unmount
+  }, [userData?.token, i18n.language, t]);
+
 
   // Handle direction change based on language
   useEffect(() => {
     const dir = i18n.language === "ar" ? "rtl" : "ltr";
     document.documentElement.setAttribute("dir", dir);
-  }, [i18n.language]);
+  }, [i18n.language, t]);
 
   const hideNavbarFooterPaths = [
     "/login",
@@ -96,6 +142,7 @@ export default function Applayout() {
         <PageScrollProgressBar />
       )}
       {!shouldHideNavbarFooter && <Navbar />}
+      <PageTop />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="publish_ad" element={<PublishAd />} />
@@ -104,6 +151,7 @@ export default function Applayout() {
         <Route path="all_properties" element={<AllProperties />} />
         <Route path="properties_AR_VR" element={<PropertiesARVR />} />
         <Route path="properties_map" element={<PropertiesMap />} />
+        <Route path="services_map" element={<ServicesMap />} />
         <Route path="all_services" element={<ServicesPage />} />
         <Route path="all_ads" element={<AdsPage />} />
         <Route path="serviceDetails/:id" element={<ServiceDetails />} />

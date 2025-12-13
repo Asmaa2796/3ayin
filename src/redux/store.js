@@ -29,6 +29,7 @@ import SearchSlice from "./Slices/SearchSlice";
 import FacilitiesSlice from "./Slices/FacilitiesSlice"; 
 import CustomizePackageSlice from "./Slices/CustomizePackageSlice"; 
 import ServicesSlice from "./Slices/ServicesSlice"; 
+import PropertyApisSlice from './Slices/PropertyApisSlice';
 const store = configureStore({
   reducer: {
     auth: authReducer,
@@ -62,6 +63,7 @@ const store = configureStore({
     facilities: FacilitiesSlice,
     customize_package: CustomizePackageSlice,
     services: ServicesSlice,
+    properties_api: PropertyApisSlice
   },
 });
 

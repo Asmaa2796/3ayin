@@ -19,22 +19,7 @@ const RecommendedProperties = () => {
   useEffect(() => {
     dispatch(fetchAllProperties({type : "all"}));
   }, [dispatch,i18n.language]);
-  const categoryMap = {
-    sale: t("property.sale"),
-    rent: t("property.rent"),
-    share: t("property.share"),
-  };
-  const unitTypeMap = {
-    apartment: t("property.apartment"),
-    building: t("property.building"),
-    villa: t("property.villa"),
-    duplex: t("property.duplex"),
-    office: t("property.office"),
-    shop: t("property.shop"),
-    warehouse: t("property.warehouse"),
-    land: t("property.land"),
-    chalet: t("property.chalet"),
-  };
+  
   const finishingMap = {
     semi: t("property.finishingSemi"),
     full: t("property.finishingFull"),
@@ -87,7 +72,7 @@ const RecommendedProperties = () => {
                   >
                     <div className="finishing_status">
                       {finishingMap[item?.finishing_status] ||
-                        item?.finishing_status}
+                        t("labels.undefined")}
                     </div>
                     <img
                       src={item.images?.[0]?.url || "/placeholder.jpg"}
@@ -107,13 +92,13 @@ const RecommendedProperties = () => {
                         <li className="text-sm bg-blue text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
                           <small>{t("property.unitCategory")}</small> :{" "}
                           <small>
-                            {categoryMap[item?.category] || item?.category}
+                            {item?.purpose?.name ? item?.purpose?.name : t("labels.undefined")}
                           </small>
                         </li>
                         <li className="text-sm bg-success text-white d-block rounded-5 px-2 py-1 my-1 mx-3 text-center">
                           <small>{t("property.unitType")}</small> :{" "}
                           <small>
-                            {unitTypeMap[item?.unit_type] || item?.unit_type}
+                            {item?.property_type?.name ? item?.property_type?.name : t("labels.undefined")}
                           </small>
                         </li>
                       </ul>
@@ -123,7 +108,7 @@ const RecommendedProperties = () => {
                         <div className="text-dark">
                           {t("recommendedServices.startingFrom")}{" "}
                           <span className="fw-bold">
-                            {item.price} {t("recommendedServices.currency")}
+                            {item?.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                           </span>
                         </div>
                         <div>

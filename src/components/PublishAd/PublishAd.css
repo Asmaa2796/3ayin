@@ -67,6 +67,20 @@
     opacity: 0;
     cursor: pointer;
 }
+.photo_wrapper .remove-file {
+  height: 25px;
+    width: 25px;
+    position: absolute;
+    top: 5px;
+    right: 5px;
+    cursor: pointer;
+    font-weight: bold;
+    font-size: 15px;
+    color: var(--basic-color);
+    background: rgb(213 13 13 / 70%);
+    border-radius: 50%;
+    padding: 2px 6px;
+}
 /* Dark mode */
 [data-theme="dark"] {
     .form_holder::before {background-color: rgba(0, 0, 0, 0.9);}

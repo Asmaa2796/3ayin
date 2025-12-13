@@ -15,7 +15,7 @@
     transition: all .3s ease-in-out;
 }
 .service_btns button span {font-weight: bold;}
-.service_btns button:hover {background-color: #ddd;}
+/* .service_btns button:hover {background-color: #ddd;} */
 .service_btns button img {
         width: auto;
     max-height: 45px;

@@ -10,6 +10,7 @@ import { addProperty } from "../../redux/Slices/AddPropertySlice";
 
 import { fetchFacilities } from "../../redux/Slices/FacilitiesSlice";
 import GoogleMapPicker from "../PublishAd/GoogleMapPicker";
+import { fetchLevels, fetchPropertCategories, fetchPropertCategoriesChilds, fetchPropertCategoriesSubChilds, fetchPurposes, fetchTypes } from "../../redux/Slices/PropertyApisSlice";
 
 const AddProperty = () => {
   const { t, i18n } = useTranslation("global");
@@ -26,15 +27,24 @@ const AddProperty = () => {
   const navigate = useNavigate();
   const { success, error, isLoading } = useSelector((state) => state.property);
   const { facilities } = useSelector((state) => state.facilities);
-
+  const { purposes,types,levels,property_categories,property_categories_childs,property_categories_sub_childs } = useSelector((state) => state.properties_api);
   useEffect(() => {
     dispatch(fetchFacilities());
+    dispatch(fetchPurposes());
+    dispatch(fetchTypes());
+    dispatch(fetchLevels());
+    dispatch(fetchPropertCategories());
   }, [dispatch, i18n.language]);
-  const [formdata, setFormata] = useState({
-    category: "",
-    unit_type: "",
+  const [formdata, setFormData] = useState({
+    purpose_id:"",
+    property_type_id:"",
+    property_level_id:"",
+    category_id:"",
+    sub_category_id:"",
+    sub_sub_category_id:"",
     title_ar: "",
     title_en: "",
+    description:"",
     rooms: "",
     floor: "",
     area_sqm: "",
@@ -44,8 +54,8 @@ const AddProperty = () => {
     payment_method: "",
     address_details: "",
     deposit_amount: "",
-    images: [], // array of images
-    files: [], // array of files
+    images: [null, null, null, null],
+    files: [null, null, null, null],
     latitude: "",
     longitude: "",
     location: "",
@@ -62,9 +72,35 @@ const AddProperty = () => {
 
   const handleChange = (e) => {
     const { name, type, checked, value } = e.target;
+    if (name === "category_id") {
+      // Fetch subcategories when category changes
+      dispatch(fetchPropertCategoriesChilds(value));
+      // Reset subcategory field
+      setFormData((prev) => ({ ...prev, sub_category_id: "" }));
+    }
+    if (name === "sub_category_id") {
+      dispatch(fetchPropertCategoriesSubChilds(value));
+      setFormData((prev) => ({ ...prev, sub_sub_category_id: "" }));
+    }
 
-    setFormata((prev) => {
-      // Case 1: handle normal boolean checkboxes
+    const arabicFields = ["title_ar"];
+    const englishFields = ["title_en"];
+
+    if (arabicFields.includes(name)) {
+      const hasEnglish = /[A-Za-z]/.test(value);
+      if (hasEnglish) {
+        toast.warning(t("validation.mustBeArabic"), { toastId: `${name}-lang` });
+      }
+    }
+
+    if (englishFields.includes(name)) {
+      const hasArabic = /[\u0600-\u06FF]/.test(value);
+      if (hasArabic) {
+        toast.warning(t("validation.mustBeEnglish"), { toastId: `${name}-lang` });
+      }
+    }
+
+    setFormData((prev) => {
       if (["education", "health", "transportation"].includes(name)) {
         return { ...prev, [name]: checked ? 1 : 0 };
       }
@@ -77,59 +113,93 @@ const AddProperty = () => {
         return { ...prev, facilities: updatedFeatures };
       }
 
+      // Case 3: normal text / input fields
       return { ...prev, [name]: value };
     });
   };
 
-  const handleFileInput = (e, key, index) => {
-    const file = e.target.files[0];
-    if (!file) return;
+  const handleFileInput = (e, key) => {
+    const files = Array.from(e.target.files);
+    console.log("Uploading to:", key, files);
+    if (!files.length) return;
+
+    // Check if total files exceed 4
+    const currentFilesCount = formdata[key].filter((f) => f !== null).length;
+    if (currentFilesCount + files.length > 4) {
+      toast.error(t("validation.You_can_upload_max_4_files"));
+      return;
+    }
 
     const imageTypes = ["image/jpeg", "image/png", "image/jpg"];
     const fileTypes = [
       "application/pdf",
       "application/msword",
       "application/vnd.openxmlformats-officedocument.wordprocessingml.document",
+      "application/vnd.ms-excel",
+      "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
     ];
 
     let allowedTypes;
     if (key === "images") allowedTypes = imageTypes;
     if (key === "files") allowedTypes = fileTypes;
 
-    if (!allowedTypes.includes(file.type)) {
+    // Validate file types
+    const invalidFile = files.find((file) => !allowedTypes.includes(file.type));
+    if (invalidFile) {
       toast.error(
-        `${t("only_allowed")} ${
-          key === "files" ? "PDF, Word" : "JPG, JPEG, PNG"
-        }`
+        `${t("only_allowed")} ${key === "files" ? "PDF, Word, Excel" : "JPG, JPEG, PNG"}`
       );
       return;
     }
 
-    // update formdata with actual file
-    setFormata((prev) => {
-      const newFiles = [...prev[key]];
-      newFiles[index] = file;
-      return { ...prev, [key]: newFiles };
+    // Fill empty slots in formdata
+    setFormData((prev) => {
+      const updated = [...prev[key]];
+      files.forEach((file) => {
+        const emptyIndex = updated.findIndex((f) => f === null);
+        if (emptyIndex !== -1) updated[emptyIndex] = file;
+      });
+      return { ...prev, [key]: updated };
     });
 
-    // update preview for images and user_works
-    if (key === "images") {
-      setPreviews((prev) => {
-        const newPreviews = { ...prev };
-        newPreviews[key][index] = URL.createObjectURL(file);
-        return newPreviews;
+    // Fill empty slots in previews
+    setPreviews((prev) => {
+      const updated = [...prev[key]];
+      files.forEach((file) => {
+        const emptyIndex = updated.findIndex((f) => f === null);
+        if (emptyIndex !== -1)
+          updated[emptyIndex] = key === "files" ? file.name : URL.createObjectURL(file);
       });
-    } else if (key === "files") {
-      setPreviews((prev) => {
-        const newPreviews = { ...prev };
-        newPreviews[key][index] = file.name; // show file name instead of image
-        return newPreviews;
-      });
-    }
+      return { ...prev, [key]: updated };
+    });
 
-    e.target.value = null; // allow reselecting same file
+    e.target.value = null; // reset input
+  };
+  const removeFile = (key, index) => {
+    setFormData((prev) => {
+      const updated = [...prev[key]];
+      updated[index] = null;
+      return { ...prev, [key]: updated };
+    });
+
+    setPreviews((prev) => {
+      const updated = [...prev[key]];
+      updated[index] = null;
+      return { ...prev, [key]: updated };
+    });
   };
 
+  const validateLanguage = (text, shouldBeArabic) => {
+    const hasArabic = /[\u0600-\u06FF]/.test(text);
+    const hasEnglish = /[A-Za-z]/.test(text);
+
+    if (!text.trim()) return true; // ignore empty
+    if (shouldBeArabic && hasEnglish)
+      return { valid: false, message: t("validation.mustBeArabic") };
+    if (!shouldBeArabic && hasArabic)
+      return { valid: false, message: t("validation.mustBeEnglish") };
+    return { valid: true };
+  };
   const handleSubmit = (e) => {
     e.preventDefault();
     if (formdata.AR_VR && !formdata.AR_VR.startsWith("https://")) {
@@ -140,7 +210,32 @@ const AddProperty = () => {
       toast.error(t("property.videoLinkInvalid"));
       return;
     }
+    if (!formdata.purpose_id) {
+      toast.error(`${t("property.purpose")} ${t("field")} ${t("is_required")}`);
+      return;
+    }
+    if (!formdata.property_type_id) {
+      toast.error(`${t("property.type")} ${t("field")} ${t("is_required")}`);
+      return;
+    }
+    if (!formdata.category_id) {
+      toast.error(`${t("property.main_categories")} ${t("field")} ${t("is_required")}`);
+      return;
+    }
 
+    // Language validation
+    const checks = [
+      { text: formdata.title_ar, arabic: true, label: t("property.unitNameAr") },
+      { text: formdata.title_en, arabic: false, label: t("propert.unitNameEn") },
+    ];
+
+    for (const check of checks) {
+      const result = validateLanguage(check.text, check.arabic);
+      if (!result.valid) {
+        toast.error(`${check.label}: ${result.message}`);
+        return;
+      }
+    }
     const data = new FormData();
 
     data.append("user_id", userID);
@@ -154,8 +249,13 @@ const AddProperty = () => {
       data.append(`facilities[${index}]`, id);
     });
 
-    formdata.images.forEach((file) => data.append("images[]", file));
-    formdata.files.forEach((file) => data.append("files[]", file));
+    formdata.images
+      .filter((file) => file instanceof File)
+      .forEach((file) => data.append("images[]", file));
+    formdata.files
+      .filter((file) => file instanceof File)
+      .forEach((file) => data.append("files[]", file));
+    
 
     // console.log("FormData contents:");
     // for (let [key, value] of data.entries()) {
@@ -195,44 +295,93 @@ const AddProperty = () => {
                   {t("property.select_category")}
                 </h4>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
-                <label className="fw-bold">{t("property.unitCategory")}</label>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.purpose")}</label>
                 <select
-                  type="text"
-                  name="category"
+                  name="purpose_id"
                   onChange={handleChange}
-                  value={formdata.category}
-                  required
+                  value={formdata.purpose_id}
                 >
                   <option value="" disabled>
                     {t("property.select_item")}
                   </option>
-                  <option value="sale">{t("property.sale")}</option>
-                  <option value="rent">{t("property.rent")}</option>
-                  <option value="share">{t("property.share")}</option>
+                  {purposes && purposes.length > 0 && purposes.map((purpose) => <option key={purpose.id} value={purpose.id}>{purpose.name}</option>)}
                 </select>
               </div>
-              <div className="col-xl-6 col-lg-6 col-md-6 col-12">
-                <label className="fw-bold">{t("property.unitType")}</label>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.type")}</label>
                 <select
-                  type="text"
-                  name="unit_type"
+                  name="property_type_id"
                   onChange={handleChange}
-                  required
-                  value={formdata.unit_type}
+                  value={formdata.property_type_id}
                 >
                   <option value="" disabled>
                     {t("property.select_item")}
                   </option>
-                  <option value="apartment">{t("property.apartment")}</option>
-                  <option value="building">{t("property.building")}</option>
-                  <option value="villa">{t("property.villa")}</option>
-                  <option value="duplex">{t("property.duplex")}</option>
-                  <option value="office">{t("property.office")}</option>
-                  <option value="shop">{t("property.shop")}</option>
-                  <option value="warehouse">{t("property.warehouse")}</option>
-                  <option value="land">{t("property.land")}</option>
-                  <option value="chalet">{t("property.chalet")}</option>
+                  {types && types.length > 0 && types.map((type) => <option key={type.id} value={type.id}>{type.name}</option>)}
+                </select>
+              </div>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.level")}</label>
+                <select
+                  name="property_level_id"
+                  onChange={handleChange}
+                  value={formdata.property_level_id}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  {levels && levels.length > 0 && levels.map((level) => <option key={level.id} value={level.id}>{level.name}</option>)}
+                </select>
+              </div>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.main_categories")}</label>
+                <select
+                  name="category_id"
+                  onChange={handleChange}
+                  value={formdata.category_id}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  {property_categories && property_categories.length > 0 && property_categories.map((category) => <option key={category.id} value={category.id}>{category.name}</option>)}
+                </select>
+              </div>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.sub_categories")}</label>
+                <select
+                  name="sub_category_id"
+                  onChange={handleChange}
+                  value={formdata.sub_category_id}
+                  disabled={!formdata.category_id}
+                  style={{
+                    backgroundColor: !formdata.category_id ? "#eee" : ""
+                  }}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  {property_categories_childs && property_categories_childs.length > 0 && property_categories_childs.map((child) => <option key={child.id} value={child.id}>{child.name}</option>)}
+                </select>
+              </div>
+              <div className="col-xl-4 col-lg-4 col-md-6 col-12">
+                <label className="fw-bold">{t("property.sub_sub_categories")}</label>
+                <select
+                  name="sub_sub_category_id"
+                  onChange={handleChange}
+                  value={formdata.sub_sub_category_id}
+                  disabled={!formdata.sub_category_id || !property_categories_sub_childs?.length}
+                  style={{
+                    backgroundColor:
+                      !formdata.sub_category_id || !property_categories_sub_childs?.length
+                        ? "#eee"
+                        : "",
+                  }}
+                >
+                  <option value="" disabled>
+                    {t("property.select_item")}
+                  </option>
+                  {property_categories_sub_childs && property_categories_sub_childs.length > 0 && property_categories_sub_childs.map((subChild) => <option key={subChild.id} value={subChild.id}>{subChild.name}</option>)}
                 </select>
               </div>
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
@@ -266,6 +415,10 @@ const AddProperty = () => {
                   value={formdata.title_en}
                 />
               </div>
+              <div className="col-xl-12 col-lg-12 col-md-12 col-12">
+                <label className="fw-bold">{t("property.description")}</label>
+                <textarea name="description" value={formdata.description} onChange={handleChange}></textarea>
+              </div>
 
               <div className="col-xl-6 col-lg-6 col-md-6 col-12">
                 <label className="fw-bold">{t("property.area")}</label>
@@ -289,7 +442,6 @@ const AddProperty = () => {
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
-                  required
                   name="rooms"
                   onChange={handleChange}
                   value={formdata.rooms}
@@ -314,7 +466,6 @@ const AddProperty = () => {
                 </label>
                 <select
                   type="text"
-                  required
                   name="finishing_status"
                   onChange={handleChange}
                   value={formdata.finishing_status}
@@ -338,7 +489,6 @@ const AddProperty = () => {
                 </label>
                 <select
                   type="text"
-                  required
                   name="furniture_status"
                   onChange={handleChange}
                   value={formdata.furniture_status}
@@ -358,15 +508,15 @@ const AddProperty = () => {
                 <hr />
               </div>
               <div className="col-xl-6 col-lg-6 col-md-6 col-12">
-                <label className="fw-bold">{t("property.price")}</label>
+                <label className="fw-bold">{t("create_ad.price")}</label>
                 <input
                   type="text"
                   name="price"
                   min="0"
+                  inputMode="numeric"
                   onInput={(e) => {
                     e.target.value = e.target.value.replace(/[^0-9]/g, ""); // only digits
                   }}
-                  required
                   onChange={handleChange}
                   value={formdata.price}
                 />
@@ -376,7 +526,6 @@ const AddProperty = () => {
                 <select
                   type="text"
                   name="payment_method"
-                  required
                   onChange={handleChange}
                   value={formdata.payment_method}
                 >
@@ -413,7 +562,6 @@ const AddProperty = () => {
                   name="address_details"
                   onChange={handleChange}
                   value={formdata.address_details}
-                  required
                   placeholder={`(${t("property.addressRegion")} - ${t(
                     "property.addressStreet"
                   )} - ${t("property.addressLandmark")})`}
@@ -422,19 +570,32 @@ const AddProperty = () => {
               <div className="col-xl-12 col-lg-12 col-md-12 col-12">
                 <label className="fw-bold">{t("create_ad.uploadImages")}</label>
                 <div className="row">
-                  {previews.images.map((preview, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-6"
-                      key={index}
-                    >
+                  {previews.images.map((fileName, index) => (
+                    <div className="col-xl-3 col-lg-3 col-md-6 col-6" key={index}>
                       <div className="photo_wrapper">
                         <input
                           type="file"
+                          multiple
                           accept=".png,.jpg,.jpeg"
-                          onChange={(e) => handleFileInput(e, "images", index)}
+                          onChange={(e) => handleFileInput(e, "images")}
                         />
-                        <img src={preview || "/camera.png"} alt="preview" />
-                        <span>{t("create_ad.uploadImage")}</span>
+                        {fileName ? (
+                          <>
+                            <img src={fileName} alt="image" />
+                            <span
+                              className="remove-file"
+                              onClick={() => removeFile("images", index)}
+                            >
+                              ×
+                            </span>
+                            <span>{t("create_ad.uploadedFile")}</span>
+                          </>
+                        ) : (
+                          <>
+                            <img src="/camera.png" alt="upload" />
+                            <span>{t("create_ad.uploadImage")}</span>
+                          </>
+                        )}
                       </div>
                     </div>
                   ))}
@@ -463,7 +624,7 @@ const AddProperty = () => {
 
                     <GoogleMapPicker
                       onSelect={({ latitude, longitude, location }) => {
-                        setFormata((prev) => ({
+                        setFormData((prev) => ({
                           ...prev,
                           latitude,
                           longitude,
@@ -611,20 +772,25 @@ const AddProperty = () => {
                 </label>
                 <div className="row">
                   {previews.files.map((fileName, index) => (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-6"
-                      key={index}
-                    >
+                    <div className="col-xl-3 col-lg-3 col-md-6 col-6" key={index}>
                       <div className="photo_wrapper">
                         <input
                           type="file"
-                          accept=".pdf,.doc,.docx"
-                          onChange={(e) => handleFileInput(e, "files", index)}
+                          multiple
+                          accept=".pdf,.doc,.docx,.xls,.xlsx"
+                          onChange={(e) => handleFileInput(e, "files")}
                         />
                         {fileName ? (
                           <>
                             <img src="/file.png" alt="file" />
                             <span>{fileName}</span>
+                            <span
+                              className="remove-file"
+                              onClick={() => removeFile("files", index)}
+                            >
+                              ×
+                            </span>
+                            <span>{t("create_ad.uploadedFile")}</span>
                           </>
                         ) : (
                           <>

@@ -112,7 +112,7 @@ const RelatedServices = ({ adCategory, currentAdId }) => {
                       <div className="text-dark">
                         {t("recommendedServices.startingFrom")}
                         <span className="fw-bold">
-                          {ad?.price} {t("recommendedServices.currency")}
+                          {ad?.price ? `${ad?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
                         </span>
                       </div>
                       <div>

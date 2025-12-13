@@ -46,7 +46,14 @@ const Services = () => {
               className="tilt-button"
             >
               <button>
-                <img src={sub.image} alt="--" />
+                <img
+                    src={sub.image || "/placeholder.jpg"}
+                    onError={(e) => {
+                      e.target.onerror = null;
+                      e.target.src = "/placeholder.jpg";
+                    }}
+                    alt="--"
+                  />
                 <span>{sub.name}</span>
               </button>
             </Tilt>
@@ -54,7 +61,7 @@ const Services = () => {
         </ul>
          <div className='text-center'>
           <Link
-              to="request_service"
+              to="/request_service"
               className="rounded-5 shadow-sm bg-dark text-white text-sm px-3 request_service_btn"
               style={{ paddingBlock: "6px" }}
             >
