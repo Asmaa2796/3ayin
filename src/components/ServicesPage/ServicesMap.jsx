@@ -176,13 +176,13 @@ const ServicesMap = () => {
                                                 </Link>
                                             </>
                                         )}
-                                        <strong>{t("create_ad.title")}: {ad?.ad_name}</strong>
+                                        <strong className="d-block">{t("create_ad.title")}: {ad?.ad_name}</strong>
                                         <br />
-                                        <small>{t("create_ad.description")}: {ad?.small_desc ? ad?.small_desc : t("labels.undefined")}</small>
+                                        <small className="d-block">{t("create_ad.description")}: {ad?.small_desc ? ad?.small_desc : t("labels.undefined")}</small>
                                         <br />
-                                        {t("create_ad.location")}: {ad?.location || "—"}
+                                        <small className="d-block">{t("create_ad.location")}: {ad?.location || "—"}</small>
                                         <br />
-                                        {t("create_ad.price")} : {ad?.price ? `${ad?.price} ${t("recommendedServices.currency")}` : t("labels.currency")}
+                                        <small className="d-block">{t("create_ad.price")} : {ad?.price ? `${ad?.price} ${t("recommendedServices.currency")}` : t("labels.currency")}</small>
                                         <br />
                                         <div style={{ marginTop: "5px" }}>
                                             <Link to={`/serviceDetails/${ad.id}`}>

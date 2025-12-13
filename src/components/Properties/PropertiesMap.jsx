@@ -237,18 +237,20 @@ const PropertiesMap = () => {
                         </Link>
                       </>
                     )}
-                    <strong>{t("property.unitName")} : {p?.title}</strong>
+                    <strong className="d-block">{t("property.unitName")} : {p?.title}</strong>
                     <br />
-                    {p?.purpose?.name && (
+                    <small className="d-block">
+                      {p?.purpose?.name && (
                       <>
                         {t("property.purpose")} : {p?.purpose.name}
                         <br />
                       </>
                     )}
+                    </small>
                     <br />
-                    <small>{t("create_ad.description")}: {p.description ? p.description : t("labels.undefined")}</small>
+                    <small className="d-block">{t("create_ad.description")}: {p.description ? p.description : t("labels.undefined")}</small>
 
-                    {t("create_ad.location")} : {p?.location || "—"}
+                    <small className="d-block">{t("create_ad.location")} : {p?.location || "—"}</small>
                     <br />
                     {t("create_ad.price")} : {p?.price ? `${p?.price} ${t("recommendedServices.currency")}` : t("labels.currency")}
                     <div>
