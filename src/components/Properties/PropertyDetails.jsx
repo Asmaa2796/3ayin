@@ -758,9 +758,7 @@ const PropertyDetails = () => {
                           )}
                         </div>
                         <hr />
-                        {/* here reviews */}
-                        {propertyItem?.purpose === "rent" && (
-                          <div>
+                        <div>
                             <b className="d-block text-sm">
                               <i
                                 className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"
@@ -908,8 +906,6 @@ const PropertyDetails = () => {
                             </form>
                             <hr />
                           </div>
-                        )}
-
                         <b className="d-block text-sm">
                           <i
                             className={`bi bi-caret-${i18n.language === "ar" ? "left" : "right"

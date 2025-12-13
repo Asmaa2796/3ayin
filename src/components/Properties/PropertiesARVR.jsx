@@ -25,174 +25,199 @@ const PropertiesARVRPage = () => {
 
   useEffect(() => {
     if (searchValue) {
-      dispatch(searchProperty(searchValue));
+      dispatch(searchProperty({ search: searchValue, page, per_page: 9 }));
     } else {
-      dispatch(fetchAllProperties({ type: activeType, page, per_page: 9 }));
+      dispatch(fetchAllProperties({ page, per_page: 9 }));
     }
-  }, [dispatch, i18n.language, page, searchValue, activeType]);
+  }, [dispatch, i18n.language, page, searchValue]);
 
   const searchMode = Boolean(searchValue);
   const listToRender = searchMode ? propertiesList : properties;
   const paginationInfo = searchMode ? propertiesPagination : pagination;
 
-  const categoryMap = {
-    sale: t("property.sale"),
-    rent: t("property.rent"),
-    share: t("property.share"),
-  };
-  const unitTypeMap = {
-    apartment: t("property.apartment"),
-    building: t("property.building"),
-    villa: t("property.villa"),
-    duplex: t("property.duplex"),
-    office: t("property.office"),
-    shop: t("property.shop"),
-    warehouse: t("property.warehouse"),
-    land: t("property.land"),
-    chalet: t("property.chalet"),
-  };
+  const arVrList = (listToRender || []).filter((item) => item?.AR_VR);
+  
+  const manualPerPage = 4;
+  const totalPages = Math.ceil(arVrList.length / manualPerPage);
+  const startIndex = (page - 1) * manualPerPage;
+  const currentArVrItems = arVrList.slice(startIndex, startIndex + manualPerPage);
+
+  const filteredList = activeType === "ar_vr" ? currentArVrItems : listToRender;
+
   const finishingMap = {
     semi: t("property.finishingSemi"),
     full: t("property.finishingFull"),
     superLux: t("property.finishingSuperLux"),
     company: t("property.finishingCompany"),
   };
-  // Filter AR/VR items
-  const arVrList = (listToRender || []).filter(item => item?.AR_VR);
 
-  // Compute total pages based on filtered data
-  const perPage = 9;
-  const totalPages = Math.ceil(arVrList.length / perPage);
-
-  // Slice current page
-  const startIndex = (page - 1) * perPage;
-  const currentItems = arVrList.slice(startIndex, startIndex + perPage);
   return (
     <>
       <Breadcrumb title={t("property.all")} />
+
       <div className="container">
-        <div className="tab_status">
-          {["all", "sale", "rent", "share"].map((type) => (
-            <button
-              key={type}
-              className={activeType === type ? "active" : ""}
-              onClick={() => {
-                setActiveType(type);
-                setPage(1);
-                if (searchValue) {
-                  window.history.replaceState(
-                    {},
-                    "",
-                    window.location.pathname
-                  );
-                  setSearchParams({});
-                }
-              }}
-            >
-              {t(`property.${type}`)}
-            </button>
-          ))}
+        {/* Filter buttons */}
+        <div className="tab_status text-center mb-3">
+          <button
+            className={activeType === "all" ? "active" : ""}
+            onClick={() => {
+              setActiveType("all");
+              setPage(1);
+              if (searchValue) {
+                window.history.replaceState({}, "", window.location.pathname);
+                setSearchParams({});
+              }
+            }}
+          >
+            {t("property.all")}
+          </button>
+
+          <button
+            className={activeType === "ar_vr" ? "active" : ""}
+            onClick={() => {
+              setActiveType("ar_vr");
+              setPage(1);
+              if (searchValue) {
+                window.history.replaceState({}, "", window.location.pathname);
+                setSearchParams({});
+              }
+            }}
+          >
+            AR / VR
+          </button>
         </div>
       </div>
+
       <div className="recommended_services py-5">
         <div className="container">
           {isLoading || loadingFiltered ? (
             <CardsLoader />
-          ) : currentItems?.length > 0 ? (
+          ) : filteredList?.length > 0 ? (
             <>
               <div className="row">
-                {currentItems.map((item, index) => (
-                  item?.AR_VR && (
-                    <div
-                      className="col-xl-3 col-lg-3 col-md-6 col-12"
-                      key={item.id || index}
+                {filteredList.map((item, index) => (
+                  <div
+                    className="col-xl-3 col-lg-3 col-md-6 col-12"
+                    key={item.id || index}
+                  >
+                    <Link
+                      to={`/propertyDetails/${item.id}`}
+                      className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block"
                     >
-                      <Link to={`/propertyDetails/${item.id}`} className="recommended_card border rounded-4 my-2 overflow-hidden position-relative d-block">
-                        <div className="finishing_status">
-                          {finishingMap[item?.finishing_status] ||
-                            item?.finishing_status}
-                        </div>
-                        <img
-                          src={item.images?.[0]?.url || "/placeholder.jpg"}
-                          onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = "/placeholder.jpg";
-                          }}
-                          alt={item.id}
-                          className="img-fluid mb-3 rounded-4"
-                        />
-                        <div className="p-3">
-                          <p className="line-height mb-1 text-dark">
-                            {item?.title.slice(0, 60)} ...
-                          </p>
-                          <hr className="my-1" />
-                          <ul className="p-0 mb-0 list-unstyled">
-                            <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
-                              <small>{t("property.unitCategory")}</small> :{" "}
-                              <small>
-                                {item?.purpose ? item?.purpose : t("labels.undefined")}
-                              </small>
-                            </li>
-                            <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
-                              <small>{t("property.unitType")}</small> :{" "}
-                              <small>
-                                {item?.property_type ? item?.property_type : t("labels.undefined")}
-                              </small>
-                            </li>
-                          </ul>
-                          <hr className="my-1" />
+                      <div className="finishing_status">
+                        {finishingMap[item?.finishing_status] ||
+                          t("labels.undefined")}
+                      </div>
+                      <img
+                        src={item.images?.[0]?.url || "/placeholder.jpg"}
+                        onError={(e) => {
+                          e.target.onerror = null;
+                          e.target.src = "/placeholder.jpg";
+                        }}
+                        alt={item.id}
+                        className="img-fluid mb-3 rounded-4"
+                      />
+                      <div className="p-3">
+                        <p className="line-height mb-1 text-dark">
+                          {item?.title?.slice(0, 60)} ...
+                        </p>
+                        <hr className="my-1" />
+                        <ul className="p-0 mb-0 list-unstyled">
+                          <li className="text-sm bg-blue text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
+                            <small>{t("property.unitCategory")}</small> :{" "}
+                            <small>
+                              {item?.purpose?.name
+                                ? item.purpose.name
+                                : t("labels.undefined")}
+                            </small>
+                          </li>
+                          <li className="text-sm bg-success text-white d-block text-center rounded-5 px-2 py-1 my-1 mx-3">
+                            <small>{t("property.type")}</small> :{" "}
+                            <small>
+                              {item?.property_type || t("labels.undefined")}
+                            </small>
+                          </li>
+                        </ul>
+                        <hr className="my-1" />
 
-                          <div className="text-sm d-flex justify-content-between align-items-center">
-                            <div className="text-dark">
-                              {t("recommendedServices.startingFrom")}{" "}
-                              <span className="fw-bold">
-                                {item?.price ? `${item?.price} ${t("recommendedServices.currency")}` : t("labels.undefined")}
-                              </span>
-                            </div>
-                            <div>
-                              <span
-                                className="view_details"
-                              >
-                                <i
-                                  className={`text-sm bi ${i18n.language === "ar"
-                                      ? "bi-arrow-left"
-                                      : "bi-arrow-right"
-                                    }`}
-                                ></i>
-                              </span>
-                            </div>
+                        <div className="text-sm d-flex justify-content-between align-items-center">
+                          <div className="text-dark">
+                            {t("recommendedServices.startingFrom")}{" "}
+                            <span className="fw-bold">
+                              {item.price
+                                ? `${item.price} ${t(
+                                    "recommendedServices.currency"
+                                  )}`
+                                : t("labels.undefined")}
+                            </span>
+                          </div>
+                          <div>
+                            <span className="view_details">
+                              <i
+                                className={`text-sm bi ${
+                                  i18n.language === "ar"
+                                    ? "bi-arrow-left"
+                                    : "bi-arrow-right"
+                                }`}
+                              ></i>
+                            </span>
                           </div>
                         </div>
-                      </Link>
-                    </div>
-                  )
+                      </div>
+                    </Link>
+                  </div>
                 ))}
               </div>
 
-              {paginationInfo && (
-                <div className="d-flex justify-content-center mt-4 align-items-center">
-                  <button
-                    className="btn btn-outline-primary mx-1"
-                    disabled={page === 1}
-                    onClick={() => setPage(prev => prev - 1)}
-                  >
-                    {t("labels.previous")}
-                  </button>
+              {/* Pagination */}
+              <div className="d-flex justify-content-center mt-4 align-items-center">
+                {activeType === "all" ? (
+                  <>
+                    <button
+                      className="btn btn-outline-primary mx-1"
+                      disabled={page === 1}
+                      onClick={() => setPage((prev) => prev - 1)}
+                    >
+                      {t("labels.previous")}
+                    </button>
 
-                  <span className="mx-2">
-                    {t("labels.page")} {page} {t("labels.of")} {totalPages}
-                  </span>
+                    <span className="mx-2">
+                      {t("labels.page")} {paginationInfo?.current_page || 1}{" "}
+                      {t("labels.of")} {paginationInfo?.last_page || 1}
+                    </span>
 
-                  <button
-                    className="btn btn-outline-primary mx-1"
-                    disabled={page === totalPages}
-                    onClick={() => setPage(prev => prev + 1)}
-                  >
-                    {t("labels.next")}
-                  </button>
-                </div>
+                    <button
+                      className="btn btn-outline-primary mx-1"
+                      disabled={page === paginationInfo?.last_page}
+                      onClick={() => setPage((prev) => prev + 1)}
+                    >
+                      {t("labels.next")}
+                    </button>
+                  </>
+                ) : (
+                  <>
+                    <button
+                      className="btn btn-outline-primary mx-1"
+                      disabled={page === 1}
+                      onClick={() => setPage((prev) => prev - 1)}
+                    >
+                      {t("labels.previous")}
+                    </button>
 
-              )}
+                    <span className="mx-2">
+                      {t("labels.page")} {page} {t("labels.of")} {totalPages}
+                    </span>
+
+                    <button
+                      className="btn btn-outline-primary mx-1"
+                      disabled={page === totalPages}
+                      onClick={() => setPage((prev) => prev + 1)}
+                    >
+                      {t("labels.next")}
+                    </button>
+                  </>
+                )}
+              </div>
             </>
           ) : (
             <div className="no_data bg-white py-5 border rounded-2 my-3 text-center">
