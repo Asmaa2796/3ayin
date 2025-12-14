@@ -10,6 +10,7 @@ import { useRef } from "react";
 import { logout } from "../redux/Slices/authSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCategoriesTree } from "../redux/Slices/FilterServicesSlice";
+
 import axios from "axios";
 const Navbar = () => {
   const { t, i18n } = useTranslation("global");
@@ -186,6 +187,7 @@ const Navbar = () => {
   useEffect(() => {
     dispatch(fetchAllCategoriesTree());
   }, [dispatch, i18n.language]);
+  console.log(filterByCats);
   // inside Navbar.jsx, above return
   const NavLinks = ({ isMobile = false, onCloseMenu }) => {
     // Only use mobile toggles when rendering mobile menu
@@ -259,7 +261,7 @@ const Navbar = () => {
                 />
               </button>
               {openSections.services && (
-                <ul className="list-unstyled ps-3">{renderSubCatsMobile(1)}</ul>
+                <ul className="list-unstyled ps-3">{renderSubCatsMobile(16)}</ul>
               )}
             </li>
 
@@ -323,7 +325,7 @@ const Navbar = () => {
               {openSections.affiliate && (
                 <ul className="list-unstyled ps-3">
                   {filterByCats?.data
-                    ?.filter((cat) => cat.id === 2)
+                    ?.filter((cat) => cat.id === 17)
                     ?.flatMap((mainCat) =>
                       mainCat.sub_categories?.map((sub) => (
                         <li key={sub.id}>
@@ -356,7 +358,7 @@ const Navbar = () => {
               {openSections.companies && (
                 <ul className="list-unstyled ps-3">
                   {filterByCats?.data
-                    ?.filter((cat) => cat.id === 3)
+                    ?.filter((cat) => cat.id === 17)
                     ?.flatMap((mainCat) =>
                       mainCat.sub_categories?.map((sub) => (
                         <li key={sub.id}>
@@ -399,7 +401,7 @@ const Navbar = () => {
             <div className="mega-menu shadow" ref={megaMenuRef}>
               <div className="row">
                 {filterByCats?.data
-                  ?.filter((cat) => cat.id === 1)
+                  ?.filter((cat) => cat.id === 16)
                   ?.flatMap((mainCat) =>
                     mainCat.sub_categories?.map((sub, index) => (
                       <div
@@ -529,7 +531,7 @@ const Navbar = () => {
             </h6>
 
             {filterByCats?.data
-              ?.filter((cat) => cat.id === 2)
+              ?.filter((cat) => cat.id === 17)
               ?.flatMap((mainCat) =>
                 mainCat.sub_categories?.map((sub) => (
                   <Link
@@ -579,7 +581,7 @@ const Navbar = () => {
             </h6>
 
             {filterByCats?.data
-              ?.filter((cat) => cat.id === 3)
+              ?.filter((cat) => cat.id === 18)
               ?.flatMap((mainCat) =>
                 mainCat.sub_categories?.map((sub) => (
                   <Link
