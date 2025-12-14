@@ -18,7 +18,7 @@ const Services = () => {
             }
         });
         const categories = res?.data?.data || [];
-        const serviceCategory = categories.find((cat) => cat.id === 1);
+        const serviceCategory = categories.find((cat) => cat.id === 16);
 
         if (serviceCategory) {
           setSubCategories(serviceCategory.sub_categories);
